@@ -1,14 +1,22 @@
 package ro.tucn.generator;
 
+import org.apache.log4j.Logger;
+
 /**
  * Created by Liviu on 4/5/2017.
  */
 public class Application {
 
-    public static void main(String args[]) throws InterruptedException {
-        if(args.length > 0) {
-            StreamGenerator streamGenerator = new StreamGenerator();
-            streamGenerator.run(args);
+    private static final Logger logger = Logger.getLogger("generator");
+
+    public static void main(String args[]) {
+        try {
+            if (args.length > 0) {
+                StreamGenerator streamGenerator = new StreamGenerator();
+                streamGenerator.run(args);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
     }
 }

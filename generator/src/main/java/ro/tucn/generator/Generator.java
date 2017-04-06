@@ -1,6 +1,7 @@
 package ro.tucn.generator;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.log4j.Logger;
 
 import java.util.Properties;
@@ -40,6 +41,12 @@ public abstract class Generator {
         return producer;
     }
 
+    public KafkaProducer<String, String> createLargeBufferProducer() {
+        Properties props = getLargeBufferKafkaProducerProperties();
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
+        return producer;
+    }
+
     public Properties getDefaultKafkaProducerProperties() {
         Properties props = new Properties();
         props.put("bootstrap.servers", bootstrapServersHost + ":" + bootstrapServersPort);
@@ -53,6 +60,35 @@ public abstract class Generator {
         */
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        return props;
+    }
+
+    public Properties getLargeBufferKafkaProducerProperties() {
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersHost + ":" + bootstrapServersPort);
+        props.put("group.id", "test");
+
+        props.put(ProducerConfig.RETRIES_CONFIG, "3");
+        props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "100");
+        props.put(ProducerConfig.ACKS_CONFIG, "0"); // "all"
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 1024); // 1024
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67108864);
+        props.put(ProducerConfig.SEND_BUFFER_CONFIG, 67108864);
+        props.put(ProducerConfig.RECEIVE_BUFFER_CONFIG, 67108864);
+
+        props.put(ProducerConfig.TIMEOUT_CONFIG, 250);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 0);
+
+        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "5000000");
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "128");
+
+
+        props.put(ProducerConfig.BLOCK_ON_BUFFER_FULL_CONFIG, true);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
         return props;
     }
 

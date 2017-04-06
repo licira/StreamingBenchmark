@@ -9,16 +9,21 @@ public class StreamGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    public void run(String[] args) throws InterruptedException {
-        if(args[0].equals("adv"))
-        {
-            int SLEEP_FREQUENCY;
-            try {
-                 SLEEP_FREQUENCY = Integer.parseInt(args[1]);
-            } catch (Exception e) {
-                SLEEP_FREQUENCY = 0;
-            }
+    public void run(String[] args) throws Exception{
+        int SLEEP_FREQUENCY = 0;
+        try {
+            SLEEP_FREQUENCY = Integer.parseInt(args[1]);
+        } catch (Exception e) {
+        }
+
+        if (args[0].equalsIgnoreCase("adv")) {
             new AdvClick().generate(SLEEP_FREQUENCY);
+        } else if (args[0].equalsIgnoreCase("kmeans")) {
+            new KMeansPoints().generate(SLEEP_FREQUENCY);
+        } else if (args[0].equalsIgnoreCase("skewed-words")) {
+            new SkewedWordCount().generate(SLEEP_FREQUENCY);
+        } else if (args[0].equalsIgnoreCase("uniform-word-count")) {
+            new UniformWordCount().generate(SLEEP_FREQUENCY);
         }
     }
 }

@@ -24,12 +24,14 @@
         <processorPath useClasspath="true" />
         <module name="consumer" />
         <module name="generator" />
+        <module name="utils" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
-      <module name="consumer" target="1.7" />
-      <module name="generator" target="1.7" />
-      <module name="StreamingBenchmark" target="1.7" />
+      <module name="consumer" target="1.5" />
+      <module name="generator" target="1.5" />
+      <module name="StreamingBenchmark" target="1.5" />
+      <module name="utils" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,7 +1,5 @@
 package ro.tucn.generator;
 
-//import fi.aalto.dmg.statistics.ThroughputLog;
-
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -35,8 +33,7 @@ public class AdvClick extends Generator {
     public AdvClick() {
         super();
         producer = createSmallBufferProducer();
-        clickProbability = Double.parseDouble(properties.getProperty("click.probability", "0.3"));
-        clickLambda = Double.parseDouble(properties.getProperty("click.lambda", "10"));
+        initializeWorkloadData();
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -104,7 +101,7 @@ public class AdvClick extends Generator {
             this.time = time;
         }
 
-        @Override
+        //@Override
         public int compareTo(Advertisement o) {
             if (this.time > o.time)
                 return 1;
@@ -123,7 +120,7 @@ public class AdvClick extends Generator {
             Collections.sort(this.advList);
         }
 
-        @Override
+        //@Override
         public void run() {
             for (Advertisement adv : advList) {
                 if (System.currentTimeMillis() < adv.time) {
@@ -138,5 +135,10 @@ public class AdvClick extends Generator {
                 // System.out.println("Clicked: " + adv.id);
             }
         }
+    }
+
+    private void initializeWorkloadData() {
+        clickProbability = Double.parseDouble(properties.getProperty("click.probability", "0.3"));
+        clickLambda = Double.parseDouble(properties.getProperty("click.lambda", "10"));
     }
 }
