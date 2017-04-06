@@ -1,4 +1,4 @@
-package ro.tucn.generator;
+package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
+import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
 /**
@@ -15,12 +16,11 @@ import ro.tucn.util.Utils;
  */
 
 public class UniformWordCount extends Generator {
+
     private static final Logger logger = Logger.getLogger(UniformWordCount.class);
+
     private static KafkaProducer<String, String> producer;
-
-    private String TOPIC = "WordCount";
-    private long SENTENCE_NUM = 1000000000;
-
+    private long SENTENCE_NUM = 1000;
     private int uniformSize;
     private double mu;
     private double sigma;
@@ -29,6 +29,7 @@ public class UniformWordCount extends Generator {
         super();
         producer = createLargeBufferProducer();
         initializeWorkloadData();
+        TOPIC = Topics.UNIFORM_WORDS;
     }
 
     public void generate(int sleep_frequency) throws InterruptedException {
@@ -54,14 +55,13 @@ public class UniformWordCount extends Generator {
 
             // control data generate speed
             if (sleep_frequency > 0 && sent_sentences % sleep_frequency == 0) {
-                Thread.sleep(1);
+                //Thread.sleep(1);
             }
         }
         producer.close();
         logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time));
     }
-
-
+    /*
     public static void main(String[] args) throws InterruptedException {
         int SLEEP_FREQUENCY = -1;
         if (args.length > 0) {
@@ -69,11 +69,10 @@ public class UniformWordCount extends Generator {
         }
         new UniformWordCount().generate(SLEEP_FREQUENCY);
     }
-
-    private void initializeWorkloadData() {
-        uniformSize = Integer.parseInt(this.properties.getProperty("uniform.size", "10000"));
+    */
+    protected void initializeWorkloadData() {
+        uniformSize = Integer.parseInt(this.properties.getProperty("uniform.size", "1000"));
         mu = Double.parseDouble(this.properties.getProperty("sentence.mu", "10"));
         sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma", "1"));
     }
 }
-

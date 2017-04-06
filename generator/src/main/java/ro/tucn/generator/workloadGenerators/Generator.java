@@ -1,8 +1,9 @@
-package ro.tucn.generator;
+package ro.tucn.generator.workloadGenerators;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.log4j.Logger;
+import ro.tucn.util.ConfigReader;
 
 import java.util.Properties;
 
@@ -13,27 +14,21 @@ import java.util.Properties;
 public abstract class Generator {
 
     private final Logger logger = Logger.getLogger(this.getClass());
+    protected ConfigReader configReader = new ConfigReader();
 
     protected Properties properties;
     protected String bootstrapServersHost;
     protected String bootstrapServersPort;
+    protected String TOPIC;
 
     public Generator() {
         initializeProperties();
         initialzeBootstrapServersData();
     }
 
-    public Properties getPropertiesFromResourcesFile(String configFile) {
-        System.out.println(configFile);
-        Properties properties = null;
-        try {
-            properties = new Properties();
-            properties.load(this.getClass().getClassLoader().getResourceAsStream(configFile));
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        return properties;
-    }
+    abstract protected void generate(int sleep_frequency) throws InterruptedException;
+
+    abstract protected void initializeWorkloadData();
 
     public KafkaProducer<String, String> createSmallBufferProducer() {
         Properties props = getDefaultKafkaProducerProperties();
@@ -68,53 +63,36 @@ public abstract class Generator {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersHost + ":" + bootstrapServersPort);
         props.put("group.id", "test");
 
-        props.put(ProducerConfig.RETRIES_CONFIG, "3");
+        //props.put(ProducerConfig.RETRIES_CONFIG, "3");
         props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "100");
         props.put(ProducerConfig.ACKS_CONFIG, "0"); // "all"
         props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
 
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 1024); // 1024
-        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67108864);
-        props.put(ProducerConfig.SEND_BUFFER_CONFIG, 67108864);
-        props.put(ProducerConfig.RECEIVE_BUFFER_CONFIG, 67108864);
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 1);
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 1024000);
+        props.put(ProducerConfig.SEND_BUFFER_CONFIG, 1024000);
+        props.put(ProducerConfig.RECEIVE_BUFFER_CONFIG, 1024000);
 
         props.put(ProducerConfig.TIMEOUT_CONFIG, 250);
         props.put(ProducerConfig.LINGER_MS_CONFIG, 0);
 
-        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "5000000");
+        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "5000");
         props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "128");
 
-
         props.put(ProducerConfig.BLOCK_ON_BUFFER_FULL_CONFIG, true);
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+
         return props;
     }
 
     private void initialzeBootstrapServersData() {
-        Properties properties = getPropertiesFromResourcesFile("DefaultBroker.properties");
+        Properties properties = configReader.tryGetPropertiesFromResourcesFile("DefaultBroker.properties");
         bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
         bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
     }
 
     private void initializeProperties() {
-        properties = getPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
-    }
-
-    public String getBootstrapServersHost() {
-        return bootstrapServersHost;
-    }
-
-    public void setBootstrapServersHost(String bootstrapServersHost) {
-        this.bootstrapServersHost = bootstrapServersHost;
-    }
-
-    public String getBootstrapServersPort() {
-        return bootstrapServersPort;
-    }
-
-    public void setBootstrapServersPort(String bootstrapServersPort) {
-        this.bootstrapServersPort = bootstrapServersPort;
+        properties = configReader.tryGetPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
     }
 }

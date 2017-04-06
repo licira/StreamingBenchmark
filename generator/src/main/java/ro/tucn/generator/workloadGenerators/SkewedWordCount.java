@@ -1,4 +1,4 @@
-package ro.tucn.generator;
+package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.skewedWords.FastZipfGenerator;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
+import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
 /**
@@ -19,10 +20,7 @@ public class SkewedWordCount extends Generator {
     private static final Logger logger = Logger.getLogger(SkewedWordCount.class);
 
     private static KafkaProducer<String, String> producer;
-
-    private String TOPIC;
-    private long SENTENCE_NUM = 1000000000;
-
+    private long SENTENCE_NUM = 1000;
     private int zipfSize;
     private double zipfExponent;
     private double mu;
@@ -31,14 +29,11 @@ public class SkewedWordCount extends Generator {
     public SkewedWordCount() {
         super();
         producer = createLargeBufferProducer();
-
-        TOPIC = this.properties.getProperty("topic", "WordCount");
-        zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size", "10000"));
-        zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent", "1"));
-        mu = Double.parseDouble(this.properties.getProperty("sentence.mu", "10"));
-        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma", "1"));
+        initializeWorkloadData();
+        TOPIC = Topics.SKEWED_WORDS;
     }
 
+    /*
     public static void main(String[] args) throws InterruptedException {
         int SLEEP_FREQUENCY = -1;
         if (args.length > 0) {
@@ -46,9 +41,8 @@ public class SkewedWordCount extends Generator {
         }
         new SkewedWordCount().generate(SLEEP_FREQUENCY);
     }
-
+    */
     public void generate(int sleep_frequency) throws InterruptedException {
-
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
         long time = System.currentTimeMillis();
 
@@ -72,11 +66,17 @@ public class SkewedWordCount extends Generator {
 
             // control data generate speed
             if (sleep_frequency > 0 && sent_sentences % sleep_frequency == 0) {
-                Thread.sleep(1);
+                //Thread.sleep(1);
             }
         }
         producer.close();
         logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time));
     }
-}
 
+    protected void initializeWorkloadData() {
+        zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size", "1000"));
+        zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent", "1"));
+        mu = Double.parseDouble(this.properties.getProperty("sentence.mu", "10"));
+        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma", "1"));
+    }
+}

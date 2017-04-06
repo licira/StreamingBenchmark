@@ -44,7 +44,7 @@ public class ThroughputLog implements Serializable {
             long elementDiff = received - lastLogEle;
             double ex = (1000 / (double) timeDiff);
 
-            logger.warn(String.format(this.loggerName + ":\t%d\t%d\t%d\tms,elements,elements/second",
+            logger.warn(String.format(this.loggerName + ":\t%d ms\t%d elements\t%d elements/s\t",
                     timeDiff,
                     elementDiff,
                     Double.valueOf(elementDiff * ex).longValue()));

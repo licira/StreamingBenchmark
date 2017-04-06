@@ -12,8 +12,7 @@ public class Application {
     public static void main(String args[]) {
         try {
             if (args.length > 0) {
-                StreamGenerator streamGenerator = new StreamGenerator();
-                streamGenerator.run(args);
+                new StreamGenerator().run(args);
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
