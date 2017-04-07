@@ -1,11 +1,10 @@
-package ro.tucn.generator;
-
-//import fi.aalto.dmg.statistics.ThroughputLog;
+package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
+import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,35 +19,21 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Generator {
 
-    private final Logger logger = Logger.getLogger(this.getClass());
-
     private static KafkaProducer<String, String> producer;
-
-    private static String ADV_TOPIC = "adv";
-    private static String CLICK_TOPIC = "click";
-
+    private static String ADV_TOPIC = Topics.ADV;
+    private static String CLICK_TOPIC = Topics.CLICK;
     private static long ADV_NUM = 1000;
-
+    private final Logger logger = Logger.getLogger(this.getClass());
     private double clickLambda;
     private double clickProbability;
 
     public AdvClick() {
         super();
         producer = createSmallBufferProducer();
-        clickProbability = Double.parseDouble(properties.getProperty("click.probability", "0.3"));
-        clickLambda = Double.parseDouble(properties.getProperty("click.lambda", "10"));
+        initializeWorkloadData();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        int SLEEP_FREQUENCY = -1;
-        if (args.length > 0) {
-            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
-        }
-        new AdvClick().generate(SLEEP_FREQUENCY);
-        System.out.println("DONE");
-    }
-
-    public void generate(int sleep_frequency) throws InterruptedException {
+    public void generate(int sleepFrequency) throws InterruptedException {
         //ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
         long time = System.currentTimeMillis();
 
@@ -56,7 +41,7 @@ public class AdvClick extends Generator {
         ExecutorService cachedPool = Executors.newCachedThreadPool();
 
         RandomDataGenerator generator = new RandomDataGenerator();
-        generator.reSeed(10000000L);
+        generator.reSeed(10000L);
         // sub thread use variable in main thread
         // for loop to generate advertisement
 
@@ -70,9 +55,9 @@ public class AdvClick extends Generator {
 
             // whether customer clicked this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
-            // long deltaT = (long)ro.tucn.generator.nextExponential(clickLambda)*1000;
+                // long deltaT = (long)ro.tucn.generator.nextExponential(clickLambda) * 1000;
                 long deltaT = (long) generator.nextGaussian(clickLambda, 1) * 1000;
-            // System.out.println(deltaT);
+                // System.out.println(deltaT);
                 advList.add(new Advertisement(advId, timestamp + deltaT));
             }
 
@@ -83,8 +68,8 @@ public class AdvClick extends Generator {
 
             //throughput.execute();
             // control data generate speed
-            if (sleep_frequency > 0 && i % sleep_frequency == 0) {
-                Thread.sleep(1);
+            if (sleepFrequency > 0 && i % sleepFrequency == 0) {
+                //Thread.sleep(1);
             }
         }
         cachedPool.shutdown();
@@ -96,15 +81,31 @@ public class AdvClick extends Generator {
         logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time));
     }
 
+    protected void initializeWorkloadData() {
+        clickProbability = Double.parseDouble(properties.getProperty("click.probability", "0.3"));
+        clickLambda = Double.parseDouble(properties.getProperty("click.lambda", "10"));
+    }
+
+    /*
+    public static void main(String[] args) throws InterruptedException {
+        int SLEEP_FREQUENCY = -1;
+        if (args.length > 0) {
+            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
+        }
+        new AdvClick().generate(SLEEP_FREQUENCY);
+        System.out.println("DONE");
+    }
+    */
     private static class Advertisement implements Comparable<Advertisement> {
         String id;
         long time;
+
         Advertisement(String id, long time) {
             this.id = id;
             this.time = time;
         }
 
-        @Override
+        //@Override
         public int compareTo(Advertisement o) {
             if (this.time > o.time)
                 return 1;
@@ -123,7 +124,7 @@ public class AdvClick extends Generator {
             Collections.sort(this.advList);
         }
 
-        @Override
+        //@Override
         public void run() {
             for (Advertisement adv : advList) {
                 if (System.currentTimeMillis() < adv.time) {
