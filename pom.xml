@@ -11,6 +11,8 @@
     <modules>
         <module>generator</module>
         <module>consumer</module>
+        <module>utils</module>
+        <module>spark</module>
     </modules>
 
 
