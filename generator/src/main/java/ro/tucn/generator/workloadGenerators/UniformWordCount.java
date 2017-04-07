@@ -32,17 +32,17 @@ public class UniformWordCount extends Generator {
         TOPIC = Topics.UNIFORM_WORDS;
     }
 
-    public void generate(int sleep_frequency) throws InterruptedException {
+    public void generate(int sleepFrequency) throws InterruptedException {
 
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
         long time = System.currentTimeMillis();
 
         ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
         // for loop to generate message
-        for (long sent_sentences = 0; sent_sentences < SENTENCE_NUM; ++sent_sentences) {
-            double sentence_length = messageGenerator.nextGaussian(mu, sigma);
+        for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
+            double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
             StringBuilder messageBuilder = new StringBuilder();
-            for (int l = 0; l < sentence_length; ++l) {
+            for (int l = 0; l < sentenceLength; ++l) {
                 int number = messageGenerator.nextInt(1, uniformSize);
                 messageBuilder.append(Utils.intToString(number)).append(" ");
             }
@@ -54,7 +54,7 @@ public class UniformWordCount extends Generator {
             producer.send(newRecord);
 
             // control data generate speed
-            if (sleep_frequency > 0 && sent_sentences % sleep_frequency == 0) {
+            if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }

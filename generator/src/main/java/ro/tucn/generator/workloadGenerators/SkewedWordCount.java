@@ -35,24 +35,24 @@ public class SkewedWordCount extends Generator {
 
     /*
     public static void main(String[] args) throws InterruptedException {
-        int SLEEP_FREQUENCY = -1;
+        int sleepFrequency = -1;
         if (args.length > 0) {
-            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
+            sleepFrequency = Integer.parseInt(args[0]);
         }
-        new SkewedWordCount().generate(SLEEP_FREQUENCY);
+        new SkewedWordCount().generate(sleepFrequency);
     }
     */
-    public void generate(int sleep_frequency) throws InterruptedException {
+    public void generate(int sleepFrequency) throws InterruptedException {
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
         long time = System.currentTimeMillis();
 
         FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
         ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
         // for loop to generate message
-        for (long sent_sentences = 0; sent_sentences < SENTENCE_NUM; ++sent_sentences) {
-            double sentence_length = messageGenerator.nextGaussian(mu, sigma);
+        for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
+            double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
             StringBuilder messageBuilder = new StringBuilder();
-            for (int l = 0; l < sentence_length; ++l) {
+            for (int l = 0; l < sentenceLength; ++l) {
                 int number = zipfGenerator.next();
                 messageBuilder.append(Utils.intToString(number)).append(" ");
             }
@@ -65,7 +65,7 @@ public class SkewedWordCount extends Generator {
             producer.send(newRecord);
 
             // control data generate speed
-            if (sleep_frequency > 0 && sent_sentences % sleep_frequency == 0) {
+            if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }

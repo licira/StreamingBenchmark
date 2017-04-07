@@ -44,27 +44,27 @@ public class KMeansPoints extends Generator {
         TOPIC = Topics.K_MEANS;
     }
 
-    public void generate(int sleep_frequency) throws InterruptedException {
+    public void generate(int sleepFrequency) throws InterruptedException {
         //logger.info(" generating...");
         generateCentroids();
         centroids = loadCentroids();
         long time = System.currentTimeMillis();
         ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
-        Random centroid_random = new Random(2342342170123L);
-        RandomGenerator point_random = new JDKRandomGenerator();
-        point_random.setSeed(8624214);
+        Random centroidRandom = new Random(2342342170123L);
+        RandomGenerator pointRandom = new JDKRandomGenerator();
+        pointRandom.setSeed(8624214);
 
-        for (long generated_points = 0; generated_points < POINT_NUM; generated_points++) {
-            int centroid_index = centroid_random.nextInt(centroids.size());
-            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(point_random, means, covariances);
+        for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
+            int centroidIndex = centroidRandom.nextInt(centroids.size());
+            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
 
             double[] point = distribution.sample();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < dimension - 1; i++) {
-                point[i] += centroids.get(centroid_index).location[i];
+                point[i] += centroids.get(centroidIndex).location[i];
                 sb.append(point[i]).append("\t");
             }
-            point[dimension - 1] += centroids.get(centroid_index).location[dimension - 1];
+            point[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
             sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(System.currentTimeMillis());
 
             throughput.execute();
@@ -72,7 +72,7 @@ public class KMeansPoints extends Generator {
             producer.send(newRecord);
 //            System.out.println(sb.toString());
             // control data generate speed
-            if (sleep_frequency > 0 && generated_points % sleep_frequency == 0) {
+            if (sleepFrequency > 0 && generatedPoints % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }
@@ -167,10 +167,10 @@ public class KMeansPoints extends Generator {
         centroids = loadCentroids();
         Random random = new Random(12397238947287L);
         List<Point> initCentroids = new ArrayList<Point>();
-        RandomGenerator point_random = new JDKRandomGenerator();
+        RandomGenerator pointRandom = new JDKRandomGenerator();
 
         for (Point centroid : centroids) {
-            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(point_random, means, covariances);
+            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
 
             double[] point = distribution.sample();
             StringBuilder sb = new StringBuilder();

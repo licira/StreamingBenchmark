@@ -1,5 +1,5 @@
 */target
 .metadata
-*.iml
-*.idea
-*.log
+/*.iml
+*/.idea
+/*.log

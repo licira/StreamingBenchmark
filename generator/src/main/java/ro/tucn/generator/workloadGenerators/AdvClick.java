@@ -33,7 +33,7 @@ public class AdvClick extends Generator {
         initializeWorkloadData();
     }
 
-    public void generate(int sleep_frequency) throws InterruptedException {
+    public void generate(int sleepFrequency) throws InterruptedException {
         //ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
         long time = System.currentTimeMillis();
 
@@ -68,7 +68,7 @@ public class AdvClick extends Generator {
 
             //throughput.execute();
             // control data generate speed
-            if (sleep_frequency > 0 && i % sleep_frequency == 0) {
+            if (sleepFrequency > 0 && i % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }
