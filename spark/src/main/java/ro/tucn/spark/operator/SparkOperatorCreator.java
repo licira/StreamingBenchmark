@@ -1,24 +1,21 @@
 package ro.tucn.spark.operator;
 
 import kafka.serializer.StringDecoder;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaPairInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
-import ro.tucn.spark.statistics.PerformanceStreamingListener;
-import scala.Tuple2;
-
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.spark.statistics.PerformanceStreamingListener;
 import ro.tucn.util.Constants;
 import ro.tucn.util.WithTime;
+import scala.Tuple2;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,9 +28,6 @@ import java.util.Properties;
  */
 public class SparkOperatorCreator extends OperatorCreator {
 
-    public JavaStreamingContext jssc;
-    private Properties properties;
-
     private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
             = new Function<Tuple2<String, String>, WithTime<String>>() {
         public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
@@ -44,13 +38,14 @@ public class SparkOperatorCreator extends OperatorCreator {
             return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
         }
     };
-
     private static Function<Tuple2<String, String>, String> mapFunction
             = new Function<Tuple2<String, String>, String>() {
         public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
             return stringStringTuple2._2();
         }
     };
+    public JavaStreamingContext jssc;
+    private Properties properties;
 
     public SparkOperatorCreator(String appName) throws IOException {
         super(appName);
@@ -59,6 +54,15 @@ public class SparkOperatorCreator extends OperatorCreator {
         SparkConf conf = new SparkConf().setMaster(this.getMaster()).setAppName(appName);
         conf.set("spark.streaming.ui.retainedBatches", "2000");
         jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
+    }
+
+    @Override
+    public void Start() {
+        jssc.addStreamingListener(new PerformanceStreamingListener());
+//        jssc.checkpoint("/tmp/log-analyzer-streaming");
+        jssc.checkpoint("/tmp/spark/checkpoint");
+        jssc.start();
+        jssc.awaitTermination();
     }
 
     @Override
@@ -126,16 +130,6 @@ public class SparkOperatorCreator extends OperatorCreator {
         JavaDStream<String> lines = messages.map(mapFunction);
 
         return new SparkWorkloadOperator(lines, parallelism);
-    }
-
-    @Override
-    public void Start() {
-        jssc.addStreamingListener(new PerformanceStreamingListener());
-
-//        jssc.checkpoint("/tmp/log-analyzer-streaming");
-        jssc.checkpoint("hdfs://master:8020/usr/warehouse/wordcount/checkpoint");
-        jssc.start();
-        jssc.awaitTermination();
     }
 
     public String getMaster() {
