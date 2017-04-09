@@ -21,10 +21,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Generator for Stream-kMeans workload
- * Created by jun on 28/02/16.
+ * Created by Liviu on 4/5/2017.
  */
-
 public class KMeansPoints extends Generator {
 
     private static KafkaProducer<String, String> producer;

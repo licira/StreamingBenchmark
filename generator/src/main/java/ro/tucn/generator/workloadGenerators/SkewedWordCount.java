@@ -11,9 +11,7 @@ import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
 /**
- * Generator for WordCount workload
- * The distribution of works is skewed
- * Created by yangjun.wang on 26/10/15.
+ * Created by Liviu on 4/8/2017.
  */
 public class SkewedWordCount extends Generator {
 

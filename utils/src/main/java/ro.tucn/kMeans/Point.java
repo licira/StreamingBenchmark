@@ -1,17 +1,16 @@
 package ro.tucn.kMeans;
 
-import java.io.Serializable;
-
 /**
  * Created by Liviu on 4/6/2017.
  */
-public class Point implements Serializable {
+public class Point {
 
-    private long time;
     public int id; // Centroid id: 0, 1, 2, ...
     public double[] location;
+    private long time;
 
-    public Point() { }
+    public Point() {
+    }
 
     public Point(int id, double[] l) {
         this.id = id;

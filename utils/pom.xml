@@ -11,7 +11,7 @@
 
     <packaging>jar</packaging>
 
-    <artifactId>utils</artifactId>
+    <artifactId>core</artifactId>
 
     <dependencies>
 
@@ -25,6 +25,12 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>2.12.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
         </dependency>
 
     </dependencies>

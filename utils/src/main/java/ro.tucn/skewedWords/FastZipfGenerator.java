@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 /**
- * Created by jun on 12/12/15.
+ * Created by Liviu on 4/5/2017.
  */
 public class FastZipfGenerator {
 

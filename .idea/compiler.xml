@@ -23,15 +23,17 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="consumer" />
+        <module name="core" />
         <module name="generator" />
-        <module name="utils" />
+        <module name="spark" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.7">
+    <bytecodeTargetLevel>
       <module name="consumer" target="1.5" />
+      <module name="core" target="1.5" />
       <module name="generator" target="1.5" />
+      <module name="spark" target="1.5" />
       <module name="StreamingBenchmark" target="1.5" />
-      <module name="utils" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

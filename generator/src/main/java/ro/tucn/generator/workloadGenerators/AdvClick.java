@@ -14,8 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Generator for Advertise Clicks workload
- * Created by jun on 28/01/16.
+ * Created by Liviu on 4/4/2017.
  */
 public class AdvClick extends Generator {
 

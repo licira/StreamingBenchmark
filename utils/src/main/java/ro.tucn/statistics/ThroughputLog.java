@@ -3,12 +3,10 @@ package ro.tucn.statistics;
 import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
 
-import java.io.Serializable;
-
 /**
  * Created by Liviu on 4/6/2017.
  */
-public class ThroughputLog implements Serializable {
+public class ThroughputLog {
 
     private Logger logger = Logger.getLogger(this.getClass());
 

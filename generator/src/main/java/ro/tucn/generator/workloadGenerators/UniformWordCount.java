@@ -10,11 +10,8 @@ import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
 /**
- * Generator for WordCount workload
- * The distribution of works is uniform
- * Created by jun on 27/01/16.
+ * Created by Liviu on 4/8/2017.
  */
-
 public class UniformWordCount extends Generator {
 
     private static final Logger logger = Logger.getLogger(UniformWordCount.class);

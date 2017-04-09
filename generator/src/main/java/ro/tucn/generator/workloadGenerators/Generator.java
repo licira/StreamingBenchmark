@@ -8,8 +8,7 @@ import ro.tucn.util.ConfigReader;
 import java.util.Properties;
 
 /**
- * abstract class of data ro.tucn.generator
- * Created by jun on 08/01/16.
+ * Created by Liviu on 4/5/2017.
  */
 public abstract class Generator {
 

@@ -1,11 +1,9 @@
 package ro.tucn.exceptions;
 
-import java.io.Serializable;
-
 /**
- * Created by yangjun.wang on 16/10/15.
+ * Created by Liviu on 4/8/2017.
  */
-public class WorkloadException extends Exception implements Serializable {
+public class WorkloadException extends Exception {
 
     public WorkloadException(String message) {
         super(message);
