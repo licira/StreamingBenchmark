@@ -10,13 +10,14 @@ import ro.tucn.util.Configuration;
 import ro.tucn.util.WithTime;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
  * Created by Liviu on 4/9/2017.
  */
-public abstract class Workload {
+public abstract class Workload implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Workload.class);
 

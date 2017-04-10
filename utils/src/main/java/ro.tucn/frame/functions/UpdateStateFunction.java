@@ -7,7 +7,8 @@ import java.util.List;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public interface UpdateStateFunction<T> {
+public interface UpdateStateFunction<T> extends SerializableFunction {
+
     Optional<T> update(List<T> values, Optional<T> cumulateValue);
 }
 

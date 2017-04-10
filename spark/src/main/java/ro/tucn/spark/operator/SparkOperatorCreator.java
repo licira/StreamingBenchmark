@@ -28,22 +28,6 @@ import java.util.Properties;
  */
 public class SparkOperatorCreator extends OperatorCreator {
 
-    private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
-            = new Function<Tuple2<String, String>, WithTime<String>>() {
-        public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
-            if (list.length == 2) {
-                return new WithTime<String>(list[0], Long.parseLong(list[1]));
-            }
-            return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
-        }
-    };
-    private static Function<Tuple2<String, String>, String> mapFunction
-            = new Function<Tuple2<String, String>, String>() {
-        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            return stringStringTuple2._2();
-        }
-    };
     public JavaStreamingContext jssc;
     private Properties properties;
 
@@ -131,6 +115,24 @@ public class SparkOperatorCreator extends OperatorCreator {
 
         return new SparkWorkloadOperator(lines, parallelism);
     }
+
+    private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
+            = new Function<Tuple2<String, String>, WithTime<String>>() {
+        public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
+            String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
+            if (list.length == 2) {
+                return new WithTime<String>(list[0], Long.parseLong(list[1]));
+            }
+            return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
+        }
+    };
+
+    private static Function<Tuple2<String, String>, String> mapFunction
+            = new Function<Tuple2<String, String>, String>() {
+        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
+            return stringStringTuple2._2();
+        }
+    };
 
     public String getMaster() {
         return properties.getProperty("cluster.master");

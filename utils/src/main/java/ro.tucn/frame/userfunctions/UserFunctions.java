@@ -11,12 +11,13 @@ import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.WithTime;
 import scala.Tuple2;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class UserFunctions {
+public class UserFunctions implements Serializable {
 
     public static MapFunction<String, String> mapToSelf = new MapFunction<String, String>() {
         public String map(String var1) {

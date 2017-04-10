@@ -15,9 +15,11 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String[] args) throws IOException, WorkloadException {
-        if (args.length > 0) {
+        if (args.length > 0)
+        {
             OperatorCreator operatorCreator;
-            if (args[0].equalsIgnoreCase(Topics.ADV)) {
+            if (args[0].equalsIgnoreCase(Topics.ADV))
+            {
                 operatorCreator = new SparkOperatorCreator(Topics.ADV);
                 Workload workload = new AdvClick(operatorCreator);
                 workload.Start();

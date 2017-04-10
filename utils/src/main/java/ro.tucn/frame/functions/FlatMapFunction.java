@@ -9,6 +9,7 @@ package ro.tucn.frame.functions;
 //}
 
 // spark
-public interface FlatMapFunction<T, R> {
-    java.lang.Iterable<R> flatMap(T var1) throws Exception;
+public interface FlatMapFunction<T, R> extends SerializableFunction {
+
+    Iterable<R> flatMap(T var1) throws Exception;
 }
