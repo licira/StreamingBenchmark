@@ -1,6 +1,7 @@
 package ro.tucn.spark.function.functions;
 
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import org.apache.spark.api.java.function.Function2;
 import ro.tucn.frame.functions.ReduceFunction;
 
@@ -9,7 +10,7 @@ import ro.tucn.frame.functions.ReduceFunction;
  */
 public class ReduceFunctionImpl<T> implements Function2<T, T, T> {
 
-    private static Logger logger = Logger.getLogger(ReduceFunctionImpl.class);
+    private static Logger logger = Logger.getLogger(ReduceFunctionImpl.class.getSimpleName());
     private ReduceFunction<T> fun;
 
     public ReduceFunctionImpl(ReduceFunction<T> function) {

@@ -1,7 +1,6 @@
 package ro.tucn.statistics;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
 
 /**
@@ -9,7 +8,7 @@ import ro.tucn.util.Configuration;
  */
 public class CentroidLog {
 
-    private static Logger logger = LoggerFactory.getLogger(CentroidLog.class);
+    private static Logger logger = Logger.getLogger(CentroidLog.class);
 
     public void execute(long counts, double[] location) {
         double probability = 0.05;

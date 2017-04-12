@@ -5,6 +5,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.util.ConfigReader;
 
 import java.util.Arrays;
@@ -17,7 +20,7 @@ import java.util.Properties;
 public class Consumer {
 
     private static String topic;
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger logger = Logger.getLogger(Consumer.class.getSimpleName());
     private ConfigReader configReader = new ConfigReader();
     private Properties properties;
     private KafkaConsumer<String, String> consumer;

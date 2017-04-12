@@ -109,10 +109,10 @@ public class UserFunctions implements Serializable {
     };
 
     public static MapFunction<WithTime<Integer>, Integer> removeTimeMap = new MapFunction<WithTime<Integer>, Integer>() {
-        private Logger logger = LoggerFactory.getLogger(this.getClass());
+        //private static Logger logger = Logger.getLogger(this.getClass());
 
         public Integer map(WithTime<Integer> var1) {
-            logger.warn(var1.toString());
+            //logger.warn(var1.toString());
             return var1.getValue();
         }
     };
@@ -188,7 +188,7 @@ public class UserFunctions implements Serializable {
             = new MapWithInitListFunction<Point, Point>() {
 
         LatencyLog latency = new LatencyLog("CentroidAssign");
-//        Logger logger = LoggerFactory.getLogger("LatestCentroids");
+//        Logger ro.tucn.logger = LoggerFactory.getLogger("LatestCentroids");
 
         public Point map(Point var1, List<Point> list) {
 
@@ -197,7 +197,7 @@ public class UserFunctions implements Serializable {
                 latency.execute(var1.getTime());
                 // log list for test
 //                if(Math.random()<0.01) {
-//                    logger.warn(list.toString());
+//                    ro.tucn.logger.warn(list.toString());
 //                }
                 list.set(var1.id, var1);
                 return null;
@@ -241,7 +241,7 @@ public class UserFunctions implements Serializable {
     public static MapFunction<Tuple2<Integer, Tuple2<Long, Point>>, Point> computeCentroid
             = new MapFunction<Tuple2<Integer, Tuple2<Long, Point>>, Point>() {
 
-        Logger logger = LoggerFactory.getLogger("CentroidLogger");
+        //Logger logger = Logger.getLogger("CentroidLogger");
 
         ThroughputLog throughput = new ThroughputLog("Centroid");
         CentroidLog centroidLog = new CentroidLog();

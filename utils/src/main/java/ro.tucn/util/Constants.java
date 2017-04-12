@@ -1,6 +1,8 @@
 package ro.tucn.util;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.exceptions.WorkloadException;
 
 import java.io.IOException;
@@ -11,7 +13,7 @@ import java.util.Properties;
  */
 public class Constants {
 
-    private static final Logger logger = Logger.getLogger(Configuration.class);
+    private static final Logger logger = Logger.getLogger(Configuration.class.getSimpleName());
 
     public static String TimeSeparator = "|";
     public static String TimeSeparatorRegex = "\\|";

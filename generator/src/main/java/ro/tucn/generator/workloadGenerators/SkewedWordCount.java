@@ -4,6 +4,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.skewedWords.FastZipfGenerator;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
@@ -15,7 +16,7 @@ import ro.tucn.util.Utils;
  */
 public class SkewedWordCount extends Generator {
 
-    private static final Logger logger = Logger.getLogger(SkewedWordCount.class);
+    private static final Logger logger = Logger.getLogger(SkewedWordCount.class.getSimpleName());
 
     private static KafkaProducer<String, String> producer;
     private long SENTENCE_NUM = 1000;

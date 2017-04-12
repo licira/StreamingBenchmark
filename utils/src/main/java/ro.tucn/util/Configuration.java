@@ -1,6 +1,8 @@
 package ro.tucn.util;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.exceptions.WorkloadException;
 
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class Configuration {
     private static final String KMEANS_CENTROIDS_FREQUENCY = "kmeans.centroids.frequency";
     private static final String CLUSTER_HOSTS = "cluster.hosts";
     private static final String HOST_CORES = "host.cores";
-    private static final Logger logger = Logger.getLogger(Configuration.class);
+    private static final Logger logger = Logger.getLogger(Configuration.class.getSimpleName());
     public static Properties config;
     public static String operatorCreator;
     public static Integer throughputFrequency; // milliseconds

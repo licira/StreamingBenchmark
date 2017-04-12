@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public abstract class Generator {
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     protected ConfigReader configReader = new ConfigReader();
 
     protected Properties properties;

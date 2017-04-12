@@ -1,16 +1,17 @@
 package ro.tucn.spark.statistics;
 
+import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import org.apache.spark.streaming.scheduler.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 
 /**
  * Created by Liviu on 8/4/17.
  */
 public class PerformanceStreamingListener implements StreamingListener {
 
-    private static Logger logger = LoggerFactory.getLogger(PerformanceStreamingListener.class);
-
+    private static Logger logger = Logger.getLogger(PerformanceStreamingListener.class.getSimpleName());
 
     /**
      * Called when a receiver has been started

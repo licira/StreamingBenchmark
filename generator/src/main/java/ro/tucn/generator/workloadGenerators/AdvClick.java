@@ -4,6 +4,8 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class AdvClick extends Generator {
     private static String ADV_TOPIC = Topics.ADV;
     private static String CLICK_TOPIC = Topics.CLICK;
     private static long ADV_NUM = 1000;
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private double clickLambda;
     private double clickProbability;
 

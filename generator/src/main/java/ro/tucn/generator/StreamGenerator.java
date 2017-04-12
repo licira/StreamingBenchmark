@@ -1,6 +1,7 @@
 package ro.tucn.generator;
 
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.generator.workloadGenerators.AdvClick;
 import ro.tucn.generator.workloadGenerators.KMeansPoints;
 import ro.tucn.generator.workloadGenerators.SkewedWordCount;
@@ -12,7 +13,7 @@ import ro.tucn.util.Topics;
  */
 public class StreamGenerator {
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     public void run(String[] args) throws Exception {
         int SLEEP_FREQUENCY = 0;

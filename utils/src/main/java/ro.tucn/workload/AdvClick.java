@@ -1,6 +1,7 @@
 package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.frame.userfunctions.UserFunctions;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Workload {
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    //private static final Logger ro.tucn.Logger = SerializableLogger.getLogger(this.getClass());
 
     private int streamWindowOne;
     private int streamWindowTwo;
@@ -30,16 +31,16 @@ public class AdvClick extends Workload {
     }
 
     @Override
-    public void Process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
 
-            PairWorkloadOperator<String, Long> advertisements = kafkaStreamOperator("advertisement")
+            PairWorkloadOperator<String, Long> advs = kafkaStreamOperator("adv")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
             PairWorkloadOperator<String, Long> clicks = kafkaStreamOperator2("click")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
-//            advertisements.print();
+//            advs.print();
 //            clicks.print();
-            PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advertisements.join(
+            PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
                     "Join",
                     clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
@@ -56,7 +57,7 @@ public class AdvClick extends Workload {
             clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
                     .sink();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            //ro.tucn.logger.error(e.getMessage());
             e.printStackTrace();
         }
     }

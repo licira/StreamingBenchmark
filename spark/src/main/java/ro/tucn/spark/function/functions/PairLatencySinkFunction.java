@@ -1,6 +1,7 @@
 package ro.tucn.spark.function.functions;
 
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import org.apache.spark.api.java.function.Function;
 import ro.tucn.statistics.LatencyLog;
 import ro.tucn.util.WithTime;
@@ -11,7 +12,7 @@ import scala.Tuple2;
  */
 public class PairLatencySinkFunction<K, V> implements Function<Tuple2<K, V>, Boolean> {
 
-    private static Logger logger = Logger.getLogger(PairLatencySinkFunction.class);
+    private static Logger logger = Logger.getLogger(PairLatencySinkFunction.class.getSimpleName());
     private LatencyLog latency;
 
     public PairLatencySinkFunction() {

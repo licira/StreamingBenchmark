@@ -1,14 +1,17 @@
 package ro.tucn.statistics;
 
 import org.apache.log4j.Logger;
+
 import ro.tucn.util.Configuration;
+
+import java.io.Serializable;
 
 /**
  * Created by Liviu on 4/6/2017.
  */
-public class ThroughputLog {
+public class ThroughputLog implements Serializable {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static Logger logger = Logger.getLogger(ThroughputLog.class.getSimpleName());
 
     private String loggerName;
     private long received;

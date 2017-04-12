@@ -1,16 +1,19 @@
 package ro.tucn.statistics;
 
-import org.slf4j.Logger;
+import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.WithTime;
+
+import java.io.Serializable;
 
 /**
  * Created by Liviu on 4/6/2017.
  */
-public class LatencyLog {
+public class LatencyLog implements Serializable {
 
-    private static Logger logger = LoggerFactory.getLogger(LatencyLog.class);
+    private static Logger logger = Logger.getLogger(LatencyLog.class.getSimpleName());
 
     private String loggerName;
 

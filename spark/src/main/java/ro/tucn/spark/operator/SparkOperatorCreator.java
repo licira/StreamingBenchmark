@@ -2,6 +2,7 @@ package ro.tucn.spark.operator;
 
 import kafka.serializer.StringDecoder;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
@@ -38,6 +39,10 @@ public class SparkOperatorCreator extends OperatorCreator {
         SparkConf conf = new SparkConf().setMaster(this.getMaster()).setAppName(appName);
         conf.set("spark.streaming.ui.retainedBatches", "2000");
         jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
+        /*
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
+        */
     }
 
     @Override

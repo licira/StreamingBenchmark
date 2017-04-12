@@ -7,6 +7,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.kMeans.Point;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
@@ -27,7 +28,7 @@ public class KMeansPoints extends Generator {
 
     private static KafkaProducer<String, String> producer;
     private static long POINT_NUM = 1000;
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     public List<Point> centroids;
     private int dimension;
     private int centroidsNum;
@@ -43,7 +44,7 @@ public class KMeansPoints extends Generator {
     }
 
     public void generate(int sleepFrequency) throws InterruptedException {
-        //logger.info(" generating...");
+        //ro.tucn.logger.info(" generating...");
         generateCentroids();
         centroids = loadCentroids();
         long time = System.currentTimeMillis();
@@ -74,7 +75,7 @@ public class KMeansPoints extends Generator {
                 //Thread.sleep(1);
             }
         }
-        //logger.info(" done generating");
+        //ro.tucn.logger.info(" done generating");
         producer.close();
         logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time) + "ms");
     }
@@ -96,7 +97,7 @@ public class KMeansPoints extends Generator {
     */
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     private void generateCentroids() {
-        //logger.info(" generating centroids...");
+        //ro.tucn.logger.info(" generating centroids...");
         Random random = new Random(10000L);
         List<Point> centroids = new ArrayList<Point>();
         for (int i = 0; i < centroidsNum; ) {
@@ -121,7 +122,7 @@ public class KMeansPoints extends Generator {
                     i++;
                 }
             }
-            //logger.info(" done generating centroids...");
+            //ro.tucn.logger.info(" done generating centroids...");
         }
 
 //        KDTree tree = new KDTree();
@@ -179,12 +180,12 @@ public class KMeansPoints extends Generator {
             point[dimension - 1] += centroid.location[dimension - 1];
             sb.append(point[dimension - 1]);
 
-            logger.info(sb.toString());
+            ro.tucn.logger.info(sb.toString());
         }
     }
     */
     private List<Point> loadCentroids() {
-        //logger.info(" loading centroids...");
+        //ro.tucn.logger.info(" loading centroids...");
         List<Point> centroids = new ArrayList<Point>();
         BufferedReader br = null;
         InputStream stream = null;
@@ -215,7 +216,7 @@ public class KMeansPoints extends Generator {
                 ex.printStackTrace();
             }
         }
-        //logger.info(" done loading centroids...");
+        //ro.tucn.logger.info(" done loading centroids...");
         return centroids;
     }
 }

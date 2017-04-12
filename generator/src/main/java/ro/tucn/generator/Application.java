@@ -1,6 +1,7 @@
 package ro.tucn.generator;
 
 import org.apache.log4j.Logger;
+import ro.tucn.logger.SerializableLogger;
 
 /**
  * Created by Liviu on 4/5/2017.

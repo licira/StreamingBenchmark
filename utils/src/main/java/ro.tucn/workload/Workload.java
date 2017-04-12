@@ -1,9 +1,10 @@
 package ro.tucn.workload;
 
-import org.slf4j.Logger;
+import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.WorkloadOperator;
 import ro.tucn.util.Configuration;
@@ -19,7 +20,7 @@ import java.util.Properties;
  */
 public abstract class Workload implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(Workload.class);
+    private static final Logger logger = Logger.getLogger(Workload.class.getSimpleName());
 
     protected Properties properties;
     protected int parallelism;
@@ -34,8 +35,9 @@ public abstract class Workload implements Serializable {
         properties = new Properties();
         String configFile = this.getClass().getSimpleName() + ".properties";
         try {
+            logger.info("Loading Workload properties: " + configFile);
             properties.load(this.getClass().getClassLoader().getResourceAsStream(configFile));
-
+            logger.info("Properties loaded for: " + configFile);
 //            int hosts = Integer.parseInt(properties.getProperty("hosts"));
 //            int cores = Integer.parseInt(properties.getProperty("cores"));
         } catch (IOException e) {
@@ -49,8 +51,8 @@ public abstract class Workload implements Serializable {
     public void Start() {
         logger.info("Start workload: " + this.getClass().getSimpleName());
         try {
-            Process();
-            this.getOperatorCreator().Start();
+            process();
+            operatorCreator.Start();
         } catch (Exception e) {
             logger.error("WorkloadException caught when run workload " + this.getClass().getSimpleName());
             e.printStackTrace();
@@ -85,7 +87,7 @@ public abstract class Workload implements Serializable {
     }
 
     protected WorkloadOperator<String> kafkaStreamOperator(String componentId) {
-        String topic = properties.getProperty("topic");
+        String topic = properties.getProperty("topic1");
         String groupId = properties.getProperty("group.id");
         String kafkaServers = properties.getProperty("bootstrap.servers");
         String zkConnectStr = properties.getProperty("zookeeper.connect");
@@ -106,5 +108,5 @@ public abstract class Workload implements Serializable {
                 kafkaServers, groupId, topic, offset, componentId, parallelism);
     }
 
-    abstract public void Process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    abstract public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 }
