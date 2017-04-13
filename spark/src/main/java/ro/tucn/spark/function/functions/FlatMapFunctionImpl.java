@@ -2,6 +2,8 @@ package ro.tucn.spark.function.functions;
 
 import org.apache.spark.api.java.function.FlatMapFunction;
 
+import java.util.Iterator;
+
 /**
  * Created by Liviu on 4/5/2017.
  */
@@ -13,8 +15,7 @@ public class FlatMapFunctionImpl<T, R> implements FlatMapFunction<T, R> {
         this.fun = function;
     }
 
-    @Override
-    public Iterable<R> call(T t) throws Exception {
+    public Iterator<R> call(T t) throws Exception {
         return fun.flatMap(t);
     }
 }

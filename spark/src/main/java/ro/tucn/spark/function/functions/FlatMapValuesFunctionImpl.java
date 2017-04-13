@@ -15,6 +15,6 @@ public class FlatMapValuesFunctionImpl<V, R> implements Function<V, Iterable<R>>
     }
 
     public Iterable<R> call(V v) throws Exception {
-        return fun.flatMap(v);
+        return (Iterable<R>) fun.flatMap(v);
     }
 }

@@ -17,7 +17,7 @@ public class MapPartitionFunctionImpl<T, R> implements FlatMapFunction<Iterator<
         fun = function;
     }
 
-    public Iterable<R> call(Iterator<T> tIterator) throws Exception {
-        return fun.mapPartition(Utils.iterable(tIterator));
+    public Iterator<R> call(Iterator<T> tIterator) throws Exception {
+        return (Iterator<R>) fun.mapPartition(Utils.iterable(tIterator));
     }
 }

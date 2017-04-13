@@ -54,4 +54,12 @@ public class PerformanceStreamingListener implements StreamingListener {
                 + batchInfo.totalDelay().get() + "\t"
                 + batchInfo.numRecords());
     }
+
+    public void onOutputOperationStarted(StreamingListenerOutputOperationStarted streamingListenerOutputOperationStarted) {
+
+    }
+
+    public void onOutputOperationCompleted(StreamingListenerOutputOperationCompleted streamingListenerOutputOperationCompleted) {
+
+    }
 }

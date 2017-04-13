@@ -18,7 +18,7 @@ public class PairMapPartitionFunctionImpl<K, V, R> implements PairFlatMapFunctio
         this.fun = function;
     }
 
-    public Iterable<Tuple2<K, R>> call(Iterator<Tuple2<K, V>> tuple2Iterator) throws Exception {
-        return fun.mapPartition(Utils.iterable(tuple2Iterator));
+    public Iterator<Tuple2<K, R>> call(Iterator<Tuple2<K, V>> tuple2Iterator) throws Exception {
+        return (Iterator<Tuple2<K, R>>) fun.mapPartition(Utils.iterable(tuple2Iterator));
     }
 }

@@ -1,19 +1,15 @@
 package ro.tucn.spark.operator;
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.streaming.Duration;
-import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.operator.WindowedWorkloadOperator;
 import ro.tucn.spark.function.functions.*;
 import ro.tucn.util.TimeDuration;
-import ro.tucn.util.Utils;
 import scala.Tuple2;
 
+import java.util.Iterator;
 import java.util.List;
 
 import ro.tucn.exceptions.UnsupportOperatorException;
@@ -21,8 +17,6 @@ import ro.tucn.frame.functions.*;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairWorkloadOperator;
 import ro.tucn.operator.WorkloadOperator;
-
-import java.util.List;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -82,8 +76,8 @@ public class SparkWorkloadOperator<T> extends WorkloadOperator<T> {
     public <K, V> PairWorkloadOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
                                                            String componentId) {
         JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair(new PairFlatMapFunction<T, K, V>() {
-            public Iterable<Tuple2<K, V>> call(T t) throws Exception {
-                return fun.flatMapToPair(t);
+            public Iterator<Tuple2<K, V>> call(T t) throws Exception {
+                return (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t);
             }
         });
         return new SparkPairWorkloadOperator(pairDStream, parallelism);

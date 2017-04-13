@@ -2,8 +2,12 @@ package ro.tucn.spark.operator;
 
 import kafka.serializer.StringDecoder;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaPairInputDStream;
@@ -66,7 +70,11 @@ public class SparkOperatorCreator extends OperatorCreator {
 //        jssc.checkpoint("/tmp/log-analyzer-streaming");
         // jssc.checkpoint("/tmp/spark/checkpoint");
         jssc.start();
-        jssc.awaitTermination();
+        try {
+            jssc.awaitTermination();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -130,31 +138,29 @@ public class SparkOperatorCreator extends OperatorCreator {
                 kafkaParams,
                 topicsSet
         );
-        /*messages.foreachRDD(
-                new Function2<JavaPairRDD<String, String>, Time, Void>() {
+        VoidFunction2<JavaPairRDD<String, String>, Time> function2 = new VoidFunction2<JavaPairRDD<String, String>, Time>() {
 
-                    public Void call(JavaPairRDD<String, String> newEventsRdd, Time time)
-                            throws Exception {
-                        System.out.println("\n===================================");
-                        System.out.println("New Events for " + time + " batch:");
-                        for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
-                            System.out.println("tuples: " + tuple._1 + ": " + tuple._2);
-                        }
-                        return null;
-                    }
-                });
-        */
+            public void call(JavaPairRDD<String, String> newEventsRdd, Time time)
+                    throws Exception {
+                System.out.println("\n===================================");
+                System.out.println("New Events for " + time + " batch:");
+                for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
+                    System.out.println("tuples: " + tuple._1 + ": " + tuple._2);
+                }
+            }
+        };
+        messages.foreachRDD(function2);
+
         JavaDStream<String> lines = messages.map(mapFunction);
-        /*lines.foreachRDD(new Function2<JavaRDD<String>, Time, Void>() {
-            public Void call(JavaRDD<String> rdd, Time time)
+        VoidFunction2<JavaRDD<String>, Time> voidFunction2 = new VoidFunction2<JavaRDD<String>, Time>() {
+            public void call(JavaRDD<String> rdd, Time time)
                     throws Exception {
                 rdd.collect();
                 System.out.println(" Number of records in this batch: "
                         + rdd.count());
-                return null;
             }
-        });
-        */
+        };
+        lines.foreachRDD(voidFunction2);
         return new SparkWorkloadOperator(lines, parallelism);
     }
 

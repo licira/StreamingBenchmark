@@ -1,5 +1,7 @@
 package ro.tucn.frame.functions;
 
+import java.util.Iterator;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
@@ -11,5 +13,5 @@ package ro.tucn.frame.functions;
 // spark
 public interface FlatMapFunction<T, R> extends SerializableFunction {
 
-    Iterable<R> flatMap(T var1) throws Exception;
+    Iterator<R> flatMap(T var1) throws Exception;
 }

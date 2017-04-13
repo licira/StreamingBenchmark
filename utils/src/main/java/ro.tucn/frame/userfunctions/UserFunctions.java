@@ -1,8 +1,6 @@
 package ro.tucn.frame.userfunctions;
 
 import com.google.common.base.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
 import ro.tucn.statistics.CentroidLog;
@@ -29,8 +27,8 @@ public class UserFunctions implements Serializable {
      */
     public static FlatMapFunction<String, String> splitFlatMap
             = new FlatMapFunction<String, String>() {
-        public Iterable<String> flatMap(String var1) throws Exception {
-            return Arrays.asList(var1.toLowerCase().split("\\W+"));
+        public Iterator<String> flatMap(String var1) throws Exception {
+            return (Iterator<String>) Arrays.asList(var1.toLowerCase().split("\\W+"));
         }
     };
     /**
@@ -51,12 +49,12 @@ public class UserFunctions implements Serializable {
     };
     public static FlatMapFunction<WithTime<String>, WithTime<String>> splitFlatMapWithTime
             = new FlatMapFunction<WithTime<String>, WithTime<String>>() {
-        public Iterable<WithTime<String>> flatMap(WithTime<String> var1) throws Exception {
+        public Iterator<WithTime<String>> flatMap(WithTime<String> var1) throws Exception {
             List<WithTime<String>> list = new ArrayList();
             for (String str : var1.getValue().toLowerCase().split("\\W+")) {
                 list.add(new WithTime(str, var1.getTime()));
             }
-            return list;
+            return (Iterator<WithTime<String>>) list;
         }
     };
     public static MapPairFunction<WithTime<String>, String, WithTime<Integer>> mapToStrIntPairWithTime
