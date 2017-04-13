@@ -2,7 +2,6 @@ package ro.tucn.spark.operator;
 
 import kafka.serializer.StringDecoder;
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
@@ -29,6 +28,22 @@ import java.util.Properties;
  */
 public class SparkOperatorCreator extends OperatorCreator {
 
+    private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
+            = new Function<Tuple2<String, String>, WithTime<String>>() {
+        public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
+            String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
+            if (list.length == 2) {
+                return new WithTime<String>(list[0], Long.parseLong(list[1]));
+            }
+            return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
+        }
+    };
+    private static Function<Tuple2<String, String>, String> mapFunction
+            = new Function<Tuple2<String, String>, String>() {
+        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
+            return stringStringTuple2._2();
+        }
+    };
     public JavaStreamingContext jssc;
     private Properties properties;
 
@@ -49,7 +64,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     public void Start() {
         jssc.addStreamingListener(new PerformanceStreamingListener());
 //        jssc.checkpoint("/tmp/log-analyzer-streaming");
-        jssc.checkpoint("/tmp/spark/checkpoint");
+        // jssc.checkpoint("/tmp/spark/checkpoint");
         jssc.start();
         jssc.awaitTermination();
     }
@@ -115,29 +130,33 @@ public class SparkOperatorCreator extends OperatorCreator {
                 kafkaParams,
                 topicsSet
         );
+        /*messages.foreachRDD(
+                new Function2<JavaPairRDD<String, String>, Time, Void>() {
 
+                    public Void call(JavaPairRDD<String, String> newEventsRdd, Time time)
+                            throws Exception {
+                        System.out.println("\n===================================");
+                        System.out.println("New Events for " + time + " batch:");
+                        for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
+                            System.out.println("tuples: " + tuple._1 + ": " + tuple._2);
+                        }
+                        return null;
+                    }
+                });
+        */
         JavaDStream<String> lines = messages.map(mapFunction);
-
+        /*lines.foreachRDD(new Function2<JavaRDD<String>, Time, Void>() {
+            public Void call(JavaRDD<String> rdd, Time time)
+                    throws Exception {
+                rdd.collect();
+                System.out.println(" Number of records in this batch: "
+                        + rdd.count());
+                return null;
+            }
+        });
+        */
         return new SparkWorkloadOperator(lines, parallelism);
     }
-
-    private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
-            = new Function<Tuple2<String, String>, WithTime<String>>() {
-        public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
-            if (list.length == 2) {
-                return new WithTime<String>(list[0], Long.parseLong(list[1]));
-            }
-            return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
-        }
-    };
-
-    private static Function<Tuple2<String, String>, String> mapFunction
-            = new Function<Tuple2<String, String>, String>() {
-        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            return stringStringTuple2._2();
-        }
-    };
 
     public String getMaster() {
         return properties.getProperty("cluster.master");

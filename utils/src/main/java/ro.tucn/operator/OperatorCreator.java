@@ -3,10 +3,12 @@ package ro.tucn.operator;
 import ro.tucn.kMeans.Point;
 import ro.tucn.util.WithTime;
 
+import java.io.Serializable;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
-public abstract class OperatorCreator {
+public abstract class OperatorCreator implements Serializable {
 
     private String appName;
 

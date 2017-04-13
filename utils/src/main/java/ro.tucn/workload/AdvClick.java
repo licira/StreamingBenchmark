@@ -40,6 +40,7 @@ public class AdvClick extends Workload {
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
 //            advs.print();
 //            clicks.print();
+
             PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
                     "Join",
                     clicks,
