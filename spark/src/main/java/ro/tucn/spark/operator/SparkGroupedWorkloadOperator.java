@@ -26,7 +26,7 @@ public class SparkGroupedWorkloadOperator<K, V> extends GroupedWorkloadOperator<
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("not implemented yet");
+        throw new UnsupportOperatorException("Not implemented yet");
     }
 
     @Override

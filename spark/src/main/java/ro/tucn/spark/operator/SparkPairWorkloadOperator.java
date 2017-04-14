@@ -162,7 +162,7 @@ public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
     }
 
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("not implemented yet");
+        throw new UnsupportOperatorException("Not implemented yet");
     }
 
     public void print() {
