@@ -10,11 +10,19 @@ import java.io.Serializable;
  */
 public abstract class OperatorCreator implements Serializable {
 
-    private String appName;
+    protected String appName;
 
     public OperatorCreator(String appName) {
         this.appName = appName;
     }
+
+    public abstract WorkloadOperator<String> stringStreamFromKafka(String zkConStr,
+                                                                   String kafkaServers,
+                                                                   String group,
+                                                                   String topics,
+                                                                   String offset,
+                                                                   String componentId,
+                                                                   int parallelism);
 
     /**
      * zkConStr: zoo1:2181
@@ -39,18 +47,6 @@ public abstract class OperatorCreator implements Serializable {
                                                                  String offset,
                                                                  String componentId,
                                                                  int parallelism);
-
-    public abstract WorkloadOperator<String> stringStreamFromKafka(String zkConStr,
-                                                                   String kafkaServers,
-                                                                   String group,
-                                                                   String topics,
-                                                                   String offset,
-                                                                   String componentId,
-                                                                   int parallelism);
-
-    public String getAppName() {
-        return this.appName;
-    }
 
     /**
      * Start streaming analysis job

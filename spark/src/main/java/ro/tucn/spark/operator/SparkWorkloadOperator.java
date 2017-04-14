@@ -4,19 +4,18 @@ import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
+import ro.tucn.exceptions.UnsupportOperatorException;
+import ro.tucn.frame.functions.*;
+import ro.tucn.operator.BaseOperator;
+import ro.tucn.operator.PairWorkloadOperator;
 import ro.tucn.operator.WindowedWorkloadOperator;
+import ro.tucn.operator.WorkloadOperator;
 import ro.tucn.spark.function.functions.*;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
 import java.util.Iterator;
 import java.util.List;
-
-import ro.tucn.exceptions.UnsupportOperatorException;
-import ro.tucn.frame.functions.*;
-import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WorkloadOperator;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -39,12 +38,12 @@ public class SparkWorkloadOperator<T> extends WorkloadOperator<T> {
 
     @Override
     public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("don't support operator");
+        throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override
     public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("don't support operator");
+        throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override
@@ -105,7 +104,7 @@ public class SparkWorkloadOperator<T> extends WorkloadOperator<T> {
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("don't support operator");
+        throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override

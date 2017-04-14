@@ -67,7 +67,7 @@ public class SparkWindowedPairWorkloadOperator<K, V> extends WindowedPairWorkloa
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("don't support operator");
+        throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override

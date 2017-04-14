@@ -61,7 +61,7 @@ public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
 
     public PairWorkloadOperator<K, V> updateStateByKey(final ReduceFunction<V> fun, String componentId) {
         JavaPairDStream<K, V> cumulateStream = pairDStream.updateStateByKey(new UpdateStateFunctionImpl(fun));
-//        cumulateStream.checkpoint(new Duration(60000));
+        //cumulateStream.checkpoint(new Duration(60000));
         return new SparkPairWorkloadOperator(cumulateStream, parallelism);
     }
 
@@ -107,6 +107,7 @@ public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
         if (windowDuration.toMilliSeconds() % windowDuration.toMilliSeconds() != 0) {
             throw new WorkloadException("WindowDuration should be multi times of joinWindowDuration");
         }
+
         Duration windowDurations = Utils.timeDurationsToSparkDuration(windowDuration);
         Duration windowDurations2 = Utils.timeDurationsToSparkDuration(joinWindowDuration);
 
@@ -144,6 +145,7 @@ public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
         if (windowDuration.toMilliSeconds() % windowDuration.toMilliSeconds() != 0) {
             throw new WorkloadException("WindowDuration should be multi times of joinWindowDuration");
         }
+
         final Duration windowDurations = Utils.timeDurationsToSparkDuration(windowDuration);
         Duration windowDurations2 = Utils.timeDurationsToSparkDuration(joinWindowDuration);
 
@@ -152,9 +154,8 @@ public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
             JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
                     .window(windowDurations.plus(windowDurations2), windowDurations2)
                     .join(joinSparkStream.pairDStream.window(windowDurations2, windowDurations2));
-            // filter illegal joined data
-//            joinedStream.filter(filterFun);
-
+            //filter illegal joined data
+            //joinedStream.filter(filterFun);
             return new SparkPairWorkloadOperator(joinedStream, parallelism);
         }
         throw new WorkloadException("Cast joinStream to SparkPairWorkloadOperator failed");

@@ -32,6 +32,12 @@ import java.util.Properties;
  */
 public class SparkOperatorCreator extends OperatorCreator {
 
+    private static Function<Tuple2<String, String>, String> mapFunction
+            = new Function<Tuple2<String, String>, String>() {
+        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
+            return stringStringTuple2._2();
+        }
+    };
     private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
             = new Function<Tuple2<String, String>, WithTime<String>>() {
         public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
@@ -42,75 +48,26 @@ public class SparkOperatorCreator extends OperatorCreator {
             return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
         }
     };
-    private static Function<Tuple2<String, String>, String> mapFunction
-            = new Function<Tuple2<String, String>, String>() {
-        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            return stringStringTuple2._2();
-        }
-    };
     public JavaStreamingContext jssc;
     private Properties properties;
 
     public SparkOperatorCreator(String appName) throws IOException {
         super(appName);
-        properties = new Properties();
-        properties.load(this.getClass().getClassLoader().getResourceAsStream("spark-cluster.properties"));
-        SparkConf conf = new SparkConf().setMaster(this.getMaster()).setAppName(appName);
-        conf.set("spark.streaming.ui.retainedBatches", "2000");
-        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
-        /*
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
-        */
+        initializeProperties();
+        initializeJavaStreamingContext(appName);
     }
 
     @Override
     public void Start() {
         jssc.addStreamingListener(new PerformanceStreamingListener());
-//        jssc.checkpoint("/tmp/log-analyzer-streaming");
-        // jssc.checkpoint("/tmp/spark/checkpoint");
+        //jssc.checkpoint("/tmp/log-analyzer-streaming");
+        //jssc.checkpoint("/tmp/spark/checkpoint");
         jssc.start();
         try {
             jssc.awaitTermination();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public SparkWorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(String zkConStr,
-                                                                                 String kafkaServers,
-                                                                                 String group,
-                                                                                 String topics,
-                                                                                 String offset,
-                                                                                 String componentId,
-                                                                                 int parallelism) {
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topics.split(",")));
-        HashMap<String, String> kafkaParams = new HashMap();
-        kafkaParams.put("metadata.broker.list", kafkaServers);
-        kafkaParams.put("auto.offset.reset", offset);
-        kafkaParams.put("zookeeper.connect", zkConStr);
-        kafkaParams.put("group.id", group);
-
-        // Create direct kafka stream with brokers and topics
-        JavaPairInputDStream<String, String> messages = KafkaUtils.createDirectStream(
-                jssc,
-                String.class,
-                String.class,
-                StringDecoder.class,
-                StringDecoder.class,
-                kafkaParams,
-                topicsSet
-        );
-
-        JavaDStream<WithTime<String>> lines = messages.map(mapFunctionWithTime);
-
-        return new SparkWorkloadOperator(lines, parallelism);
-    }
-
-    @Override
-    public WorkloadOperator<Point> pointStreamFromKafka(String zkConStr, String kafkaServers, String group, String topics, String offset, String componentId, int parallelism) {
-        return null;
     }
 
     @Override
@@ -122,14 +79,62 @@ public class SparkOperatorCreator extends OperatorCreator {
                                                           String componentId,
                                                           int parallelism) {
         HashSet<String> topicsSet = new HashSet(Arrays.asList(topics.split(",")));
+        HashMap<String, String> kafkaParams = createKafkaParamsFromKafka(zkConStr, kafkaServers, group, offset);
+        // Create direct kafka stream with brokers and topics
+        JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
+        print(messages);
+        JavaDStream<String> lines = messages.map(mapFunction);
+        print(lines);
+        return new SparkWorkloadOperator(lines, parallelism);
+    }
+
+    @Override
+    public SparkWorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(String zkConStr,
+                                                                                 String kafkaServers,
+                                                                                 String group,
+                                                                                 String topics,
+                                                                                 String offset,
+                                                                                 String componentId,
+                                                                                 int parallelism) {
+        HashSet<String> topicsSet = new HashSet(Arrays.asList(topics.split(",")));
+        HashMap<String, String> kafkaParams = createKafkaParamsFromKafka(zkConStr, kafkaServers, group, offset);
+        // Create direct kafka stream with brokers and topics
+        JavaPairInputDStream<String, String> messages = (JavaPairInputDStream<String, String>) createDirectStream(kafkaParams, topicsSet);
+        JavaDStream<WithTime<String>> lines = messages.map(mapFunctionWithTime);
+        return new SparkWorkloadOperator(lines, parallelism);
+    }
+
+    @Override
+    public WorkloadOperator<Point> pointStreamFromKafka(String zkConStr, String kafkaServers, String group, String topics, String offset, String componentId, int parallelism) {
+        return null;
+    }
+
+    private void initializeProperties() throws IOException {
+        properties = new Properties();
+        properties.load(this.getClass().getClassLoader().getResourceAsStream("spark-cluster.properties"));
+    }
+
+    private void initializeJavaStreamingContext(String appName) {
+        SparkConf conf = new SparkConf().setMaster(this.getMaster()).setAppName(appName);
+        conf.set("spark.streaming.ui.retainedBatches", "2000");
+        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
+        /*
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
+        */
+    }
+
+    private HashMap createKafkaParamsFromKafka(String zkConnect, String kafkaServers, String group, String offset) {
         HashMap<String, String> kafkaParams = new HashMap();
         kafkaParams.put("metadata.broker.list", kafkaServers);
         kafkaParams.put("auto.offset.reset", offset);
-        kafkaParams.put("zookeeper.connect", zkConStr);
+        kafkaParams.put("zookeeper.connect", zkConnect);
         kafkaParams.put("group.id", group);
+        return kafkaParams;
+    }
 
-        // Create direct kafka stream with brokers and topics
-        JavaPairDStream<String, String> messages = KafkaUtils.createDirectStream(
+    private JavaPairDStream<String, String> createDirectStream(HashMap<String, String> kafkaParams, HashSet<String> topicsSet) {
+        return KafkaUtils.createDirectStream(
                 jssc,
                 String.class,
                 String.class,
@@ -138,8 +143,10 @@ public class SparkOperatorCreator extends OperatorCreator {
                 kafkaParams,
                 topicsSet
         );
-        VoidFunction2<JavaPairRDD<String, String>, Time> function2 = new VoidFunction2<JavaPairRDD<String, String>, Time>() {
+    }
 
+    private void print(JavaPairDStream<String, String> messages) {
+        VoidFunction2<JavaPairRDD<String, String>, Time> function2 = new VoidFunction2<JavaPairRDD<String, String>, Time>() {
             public void call(JavaPairRDD<String, String> newEventsRdd, Time time)
                     throws Exception {
                 System.out.println("\n===================================");
@@ -150,8 +157,9 @@ public class SparkOperatorCreator extends OperatorCreator {
             }
         };
         messages.foreachRDD(function2);
+    }
 
-        JavaDStream<String> lines = messages.map(mapFunction);
+    private void print(JavaDStream<String> lines) {
         VoidFunction2<JavaRDD<String>, Time> voidFunction2 = new VoidFunction2<JavaRDD<String>, Time>() {
             public void call(JavaRDD<String> rdd, Time time)
                     throws Exception {
@@ -161,14 +169,13 @@ public class SparkOperatorCreator extends OperatorCreator {
             }
         };
         lines.foreachRDD(voidFunction2);
-        return new SparkWorkloadOperator(lines, parallelism);
     }
 
-    public String getMaster() {
+    private String getMaster() {
         return properties.getProperty("cluster.master");
     }
 
-    public long getDurationsMilliseconds() {
+    private long getDurationsMilliseconds() {
         return Long.parseLong(properties.getProperty("streaming.durations.milliseconds"));
     }
 }
