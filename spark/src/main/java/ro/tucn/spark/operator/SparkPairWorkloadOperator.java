@@ -9,7 +9,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairWorkloadOperator;
 import ro.tucn.operator.WindowedPairWorkloadOperator;
 import ro.tucn.operator.WorkloadOperator;
-import ro.tucn.spark.function.functions.*;
+import ro.tucn.spark.function.*;
 import ro.tucn.spark.util.Utils;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;

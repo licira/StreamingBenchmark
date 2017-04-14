@@ -1,4 +1,4 @@
-package ro.tucn.spark.function.functions;
+package ro.tucn.spark.function;
 
 import com.google.common.base.Optional;
 import org.apache.log4j.Logger;

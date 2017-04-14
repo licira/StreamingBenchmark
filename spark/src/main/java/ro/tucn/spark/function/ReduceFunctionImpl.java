@@ -1,4 +1,4 @@
-package ro.tucn.spark.function.functions;
+package ro.tucn.spark.function;
 
 import org.apache.log4j.Logger;
 import ro.tucn.logger.SerializableLogger;

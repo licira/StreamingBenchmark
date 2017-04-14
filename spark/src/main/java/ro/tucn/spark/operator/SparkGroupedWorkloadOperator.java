@@ -5,7 +5,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.GroupedWorkloadOperator;
-import ro.tucn.spark.function.functions.GrouperPairFunctionImpl;
+import ro.tucn.spark.function.GrouperPairFunctionImpl;
 
 /**
  * Created by Liviu on 4/5/2017.

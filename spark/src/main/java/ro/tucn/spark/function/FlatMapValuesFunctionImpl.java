@@ -1,4 +1,4 @@
-package ro.tucn.spark.function.functions;
+package ro.tucn.spark.function;
 
 import org.apache.spark.api.java.function.Function;
 import ro.tucn.frame.functions.FlatMapFunction;
@@ -8,7 +8,7 @@ import ro.tucn.frame.functions.FlatMapFunction;
  */
 public class FlatMapValuesFunctionImpl<V, R> implements Function<V, Iterable<R>> {
 
-    FlatMapFunction<V, R> fun;
+    private FlatMapFunction<V, R> fun;
 
     public FlatMapValuesFunctionImpl(FlatMapFunction<V, R> function) {
         this.fun = function;

@@ -8,7 +8,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairWorkloadOperator;
 import ro.tucn.operator.WindowedWorkloadOperator;
 import ro.tucn.operator.WorkloadOperator;
-import ro.tucn.spark.function.functions.*;
+import ro.tucn.spark.function.*;
 
 /**
  * Created by Liviu on 4/5/2017.

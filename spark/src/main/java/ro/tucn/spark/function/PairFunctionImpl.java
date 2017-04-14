@@ -1,4 +1,4 @@
-package ro.tucn.spark.function.functions;
+package ro.tucn.spark.function;
 
 import org.apache.spark.api.java.function.PairFunction;
 import ro.tucn.frame.functions.MapPairFunction;

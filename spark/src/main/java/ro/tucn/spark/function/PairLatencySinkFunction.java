@@ -1,7 +1,6 @@
-package ro.tucn.spark.function.functions;
+package ro.tucn.spark.function;
 
 import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
 import org.apache.spark.api.java.function.Function;
 import ro.tucn.statistics.LatencyLog;
 import ro.tucn.util.WithTime;

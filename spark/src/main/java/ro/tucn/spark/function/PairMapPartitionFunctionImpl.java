@@ -1,4 +1,4 @@
-package ro.tucn.spark.function.functions;
+package ro.tucn.spark.function;
 
 import org.apache.spark.api.java.function.PairFlatMapFunction;
 import ro.tucn.frame.functions.MapPartitionFunction;
@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class PairMapPartitionFunctionImpl<K, V, R> implements PairFlatMapFunction<Iterator<Tuple2<K, V>>, K, R> {
 
-    MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun;
+    private MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun;
 
     public PairMapPartitionFunctionImpl(MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> function) {
         this.fun = function;
