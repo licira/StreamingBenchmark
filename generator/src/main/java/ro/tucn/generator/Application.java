@@ -8,7 +8,7 @@ import ro.tucn.logger.SerializableLogger;
  */
 public class Application {
 
-    private static final Logger logger = Logger.getLogger("generator");
+    private static final Logger logger = Logger.getLogger("Generator");
 
     public static void main(String args[]) {
         try {
@@ -16,7 +16,7 @@ public class Application {
                 new StreamGenerator().run(args);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getClass() + " " + e.getMessage());
         }
     }
 }
