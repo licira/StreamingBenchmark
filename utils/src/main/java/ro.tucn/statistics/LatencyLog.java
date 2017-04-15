@@ -1,8 +1,6 @@
 package ro.tucn.statistics;
 
 import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.WithTime;
 
@@ -15,37 +13,86 @@ public class LatencyLog implements Serializable {
 
     private static Logger logger = Logger.getLogger(LatencyLog.class.getSimpleName());
 
-    private String loggerName;
+    private static final String LATENCY_MSG = ": Latency:";
+    private static final String TOTAL_LATENCY_MSG =": Total Latency: ";
 
-    public LatencyLog(String loggerName) {
-        this.loggerName = loggerName;
+    private String name;
+    private Long startTime;
+    private Long prevTime;
+    private Long totalLatency;
+    private boolean printEnabled;
+
+    public LatencyLog(String name) {
+        this.name = name;
+        totalLatency = 0L;
+        prevTime = 0L;
     }
 
     public void execute(WithTime<? extends Object> withTime) {
-        long latency = System.currentTimeMillis() - withTime.getTime();
-
+        Long latency = System.nanoTime() - withTime.getTime();
         double frequency = 0.001;
         if (Configuration.latencyFrequency != null
                 && Configuration.latencyFrequency > 0) {
             frequency = Configuration.latencyFrequency;
         }
-
         // probability to log 0.001
         if (Math.random() < frequency) {
-            logger.warn(String.format(this.loggerName + ":\t%d", latency));
+            log("Latency: ", toSeconds(latency.longValue()));
         }
+        totalLatency += latency;
     }
 
-    public void execute(long time) {
-        long latency = System.currentTimeMillis() - time;
+    public void execute(Long time) {
+        Long latency = time - prevTime;
+        prevTime = time;
         double probability = 0.001;
         if (Configuration.latencyFrequency != null
                 && Configuration.latencyFrequency > 0) {
             probability = Configuration.latencyFrequency;
         }
         // probability to log 0.001
-        if (Math.random() < probability) {
-            logger.warn(String.format(this.loggerName + ":\t%d", latency));
+        //if (Math.random() < probability)
+        {
+            log(name + LATENCY_MSG, toSeconds(latency.longValue()));
         }
+        totalLatency += latency;
+    }
+
+    private void log(String msg, double latency) {
+        if (printEnabled) {
+            logger.info(String.format("%-25s\t%fs", msg, latency));
+        }
+    }
+
+    public void logTotal() {
+        log(name + TOTAL_LATENCY_MSG, toSeconds(totalLatency.longValue()));
+    }
+
+    public void reset() {
+        startTime = null;
+        prevTime = null;
+        totalLatency = 0L;
+    }
+
+    public void setPrevTime(Long prevTime) {
+        this.prevTime = prevTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+        prevTime = startTime;
+        totalLatency = 0L;
+    }
+
+    private double toSeconds(long nanoSeconds) {
+        return (double) nanoSeconds / 1000000000.0;
+    }
+
+    public void enablePrint() {
+        printEnabled = true;
+    }
+
+    public void disablePrint() {
+        printEnabled = false;
     }
 }
