@@ -48,10 +48,7 @@ public class SkewedWordCount extends Generator {
 
         FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
 
-        Long startTime = System.nanoTime();
-        performanceLog.setStartTime(startTime);
-        performanceLog.setPrevTime(startTime);
-        performanceLog.disablePrint();
+        initializePerformanceLogWithCurrentTime();
         // for loop to generate message
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);

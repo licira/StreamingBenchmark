@@ -47,9 +47,7 @@ public class AdvClick extends Generator {
         // for loop to generate advertisement
 
         ArrayList<Advertisement> advList = new ArrayList();
-        Long startTime = System.nanoTime();
-        performanceLog.setStartTime(startTime);
-        performanceLog.setPrevTime(startTime);
+        initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
         for (long i = 0; i < ADV_NUM; ++i) {
             // advertisement id

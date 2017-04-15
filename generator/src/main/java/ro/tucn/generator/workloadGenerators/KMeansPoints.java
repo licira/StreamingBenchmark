@@ -52,10 +52,7 @@ public class KMeansPoints extends Generator {
         RandomGenerator pointRandom = new JDKRandomGenerator();
         pointRandom.setSeed(8624214);
 
-        Long startTime = System.nanoTime();
-        performanceLog.setStartTime(startTime);
-        performanceLog.setPrevTime(startTime);
-        performanceLog.disablePrint();
+        initializePerformanceLogWithCurrentTime();
         for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
             int centroidIndex = centroidRandom.nextInt(centroids.size());
             MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);

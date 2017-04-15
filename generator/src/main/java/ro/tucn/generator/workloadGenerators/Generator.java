@@ -31,6 +31,12 @@ public abstract class Generator {
 
     abstract protected void initializeWorkloadData();
 
+    protected void initializePerformanceLogWithCurrentTime() {
+        Long startTime = System.nanoTime();
+        performanceLog.setStartTime(startTime);
+        performanceLog.setPrevTime(startTime);
+    }
+
     public KafkaProducer<String, String> createSmallBufferProducer() {
         Properties props = getDefaultKafkaProducerProperties();
         return createKafkaProducerWithProperties(props);
