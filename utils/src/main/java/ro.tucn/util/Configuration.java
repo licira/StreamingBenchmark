@@ -1,8 +1,6 @@
 package ro.tucn.util;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.exceptions.WorkloadException;
 
 import java.io.IOException;
@@ -54,4 +52,8 @@ public class Configuration {
         }
     }
 
+    public static boolean throughputFrequencyToBeLogged() {
+        return (Configuration.throughputFrequency != null
+                && Configuration.throughputFrequency > 0);
+    }
 }

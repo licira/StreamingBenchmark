@@ -15,7 +15,7 @@ public class Point {
     public Point(int id, double[] l) {
         this.id = id;
         this.location = l;
-        this.time = System.currentTimeMillis();
+        this.time = System.nanoTime();
     }
 
     public Point(int id, double[] l, long time) {

@@ -45,7 +45,7 @@ public class SparkOperatorCreator extends OperatorCreator {
             if (list.length == 2) {
                 return new WithTime<String>(list[0], Long.parseLong(list[1]));
             }
-            return new WithTime(stringStringTuple2._2(), System.currentTimeMillis());
+            return new WithTime(stringStringTuple2._2(), System.nanoTime());
         }
     };
     public JavaStreamingContext jssc;

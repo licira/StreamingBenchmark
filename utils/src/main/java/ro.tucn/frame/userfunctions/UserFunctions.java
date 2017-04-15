@@ -133,7 +133,7 @@ public class UserFunctions implements Serializable {
         public Iterable<Tuple2<String, WithTime<Integer>>> flatMapToPair(String var1) throws Exception {
             List<Tuple2<String, WithTime<Integer>>> results = new ArrayList();
             for (String str : var1.toLowerCase().split("\\W+")) {
-                results.add(new Tuple2(str, new WithTime(1, System.currentTimeMillis())));
+                results.add(new Tuple2(str, new WithTime(1, System.nanoTime())));
             }
             return results;
         }

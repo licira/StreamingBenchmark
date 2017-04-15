@@ -10,7 +10,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairWorkloadOperator;
 import ro.tucn.operator.WindowedPairWorkloadOperator;
 import ro.tucn.spark.function.PairMapPartitionFunctionImpl;
-import ro.tucn.spark.function.functions.ReduceFunctionImpl;
+import ro.tucn.spark.function.ReduceFunctionImpl;
 import ro.tucn.spark.function.UpdateStateFunctionImpl;
 import scala.Tuple2;
 

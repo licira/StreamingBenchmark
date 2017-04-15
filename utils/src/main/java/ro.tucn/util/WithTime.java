@@ -15,7 +15,7 @@ public class WithTime<T> {
 
     public WithTime(T v) {
         this.value = v;
-        this.time = System.currentTimeMillis();
+        this.time = System.nanoTime();
     }
 
     public T getValue() {
