@@ -5,6 +5,7 @@ import ro.tucn.operator.OperatorCreator;
 import ro.tucn.spark.operator.SparkOperatorCreator;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.AdvClick;
+import ro.tucn.workload.KMeans;
 import ro.tucn.workload.Workload;
 
 import java.io.IOException;
@@ -18,12 +19,24 @@ public class Application {
         if (args.length > 0)
         {
             OperatorCreator operatorCreator;
+            Workload workload = null;
             if (args[0].equalsIgnoreCase(Topics.ADV))
             {
                 operatorCreator = new SparkOperatorCreator(Topics.ADV);
-                Workload workload = new AdvClick(operatorCreator);
-                workload.Start();
+                workload = new AdvClick(operatorCreator);
+            } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
+                operatorCreator = new SparkOperatorCreator(Topics.K_MEANS);
+                workload = new KMeans(operatorCreator);
+            } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
+                operatorCreator = new SparkOperatorCreator(Topics.UNIFORM_WORDS);
+                workload = new AdvClick(operatorCreator);
+            } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
+                operatorCreator = new SparkOperatorCreator(Topics.SKEWED_WORDS);
+                workload = new AdvClick(operatorCreator);
+            } else {
+                return;
             }
+            workload.Start();
         }
     }
 }

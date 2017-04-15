@@ -1,10 +1,8 @@
 package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.WorkloadOperator;
 import ro.tucn.util.Configuration;
@@ -30,7 +28,6 @@ public abstract class Workload implements Serializable {
         this.operatorCreator = creator;
         Configuration.LoadConfigure();
         parallelism = Configuration.clusterHosts * Configuration.hostCores;
-
         // load specific configure for each workload
         properties = new Properties();
         String configFile = this.getClass().getSimpleName() + ".properties";
@@ -38,8 +35,8 @@ public abstract class Workload implements Serializable {
             logger.info("Loading Workload properties: " + configFile);
             properties.load(this.getClass().getClassLoader().getResourceAsStream(configFile));
             logger.info("Properties loaded for: " + configFile);
-//            int hosts = Integer.parseInt(properties.getProperty("hosts"));
-//            int cores = Integer.parseInt(properties.getProperty("cores"));
+            //int hosts = Integer.parseInt(properties.getProperty("hosts"));
+            //int cores = Integer.parseInt(properties.getProperty("cores"));
         } catch (IOException e) {
             throw new WorkloadException("Read configure file " + configFile + " failed");
         } catch (Exception e) {
