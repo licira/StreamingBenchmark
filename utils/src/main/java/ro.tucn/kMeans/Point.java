@@ -9,8 +9,7 @@ public class Point {
     public double[] location;
     private long time;
 
-    public Point() {
-    }
+    public Point() { }
 
     public Point(int id, double[] l) {
         this.id = id;
