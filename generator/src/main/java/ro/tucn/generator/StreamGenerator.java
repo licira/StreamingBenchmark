@@ -1,11 +1,8 @@
 package ro.tucn.generator;
 
 import org.apache.log4j.Logger;
+import ro.tucn.generator.workloadGenerators.*;
 import ro.tucn.logger.SerializableLogger;
-import ro.tucn.generator.workloadGenerators.AdvClick;
-import ro.tucn.generator.workloadGenerators.KMeansPoints;
-import ro.tucn.generator.workloadGenerators.SkewedWordCount;
-import ro.tucn.generator.workloadGenerators.UniformWordCount;
 import ro.tucn.util.Topics;
 
 /**
@@ -22,18 +19,19 @@ public class StreamGenerator {
         } catch (Exception e) {
         }
 
+        Generator generator = null;
+        logger.info(args[0]);
         if (args[0].equalsIgnoreCase(Topics.ADV)) {
-            logger.info(args[0]);
-            new AdvClick().generate(SLEEP_FREQUENCY);
+            generator = new AdvClick();
         } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-            logger.info(args[0]);
-            new KMeansPoints().generate(SLEEP_FREQUENCY);
+            generator = new KMeansPoints();
         } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
-            logger.info(args[0]);
-            new SkewedWordCount().generate(SLEEP_FREQUENCY);
+            generator = new SkewedWordCount();
         } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
-            logger.info(args[0]);
-            new UniformWordCount().generate(SLEEP_FREQUENCY);
+            generator = new UniformWordCount();
+        } else {
+            return;
         }
+        generator.generate(SLEEP_FREQUENCY);
     }
 }

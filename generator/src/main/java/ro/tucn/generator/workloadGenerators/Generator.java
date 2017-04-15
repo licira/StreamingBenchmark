@@ -25,7 +25,7 @@ public abstract class Generator {
         initialzeBootstrapServersData();
     }
 
-    abstract protected void generate(int sleepFrequency) throws InterruptedException;
+    abstract public void generate(int sleepFrequency) throws InterruptedException;
 
     abstract protected void initializeWorkloadData();
 
