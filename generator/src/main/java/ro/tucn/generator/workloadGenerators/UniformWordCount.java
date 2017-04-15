@@ -26,16 +26,17 @@ public class UniformWordCount extends Generator {
     public UniformWordCount() {
         super();
         producer = createLargeBufferProducer();
-        initializeWorkloadData();
         TOPIC = Topics.UNIFORM_WORDS;
+        initializeWorkloadData();
     }
 
     public void generate(int sleepFrequency) throws InterruptedException {
-
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
-        long time = System.currentTimeMillis();
 
-        ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
+        Long startTime = System.nanoTime();
+        performanceLog.setStartTime(startTime);
+        performanceLog.setPrevTime(startTime);
+        performanceLog.disablePrint();
         // for loop to generate message
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
@@ -46,18 +47,18 @@ public class UniformWordCount extends Generator {
             }
 
             // Add timestamp
-            messageBuilder.append(Constants.TimeSeparator).append(System.currentTimeMillis());
-            throughput.execute();
+            messageBuilder.append(Constants.TimeSeparator).append(System.nanoTime());
+
             ProducerRecord<String, String> newRecord = new ProducerRecord<String, String>(TOPIC, messageBuilder.toString());
             producer.send(newRecord);
-
+            performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }
+        performanceLog.logTotalThroughputAndTotalLatency();
         producer.close();
-        logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time));
     }
     /*
     public static void main(String[] args) throws InterruptedException {

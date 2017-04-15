@@ -3,6 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.log4j.Logger;
+import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.ConfigReader;
 
 import java.util.Properties;
@@ -13,8 +14,9 @@ import java.util.Properties;
 public abstract class Generator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-    protected ConfigReader configReader = new ConfigReader();
 
+    protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
+    protected ConfigReader configReader = new ConfigReader();
     protected Properties properties;
     protected String bootstrapServersHost;
     protected String bootstrapServersPort;
@@ -31,14 +33,12 @@ public abstract class Generator {
 
     public KafkaProducer<String, String> createSmallBufferProducer() {
         Properties props = getDefaultKafkaProducerProperties();
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
-        return producer;
+        return createKafkaProducerWithProperties(props);
     }
 
     public KafkaProducer<String, String> createLargeBufferProducer() {
         Properties props = getLargeBufferKafkaProducerProperties();
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
-        return producer;
+        return createKafkaProducerWithProperties(props);
     }
 
     public Properties getDefaultKafkaProducerProperties() {
@@ -93,5 +93,10 @@ public abstract class Generator {
 
     private void initializeProperties() {
         properties = configReader.tryGetPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
+    }
+
+    private KafkaProducer<String,String> createKafkaProducerWithProperties(Properties props) {
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
+        return producer;
     }
 }

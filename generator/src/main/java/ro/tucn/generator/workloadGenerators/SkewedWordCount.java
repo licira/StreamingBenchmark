@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.skewedWords.FastZipfGenerator;
+import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
@@ -28,8 +29,8 @@ public class SkewedWordCount extends Generator {
     public SkewedWordCount() {
         super();
         producer = createLargeBufferProducer();
-        initializeWorkloadData();
         TOPIC = Topics.SKEWED_WORDS;
+        initializeWorkloadData();
     }
 
     /*
@@ -43,10 +44,14 @@ public class SkewedWordCount extends Generator {
     */
     public void generate(int sleepFrequency) throws InterruptedException {
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
-        long time = System.currentTimeMillis();
+        long time = System.nanoTime();
 
         FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
-        ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
+
+        Long startTime = System.nanoTime();
+        performanceLog.setStartTime(startTime);
+        performanceLog.setPrevTime(startTime);
+        performanceLog.disablePrint();
         // for loop to generate message
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
@@ -57,19 +62,18 @@ public class SkewedWordCount extends Generator {
             }
 
             // Add timestamp
-            messageBuilder.append(Constants.TimeSeparator).append(System.currentTimeMillis());
+            messageBuilder.append(Constants.TimeSeparator).append(System.nanoTime());
 
-            throughput.execute();
             ProducerRecord<String, String> newRecord = new ProducerRecord<String, String>(TOPIC, messageBuilder.toString());
             producer.send(newRecord);
-
+            performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }
+        performanceLog.logTotalThroughputAndTotalLatency();
         producer.close();
-        logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time));
     }
 
     protected void initializeWorkloadData() {

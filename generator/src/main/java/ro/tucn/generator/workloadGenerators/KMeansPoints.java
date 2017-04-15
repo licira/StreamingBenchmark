@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.kMeans.Point;
+import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
@@ -39,20 +40,22 @@ public class KMeansPoints extends Generator {
     public KMeansPoints() throws Exception {
         super();
         producer = createSmallBufferProducer();
-        initializeWorkloadData();
         TOPIC = Topics.K_MEANS;
+        initializeWorkloadData();
     }
 
     public void generate(int sleepFrequency) throws InterruptedException {
         //ro.tucn.logger.info(" generating...");
         generateCentroids();
         centroids = loadCentroids();
-        long time = System.currentTimeMillis();
-        ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
         Random centroidRandom = new Random(2342342170123L);
         RandomGenerator pointRandom = new JDKRandomGenerator();
         pointRandom.setSeed(8624214);
 
+        Long startTime = System.nanoTime();
+        performanceLog.setStartTime(startTime);
+        performanceLog.setPrevTime(startTime);
+        performanceLog.disablePrint();
         for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
             int centroidIndex = centroidRandom.nextInt(centroids.size());
             MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
@@ -64,20 +67,19 @@ public class KMeansPoints extends Generator {
                 sb.append(point[i]).append("\t");
             }
             point[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
-            sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(System.currentTimeMillis());
+            sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(System.nanoTime());
 
-            throughput.execute();
             ProducerRecord<String, String> newRecord = new ProducerRecord<String, String>(TOPIC, sb.toString());
             producer.send(newRecord);
-//            System.out.println(sb.toString());
-            // control data generate speed
+            //System.out.println(sb.toString());
+            performanceLog.logThroughputAndLatency(System.nanoTime());
+            //control data generate speed
             if (sleepFrequency > 0 && generatedPoints % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }
-        //ro.tucn.logger.info(" done generating");
+        performanceLog.logTotalThroughputAndTotalLatency();
         producer.close();
-        logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time) + "ms");
     }
 
     /*

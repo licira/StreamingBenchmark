@@ -6,6 +6,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.logger.SerializableLogger;
+import ro.tucn.statistics.PerformanceLog;
+import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
@@ -20,11 +22,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Generator {
 
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+
     private static KafkaProducer<String, String> producer;
     private static String ADV_TOPIC = Topics.ADV;
     private static String CLICK_TOPIC = Topics.CLICK;
     private static long ADV_NUM = 1000;
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private double clickLambda;
     private double clickProbability;
 
@@ -35,9 +38,6 @@ public class AdvClick extends Generator {
     }
 
     public void generate(int sleepFrequency) throws InterruptedException {
-        //ThroughputLog throughput = new ThroughputLog(this.getClass().getSimpleName());
-        long time = System.currentTimeMillis();
-
         // Obtain a cached thread pool
         ExecutorService cachedPool = Executors.newCachedThreadPool();
 
@@ -47,13 +47,16 @@ public class AdvClick extends Generator {
         // for loop to generate advertisement
 
         ArrayList<Advertisement> advList = new ArrayList();
-        for (long i = 1; i < ADV_NUM; ++i) {
+        Long startTime = System.nanoTime();
+        performanceLog.setStartTime(startTime);
+        performanceLog.setPrevTime(startTime);
+        performanceLog.disablePrint();
+        for (long i = 0; i < ADV_NUM; ++i) {
             // advertisement id
             String advId = UUID.randomUUID().toString();
-            long timestamp = System.currentTimeMillis();
-            producer.send(new ProducerRecord<String, String>(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId)));
-            // System.out.println("Shown: " + System.currentTimeMillis() + "\t" + advId);
-
+            long timestamp = System.nanoTime();
+            //producer.send(new ProducerRecord<String, String>(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId)));
+            //logger.info("Timestamp: " + timestamp + "\tAdvId: " + advId);
             // whether customer clicked this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
                 // long deltaT = (long)ro.tucn.generator.nextExponential(clickLambda) * 1000;
@@ -61,25 +64,24 @@ public class AdvClick extends Generator {
                 // System.out.println(deltaT);
                 advList.add(new Advertisement(advId, timestamp + deltaT));
             }
-
             if (i % 100 == 0) {
                 cachedPool.submit(new ClickThread(advList));
                 advList = new ArrayList();
             }
-
-            //throughput.execute();
+            performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && i % sleepFrequency == 0) {
                 //Thread.sleep(1);
             }
         }
+        performanceLog.logTotalThroughputAndTotalLatency();
         cachedPool.shutdown();
         try {
             cachedPool.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             logger.info(e.getMessage());
         }
-        logger.info("LatencyLog: " + String.valueOf(System.currentTimeMillis() - time));
+        producer.close();
     }
 
     protected void initializeWorkloadData() {
@@ -87,16 +89,6 @@ public class AdvClick extends Generator {
         clickLambda = Double.parseDouble(properties.getProperty("click.lambda", "10"));
     }
 
-    /*
-    public static void main(String[] args) throws InterruptedException {
-        int SLEEP_FREQUENCY = -1;
-        if (args.length > 0) {
-            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
-        }
-        new AdvClick().generate(SLEEP_FREQUENCY);
-        System.out.println("DONE");
-    }
-    */
     private static class Advertisement implements Comparable<Advertisement> {
         String id;
         long time;
@@ -128,15 +120,15 @@ public class AdvClick extends Generator {
         //@Override
         public void run() {
             for (Advertisement adv : advList) {
-                if (System.currentTimeMillis() < adv.time) {
+                if (System.nanoTime() < adv.time) {
                     try {
-                        Thread.sleep(adv.time - System.currentTimeMillis());
+                        Thread.sleep(adv.time - System.nanoTime());
                     } catch (InterruptedException e) {
                         logger.error(e.getMessage());
                     }
                 }
                 producer.send(new ProducerRecord(CLICK_TOPIC, adv.id,
-                        String.format("%d\t%s", System.currentTimeMillis(), adv.id)));
+                        String.format("%d\t%s", System.nanoTime(), adv.id)));
                 // System.out.println("Clicked: " + adv.id);
             }
         }
