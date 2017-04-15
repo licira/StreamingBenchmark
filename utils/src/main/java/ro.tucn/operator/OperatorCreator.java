@@ -4,6 +4,7 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.util.WithTime;
 
 import java.io.Serializable;
+import java.util.Properties;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -16,11 +17,8 @@ public abstract class OperatorCreator implements Serializable {
         this.appName = appName;
     }
 
-    public abstract WorkloadOperator<String> stringStreamFromKafka(String zkConStr,
-                                                                   String kafkaServers,
-                                                                   String group,
-                                                                   String topics,
-                                                                   String offset,
+    public abstract WorkloadOperator<String> stringStreamFromKafka(Properties properties,
+                                                                   String topicPropertyName,
                                                                    String componentId,
                                                                    int parallelism);
 
@@ -29,22 +27,16 @@ public abstract class OperatorCreator implements Serializable {
      * topics: Topic1,Topic2
      * offset smallest
      **/
-    public abstract WorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(String zkConStr,
-                                                                                     String kafkaServers,
-                                                                                     String group,
-                                                                                     String topics,
-                                                                                     String offset,
+    public abstract WorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
+                                                                                     String topicPropertyName,
                                                                                      String componentId,
                                                                                      int parallelism);
 
     /**
      * Consume point stream from kafka for workload 3
      */
-    public abstract WorkloadOperator<Point> pointStreamFromKafka(String zkConStr,
-                                                                 String kafkaServers,
-                                                                 String group,
-                                                                 String topics,
-                                                                 String offset,
+    public abstract WorkloadOperator<Point> pointStreamFromKafka(Properties properties,
+                                                                 String topicPropertyName,
                                                                  String componentId,
                                                                  int parallelism);
 
@@ -52,5 +44,4 @@ public abstract class OperatorCreator implements Serializable {
      * Start streaming analysis job
      */
     public abstract void Start();
-
 }

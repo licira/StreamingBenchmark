@@ -71,15 +71,14 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public WorkloadOperator<String> stringStreamFromKafka(String zkConStr,
-                                                          String kafkaServers,
-                                                          String group,
-                                                          String topics,
-                                                          String offset,
+    public WorkloadOperator<String> stringStreamFromKafka(Properties properties,
+                                                          String topicPropertyName,
                                                           String componentId,
                                                           int parallelism) {
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topics.split(",")));
-        HashMap<String, String> kafkaParams = createKafkaParamsFromKafka(zkConStr, kafkaServers, group, offset);
+        String topic = properties.getProperty(topicPropertyName);
+        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
+
+        HashMap<String, String> kafkaParams = createKafkaParams(properties);
         // Create direct kafka stream with brokers and topics
         JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
         print(messages);
@@ -89,15 +88,14 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public SparkWorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(String zkConStr,
-                                                                                 String kafkaServers,
-                                                                                 String group,
-                                                                                 String topics,
-                                                                                 String offset,
+    public SparkWorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
+                                                                                 String topicPropertyName,
                                                                                  String componentId,
                                                                                  int parallelism) {
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topics.split(",")));
-        HashMap<String, String> kafkaParams = createKafkaParamsFromKafka(zkConStr, kafkaServers, group, offset);
+        String topic = properties.getProperty(topicPropertyName);
+        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
+
+        HashMap<String, String> kafkaParams = createKafkaParams(properties);
         // Create direct kafka stream with brokers and topics
         JavaPairInputDStream<String, String> messages = (JavaPairInputDStream<String, String>) createDirectStream(kafkaParams, topicsSet);
         JavaDStream<WithTime<String>> lines = messages.map(mapFunctionWithTime);
@@ -105,7 +103,10 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public WorkloadOperator<Point> pointStreamFromKafka(String zkConStr, String kafkaServers, String group, String topics, String offset, String componentId, int parallelism) {
+    public WorkloadOperator<Point> pointStreamFromKafka(Properties properties,
+                                                        String topicPropertyName,
+                                                        String componentId,
+                                                        int parallelism) {
         return null;
     }
 
@@ -124,12 +125,12 @@ public class SparkOperatorCreator extends OperatorCreator {
         */
     }
 
-    private HashMap createKafkaParamsFromKafka(String zkConnect, String kafkaServers, String group, String offset) {
+    private HashMap createKafkaParams(Properties properites) {
         HashMap<String, String> kafkaParams = new HashMap();
-        kafkaParams.put("metadata.broker.list", kafkaServers);
-        kafkaParams.put("auto.offset.reset", offset);
-        kafkaParams.put("zookeeper.connect", zkConnect);
-        kafkaParams.put("group.id", group);
+        kafkaParams.put("metadata.broker.list", properties.getProperty("bootstrap.servers"));
+        kafkaParams.put("auto.offset.reset", properties.getProperty("auto.offset.reset"));
+        kafkaParams.put("zookeeper.connect", properties.getProperty("zookeeper.connect"));
+        kafkaParams.put("group.id", properties.getProperty("group.id"));
         return kafkaParams;
     }
 

@@ -57,53 +57,17 @@ public abstract class Workload implements Serializable {
         logger.info("The end of workload: " + this.getClass().getSimpleName());
     }
 
-    protected OperatorCreator getOperatorCreator() {
-        return operatorCreator;
-    }
-
-    protected WorkloadOperator<WithTime<String>> stringStreamWithTime(String componentId) {
-        String topic = properties.getProperty("topic");
-        String groupId = properties.getProperty("group.id");
-        String kafkaServers = properties.getProperty("bootstrap.servers");
-        String zkConnectStr = properties.getProperty("zookeeper.connect");
-        String offset = properties.getProperty("auto.offset.reset");
-
-        return this.getOperatorCreator().stringStreamFromKafkaWithTime(zkConnectStr,
-                kafkaServers, groupId, topic, offset, componentId, parallelism);
-    }
-
-    protected WorkloadOperator<Point> getPointStream(String componentId) {
-        String topic = properties.getProperty("topic");
-        String groupId = properties.getProperty("group.id");
-        String kafkaServers = properties.getProperty("bootstrap.servers");
-        String zkConnectStr = properties.getProperty("zookeeper.connect");
-        String offset = properties.getProperty("auto.offset.reset");
-
-        return this.getOperatorCreator().pointStreamFromKafka(zkConnectStr,
-                kafkaServers, groupId, topic, offset, componentId, parallelism);
-    }
-
-    protected WorkloadOperator<String> kafkaStreamOperator(String componentId) {
-        String topic = properties.getProperty("topic1");
-        String groupId = properties.getProperty("group.id");
-        String kafkaServers = properties.getProperty("bootstrap.servers");
-        String zkConnectStr = properties.getProperty("zookeeper.connect");
-        String offset = properties.getProperty("auto.offset.reset");
-
-        return this.getOperatorCreator().stringStreamFromKafka(zkConnectStr,
-                kafkaServers, groupId, topic, offset, componentId, parallelism);
-    }
-
-    protected WorkloadOperator<String> kafkaStreamOperator2(String componentId) {
-        String topic = properties.getProperty("topic2");
-        String groupId = properties.getProperty("group.id");
-        String kafkaServers = properties.getProperty("bootstrap.servers");
-        String zkConnectStr = properties.getProperty("zookeeper.connect");
-        String offset = properties.getProperty("auto.offset.reset");
-
-        return this.getOperatorCreator().stringStreamFromKafka(zkConnectStr,
-                kafkaServers, groupId, topic, offset, componentId, parallelism);
-    }
-
     abstract public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+
+    protected WorkloadOperator<WithTime<String>> stringStreamWithTime(String componentId, String topicPropertyName) {
+        return operatorCreator.stringStreamFromKafkaWithTime(properties, topicPropertyName, componentId, parallelism);
+    }
+
+    protected WorkloadOperator<Point> getPointStream(String componentId, String topicPropertyName) {
+        return operatorCreator.pointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+    }
+
+    protected WorkloadOperator<String> createKafkaStreamOperator(String componentId, String topicPropertyName) {
+        return operatorCreator.stringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+    }
 }

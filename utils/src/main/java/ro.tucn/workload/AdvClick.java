@@ -34,9 +34,9 @@ public class AdvClick extends Workload {
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
 
-            PairWorkloadOperator<String, Long> advs = kafkaStreamOperator("adv")
+            PairWorkloadOperator<String, Long> advs = createKafkaStreamOperator("adv", "topic1")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
-            PairWorkloadOperator<String, Long> clicks = kafkaStreamOperator2("click")
+            PairWorkloadOperator<String, Long> clicks = createKafkaStreamOperator("click", "topic2")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
             //advs.print();
             //clicks.print();

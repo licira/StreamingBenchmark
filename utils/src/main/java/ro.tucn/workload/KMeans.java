@@ -36,7 +36,7 @@ public class KMeans extends Workload {
 
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            WorkloadOperator<Point> points = getPointStream("source");
+            WorkloadOperator<Point> points = getPointStream("source", "topic1");
             points.iterative(); // points iteration
             WorkloadOperator<Point> assignedPoints = points.map(UserFunctions.assign, initCentroids, "assign", Point.class);
             WorkloadOperator<Point> centroids = assignedPoints
