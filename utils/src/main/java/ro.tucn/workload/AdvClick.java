@@ -38,28 +38,25 @@ public class AdvClick extends Workload {
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
             PairWorkloadOperator<String, Long> clicks = kafkaStreamOperator2("click")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
-//            advs.print();
-//            clicks.print();
-
+            //advs.print();
+            //clicks.print();
             PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
                     "Join",
                     clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
 
-//            PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advertisements.join(
-//                    "Join",
-//                    clicks,
-//                    new TimeDurations(TimeUnit.SECONDS, stream1Window),
-//                    new TimeDurations(TimeUnit.SECONDS, stream2Window),
-//                    new TimeAssigner(),
-//                    new TimeAssigner());
-
+            //PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advertisements.join(
+            //"Join",
+            //clicks,
+            //new TimeDurations(TimeUnit.SECONDS, stream1Window),
+            //new TimeDurations(TimeUnit.SECONDS, stream2Window),
+            //new TimeAssigner(),
+            //new TimeAssigner());
             clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
                     .sink();
         } catch (Exception e) {
-            //ro.tucn.logger.error(e.getMessage());
-            e.printStackTrace();
+            //logger.error(e.getMessage());
         }
     }
 
