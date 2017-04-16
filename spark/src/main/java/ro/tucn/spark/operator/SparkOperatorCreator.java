@@ -4,6 +4,7 @@ import kafka.serializer.StringDecoder;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.streaming.Durations;
@@ -76,7 +77,7 @@ public class SparkOperatorCreator extends OperatorCreator {
                                                           String componentId,
                                                           int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
+        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic.split(",")));
 
         HashMap<String, String> kafkaParams = createKafkaParams(properties);
         // Create direct kafka stream with brokers and topics
@@ -118,19 +119,16 @@ public class SparkOperatorCreator extends OperatorCreator {
     private void initializeJavaStreamingContext(String appName) {
         SparkConf conf = new SparkConf().setMaster(this.getMaster()).setAppName(appName);
         conf.set("spark.streaming.ui.retainedBatches", "2000");
-        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
-        /*
         JavaSparkContext sc = new JavaSparkContext(conf);
-        jssc = new JavaStreamingContext(conf, Durations.milliseconds(this.getDurationsMilliseconds()));
-        */
+        jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
     }
 
-    private HashMap createKafkaParams(Properties properites) {
+    private HashMap createKafkaParams(Properties properties) {
         HashMap<String, String> kafkaParams = new HashMap();
-        kafkaParams.put("metadata.broker.list", properties.getProperty("bootstrap.servers"));
-        kafkaParams.put("auto.offset.reset", properties.getProperty("auto.offset.reset"));
-        kafkaParams.put("zookeeper.connect", properties.getProperty("zookeeper.connect"));
-        kafkaParams.put("group.id", properties.getProperty("group.id"));
+        kafkaParams.put("metadata.broker.list", (String) properties.get("bootstrap.servers"));
+        kafkaParams.put("auto.offset.reset", (String) properties.get("auto.offset.reset"));
+        kafkaParams.put("zookeeper.connect", (String) properties.get("zookeeper.connect"));
+        kafkaParams.put("group.id", (String) properties.get("group.id"));
         return kafkaParams;
     }
 
