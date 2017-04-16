@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Workload {
 
-    //private static final Logger ro.tucn.Logger = SerializableLogger.getLogger(this.getClass());
+    private static final Logger logger = SerializableLogger.getLogger(AdvClick.class);
 
     private int streamWindowOne;
     private int streamWindowTwo;
@@ -37,8 +37,8 @@ public class AdvClick extends Workload {
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
             PairWorkloadOperator<String, Long> clicks = createKafkaStreamOperator("click", "topic2")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
-            advs.print();
-            clicks.print();
+            //advs.print();
+            //clicks.print();
             /*PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
                     "Join",
                     clicks,
@@ -52,8 +52,8 @@ public class AdvClick extends Workload {
             new TimeDuration(TimeUnit.SECONDS, streamWindowTwo),
             new TimeAssigner(),
             new TimeAssigner());
-            /*clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
-                    .sink();*/
+            clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
+                    .sink();
             clicksWithCreateTime.print();
         } catch (Exception e) {
             //logger.error(e.getMessage());

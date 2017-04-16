@@ -151,7 +151,7 @@ public class SparkOperatorCreator extends OperatorCreator {
                 System.out.println("\n===================================");
                 System.out.println("New Events for " + time + " batch:");
                 for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
-                    System.out.println("tuples: " + tuple._1 + ": " + tuple._2);
+                    System.out.println("Tuples: " + tuple._1 + ": " + tuple._2);
                 }
             }
         };
@@ -163,6 +163,7 @@ public class SparkOperatorCreator extends OperatorCreator {
             public void call(JavaRDD<String> rdd, Time time)
                     throws Exception {
                 rdd.collect();
+                System.out.println("\n===================================");
                 System.out.println(" Number of records in this batch: "
                         + rdd.count());
             }
