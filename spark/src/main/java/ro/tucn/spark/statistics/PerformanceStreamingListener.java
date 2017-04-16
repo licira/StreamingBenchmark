@@ -1,10 +1,8 @@
 package ro.tucn.spark.statistics;
 
 import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
 import org.apache.spark.streaming.scheduler.*;
-import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
+import ro.tucn.util.TimeDuration;
 
 /**
  * Created by Liviu on 8/4/17.
@@ -48,7 +46,8 @@ public class PerformanceStreamingListener implements StreamingListener {
      */
     public void onBatchCompleted(StreamingListenerBatchCompleted batchCompleted) {
         BatchInfo batchInfo = batchCompleted.batchInfo();
-        logger.warn(batchInfo.batchTime().milliseconds() + "\t"
+        double duration = TimeDuration.millisToSeconds(batchInfo.batchTime().milliseconds());
+        logger.info(duration + "\t"
                 + batchInfo.schedulingDelay().get() + "\t"
                 + batchInfo.processingDelay().get() + "\t"
                 + batchInfo.totalDelay().get() + "\t"
