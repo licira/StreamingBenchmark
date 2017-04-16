@@ -28,12 +28,12 @@
         <module name="spark" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="consumer" target="1.5" />
-      <module name="core" target="1.5" />
-      <module name="generator" target="1.5" />
-      <module name="spark" target="1.5" />
-      <module name="StreamingBenchmark" target="1.5" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="consumer" target="1.8" />
+      <module name="core" target="1.8" />
+      <module name="generator" target="1.8" />
+      <module name="spark" target="1.8" />
+      <module name="StreamingBenchmark" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
