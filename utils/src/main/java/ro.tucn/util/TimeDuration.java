@@ -35,7 +35,7 @@ public class TimeDuration {
         return length;
     }
 
-    public long toSeconds() {
+    public long nanosToSeconds() {
         long seconds = this.length;
         switch (unit) {
             case MILLISECONDS:
@@ -69,5 +69,13 @@ public class TimeDuration {
 
     public boolean equals(TimeDuration timeDurations) {
         return (this.getLength() == timeDurations.getLength() && this.getUnit().equals(timeDurations.getUnit()));
+    }
+
+    public static double nanosToSeconds(long nanoSeconds) {
+        return (double) nanoSeconds / 1000000000.0;
+    }
+
+    public static double millisToSeconds(long milliSeconds) {
+        return (double) milliSeconds / 1000000.0;
     }
 }

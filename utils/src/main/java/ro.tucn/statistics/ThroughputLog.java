@@ -2,8 +2,10 @@ package ro.tucn.statistics;
 
 import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
+import ro.tucn.util.TimeDuration;
 
 import java.io.Serializable;
+import java.sql.Time;
 
 /**
  * Created by Liviu on 4/6/2017.
@@ -61,8 +63,8 @@ public class ThroughputLog implements Serializable {
         Long timeDiff = now - prevTime;
         Long elementDiff = received - lastLogEle;
         if (timeDiff > logFrequency) {
-            double ex = toSeconds(timeDiff);
-            double latency = toSeconds(timeDiff);
+            double ex = TimeDuration.nanosToSeconds(timeDiff);
+            double latency = TimeDuration.nanosToSeconds(timeDiff);
             long elementsPerSecond = Double.valueOf(elementDiff * ex).longValue();
 
             log(THROUGHPUT_MSG, latency, elementDiff, elementsPerSecond);
@@ -85,8 +87,8 @@ public class ThroughputLog implements Serializable {
     }
 
     public void logTotal() {
-        double ex = toSeconds(totalTimeDiff);
-        double latency = toSeconds(totalTimeDiff);
+        double ex = TimeDuration.nanosToSeconds(totalTimeDiff);
+        double latency = TimeDuration.nanosToSeconds(totalTimeDiff);
         long elementsPerSecond = Double.valueOf(totalElementDiff * ex).longValue();
         log(TOTAL_THROUGHPUT_MSG, latency, totalElementDiff, elementsPerSecond);
     }
@@ -98,10 +100,6 @@ public class ThroughputLog implements Serializable {
         totalTimeDiff = 0L;
         totalElementDiff = 0L;
         lastLogEle = 0L;
-    }
-
-    private double toSeconds(long nanoSeconds) {
-        return (double) nanoSeconds / 1000000000.0;
     }
 
     public void enablePrint() {

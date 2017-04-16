@@ -2,6 +2,7 @@ package ro.tucn.statistics;
 
 import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
+import ro.tucn.util.TimeDuration;
 import ro.tucn.util.WithTime;
 
 import java.io.Serializable;
@@ -37,7 +38,7 @@ public class LatencyLog implements Serializable {
         }
         // probability to log 0.001
         if (Math.random() < frequency) {
-            log("Latency: ", toSeconds(latency.longValue()));
+            log("Latency: ", TimeDuration.nanosToSeconds(latency.longValue()));
         }
         totalLatency += latency;
     }
@@ -53,7 +54,7 @@ public class LatencyLog implements Serializable {
         // probability to log 0.001
         //if (Math.random() < probability)
         {
-            log(name + LATENCY_MSG, toSeconds(latency.longValue()));
+            log(name + LATENCY_MSG, TimeDuration.nanosToSeconds(latency.longValue()));
         }
         totalLatency += latency;
     }
@@ -65,7 +66,7 @@ public class LatencyLog implements Serializable {
     }
 
     public void logTotal() {
-        log(name + TOTAL_LATENCY_MSG, toSeconds(totalLatency.longValue()));
+        log(name + TOTAL_LATENCY_MSG, TimeDuration.nanosToSeconds(totalLatency.longValue()));
     }
 
     public void reset() {
@@ -82,10 +83,6 @@ public class LatencyLog implements Serializable {
         this.startTime = startTime;
         prevTime = startTime;
         totalLatency = 0L;
-    }
-
-    private double toSeconds(long nanoSeconds) {
-        return (double) nanoSeconds / 1000000000.0;
     }
 
     public void enablePrint() {
