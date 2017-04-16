@@ -1,6 +1,7 @@
 package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.or.ThreadGroupRenderer;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
@@ -51,8 +52,8 @@ public abstract class Workload implements Serializable {
             process();
             operatorCreator.Start();
         } catch (Exception e) {
-            logger.error("WorkloadException caught when run workload " + this.getClass().getSimpleName());
-            e.printStackTrace();
+            logger.error("WorkloadException caught when trying to run workload " + this.getClass().getSimpleName()
+                + ": " + e.getClass() + " " + e.getMessage());
         }
         logger.info("The end of workload: " + this.getClass().getSimpleName());
     }

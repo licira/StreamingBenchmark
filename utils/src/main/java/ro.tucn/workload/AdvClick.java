@@ -33,28 +33,28 @@ public class AdvClick extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-
             PairWorkloadOperator<String, Long> advs = createKafkaStreamOperator("adv", "topic1")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
             PairWorkloadOperator<String, Long> clicks = createKafkaStreamOperator("click", "topic2")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
-            //advs.print();
-            //clicks.print();
-            PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
+            advs.print();
+            clicks.print();
+            /*PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
                     "Join",
                     clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
-
-            //PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advertisements.join(
-            //"Join",
-            //clicks,
-            //new TimeDurations(TimeUnit.SECONDS, stream1Window),
-            //new TimeDurations(TimeUnit.SECONDS, stream2Window),
-            //new TimeAssigner(),
-            //new TimeAssigner());
-            clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
-                    .sink();
+            */
+            PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
+            "Join",
+            clicks,
+            new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
+            new TimeDuration(TimeUnit.SECONDS, streamWindowTwo),
+            new TimeAssigner(),
+            new TimeAssigner());
+            /*clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
+                    .sink();*/
+            clicksWithCreateTime.print();
         } catch (Exception e) {
             //logger.error(e.getMessage());
         }

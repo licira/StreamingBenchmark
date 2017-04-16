@@ -53,8 +53,8 @@ public class AdvClick extends Generator {
             // advertisement id
             String advId = UUID.randomUUID().toString();
             long timestamp = System.nanoTime();
-            //producer.send(new ProducerRecord<String, String>(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId)));
-            //logger.info("Timestamp: " + timestamp + "\tAdvId: " + advId);
+            producer.send(new ProducerRecord<String, String>(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId)));
+            logger.info("Timestamp: " + timestamp + "\tAdvId: " + advId);
             // whether customer clicked this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
                 // long deltaT = (long)ro.tucn.generator.nextExponential(clickLambda) * 1000;
