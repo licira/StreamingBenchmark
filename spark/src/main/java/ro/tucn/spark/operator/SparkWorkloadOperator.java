@@ -74,11 +74,8 @@ public class SparkWorkloadOperator<T> extends WorkloadOperator<T> {
     @Override
     public <K, V> PairWorkloadOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
                                                            String componentId) {
-        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair(new PairFlatMapFunction<T, K, V>() {
-            public Iterator<Tuple2<K, V>> call(T t) throws Exception {
-                return (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t);
-            }
-        });
+        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair((PairFlatMapFunction<T, K, V>) t ->
+                (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t));
         return new SparkPairWorkloadOperator(pairDStream, parallelism);
     }
 

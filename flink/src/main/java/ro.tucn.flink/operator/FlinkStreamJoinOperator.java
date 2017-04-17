@@ -144,7 +144,7 @@ public class FlinkStreamJoinOperator<K, IN1, IN2, OUT>
             return;
         // process elements after currentWatermark and lower than watermark
         for (Map.Entry<K, StreamRecord<IN1>> record1 : stream1Buffer.asMap().entrySet()) {
-            if (record1.getValue().getTimestamp() >= this.currentWatermark
+            if (record1.getValue().getTimestamp() >= currentWatermark
                     && record1.getValue().getTimestamp() < watermark) {
                 StreamRecord<IN2> record2 = stream2Buffer.getIfPresent(record1.getKey());
                 if (record2 != null) {
@@ -158,7 +158,7 @@ public class FlinkStreamJoinOperator<K, IN1, IN2, OUT>
         }
 
         for (Map.Entry<K, StreamRecord<IN2>> record2 : stream2Buffer.asMap().entrySet()) {
-            if (record2.getValue().getTimestamp() >= this.currentWatermark
+            if (record2.getValue().getTimestamp() >= currentWatermark
                     && record2.getValue().getTimestamp() < watermark) {
                 StreamRecord<IN1> record1 = stream1Buffer.getIfPresent(record2.getKey());
                 if (record1 != null) {
@@ -180,8 +180,8 @@ public class FlinkStreamJoinOperator<K, IN1, IN2, OUT>
         processWatermark(watermark);
 
         output.emitWatermark(mark);
-        this.currentWatermark = watermark;
-        this.currentWatermark1 = mark.getTimestamp();
+        currentWatermark = watermark;
+        currentWatermark1 = mark.getTimestamp();
     }
 
     @Override
@@ -192,8 +192,8 @@ public class FlinkStreamJoinOperator<K, IN1, IN2, OUT>
         processWatermark(watermark);
 
         output.emitWatermark(mark);
-        this.currentWatermark = watermark;
-        this.currentWatermark2 = mark.getTimestamp();
+        currentWatermark = watermark;
+        currentWatermark2 = mark.getTimestamp();
     }
 
     /**

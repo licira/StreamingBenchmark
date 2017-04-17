@@ -34,20 +34,14 @@ import java.util.Properties;
 public class SparkOperatorCreator extends OperatorCreator {
 
     private static Function<Tuple2<String, String>, String> mapFunction
-            = new Function<Tuple2<String, String>, String>() {
-        public String call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            return stringStringTuple2._2();
-        }
-    };
+            = (Function<Tuple2<String, String>, String>) stringStringTuple2 -> stringStringTuple2._2();
     private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
-            = new Function<Tuple2<String, String>, WithTime<String>>() {
-        public WithTime<String> call(Tuple2<String, String> stringStringTuple2) throws Exception {
-            String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
-            if (list.length == 2) {
-                return new WithTime<String>(list[0], Long.parseLong(list[1]));
-            }
-            return new WithTime(stringStringTuple2._2(), System.nanoTime());
+            = (Function<Tuple2<String, String>, WithTime<String>>) stringStringTuple2 -> {
+        String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
+        if (list.length == 2) {
+            return new WithTime<String>(list[0], Long.parseLong(list[1]));
         }
+        return new WithTime(stringStringTuple2._2(), System.nanoTime());
     };
     public JavaStreamingContext jssc;
     private Properties properties;
@@ -145,28 +139,22 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     private void print(JavaPairDStream<String, String> messages) {
-        VoidFunction2<JavaPairRDD<String, String>, Time> function2 = new VoidFunction2<JavaPairRDD<String, String>, Time>() {
-            public void call(JavaPairRDD<String, String> newEventsRdd, Time time)
-                    throws Exception {
-                System.out.println("\n===================================");
-                System.out.println("New Events for " + time + " batch:");
-                for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
-                    System.out.println("Tuples: " + tuple._1 + ": " + tuple._2);
-                }
+        VoidFunction2<JavaPairRDD<String, String>, Time> function2 = (VoidFunction2<JavaPairRDD<String, String>, Time>) (newEventsRdd, time) -> {
+            System.out.println("\n===================================");
+            System.out.println("New Events for " + time + " batch:");
+            for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
+                System.out.println("Tuples: " + tuple._1 + ": " + tuple._2);
             }
         };
         messages.foreachRDD(function2);
     }
 
     private void print(JavaDStream<String> lines) {
-        VoidFunction2<JavaRDD<String>, Time> voidFunction2 = new VoidFunction2<JavaRDD<String>, Time>() {
-            public void call(JavaRDD<String> rdd, Time time)
-                    throws Exception {
-                rdd.collect();
-                System.out.println("\n===================================");
-                System.out.println(" Number of records in this batch: "
-                        + rdd.count());
-            }
+        VoidFunction2<JavaRDD<String>, Time> voidFunction2 = (VoidFunction2<JavaRDD<String>, Time>) (rdd, time) -> {
+            rdd.collect();
+            System.out.println("\n===================================");
+            System.out.println(" Number of records in this batch: "
+                    + rdd.count());
         };
         lines.foreachRDD(voidFunction2);
     }
