@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/StreamingBenchmark.iml" filepath="$PROJECT_DIR$/.idea/StreamingBenchmark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StreamingBenchmark.iml" filepath="$PROJECT_DIR$/StreamingBenchmark.iml" />
       <module fileurl="file://$PROJECT_DIR$/consumer/consumer.iml" filepath="$PROJECT_DIR$/consumer/consumer.iml" />
       <module fileurl="file://$PROJECT_DIR$/utils/core.iml" filepath="$PROJECT_DIR$/utils/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/flink/flink.iml" filepath="$PROJECT_DIR$/flink/flink.iml" />
