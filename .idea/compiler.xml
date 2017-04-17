@@ -24,13 +24,15 @@
         <processorPath useClasspath="true" />
         <module name="consumer" />
         <module name="core" />
+        <module name="flink" />
         <module name="generator" />
         <module name="spark" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel>
       <module name="consumer" target="1.8" />
       <module name="core" target="1.8" />
+      <module name="flink" target="1.8" />
       <module name="generator" target="1.8" />
       <module name="spark" target="1.8" />
       <module name="StreamingBenchmark" target="1.8" />
