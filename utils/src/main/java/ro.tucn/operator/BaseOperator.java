@@ -9,6 +9,7 @@ abstract public class BaseOperator {
 
     protected int parallelism = -1;
     protected boolean iterativeEnabled = false;
+    protected boolean iterativeClosed = false;
 
     public BaseOperator(int parallelism) {
         this.setParallelism(parallelism);
