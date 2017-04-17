@@ -2,7 +2,6 @@ package ro.tucn.generator;
 
 import org.apache.log4j.Logger;
 import ro.tucn.generator.workloadGenerators.*;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.util.Topics;
 
 /**
@@ -12,7 +11,7 @@ public class StreamGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    public void run(String[] args) throws Exception {
+    public void run(String[] args) {
         int SLEEP_FREQUENCY = 0;
         try {
             SLEEP_FREQUENCY = Integer.parseInt(args[1]);

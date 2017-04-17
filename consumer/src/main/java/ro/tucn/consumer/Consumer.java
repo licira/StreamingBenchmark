@@ -5,11 +5,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.util.ConfigReader;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -19,8 +17,8 @@ import java.util.Properties;
  */
 public class Consumer {
 
-    private static String topic;
     private static final Logger logger = Logger.getLogger(Consumer.class.getSimpleName());
+    private static String topic;
     private ConfigReader configReader = new ConfigReader();
     private Properties properties;
     private KafkaConsumer<String, String> consumer;
@@ -90,7 +88,12 @@ public class Consumer {
     }
 
     private void initialzeBootstrapServersData() {
-        Properties properties = configReader.tryGetPropertiesFromResourcesFile("DefaultBroker.properties");
+        Properties properties = null;
+        try {
+            properties = configReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
         bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
     }

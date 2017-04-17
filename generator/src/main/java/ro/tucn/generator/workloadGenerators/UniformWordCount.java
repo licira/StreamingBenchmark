@@ -4,8 +4,6 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
-import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
@@ -30,7 +28,7 @@ public class UniformWordCount extends Generator {
         initializeWorkloadData();
     }
 
-    public void generate(int sleepFrequency) throws InterruptedException {
+    public void generate(int sleepFrequency) {
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
 
         initializePerformanceLogWithCurrentTime();
@@ -57,6 +55,7 @@ public class UniformWordCount extends Generator {
         performanceLog.logTotalThroughputAndTotalLatency();
         producer.close();
     }
+
     /*
     public static void main(String[] args) throws InterruptedException {
         int SLEEP_FREQUENCY = -1;

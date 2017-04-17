@@ -8,20 +8,10 @@ import java.util.Properties;
  */
 public class ConfigReader {
 
-    public Properties tryGetPropertiesFromResourcesFile(String fileName) {
-        Properties properties = null;
-        try {
-            properties = getPropertiesFromResourcesFile(fileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-        return properties;
-    }
-
-    public Properties getPropertiesFromResourcesFile(String fileName) throws IOException {
+    public static Properties getPropertiesFromResourcesFile(String fileName) throws IOException {
         Properties properties = null;
         properties = new Properties();
-        properties.load(this.getClass().getClassLoader().getResourceAsStream(fileName));
+        properties.load(ConfigReader.class.getClassLoader().getResourceAsStream(fileName));
         return properties;
     }
 }

@@ -7,10 +7,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.kMeans.Point;
-import ro.tucn.statistics.PerformanceLog;
-import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
 
@@ -37,14 +34,14 @@ public class KMeansPoints extends Generator {
     private double[] means; // origin point
     private double[][] covariances;
 
-    public KMeansPoints() throws Exception {
+    public KMeansPoints() {
         super();
         producer = createSmallBufferProducer();
         TOPIC = Topics.K_MEANS;
         initializeWorkloadData();
     }
 
-    public void generate(int sleepFrequency) throws InterruptedException {
+    public void generate(int sleepFrequency) {
         //ro.tucn.logger.info(" generating...");
         generateCentroids();
         centroids = loadCentroids();
@@ -160,6 +157,7 @@ public class KMeansPoints extends Generator {
             }
         }
     }
+
     /*
     private void generateInitCentroids() {
         centroids = loadCentroids();

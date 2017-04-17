@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.ConfigReader;
 
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -23,11 +24,15 @@ public abstract class Generator {
     protected String TOPIC;
 
     public Generator() {
-        initializeProperties();
+        try {
+            properties = ConfigReader.getPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         initialzeBootstrapServersData();
     }
 
-    abstract public void generate(int sleepFrequency) throws InterruptedException;
+    abstract public void generate(int sleepFrequency);
 
     abstract protected void initializeWorkloadData();
 
@@ -92,16 +97,25 @@ public abstract class Generator {
     }
 
     private void initialzeBootstrapServersData() {
-        Properties properties = configReader.tryGetPropertiesFromResourcesFile("DefaultBroker.properties");
+        Properties properties = null;
+        try {
+            properties = configReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
         bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
     }
 
     private void initializeProperties() {
-        properties = configReader.tryGetPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
+        try {
+            properties = configReader.getPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private KafkaProducer<String,String> createKafkaProducerWithProperties(Properties props) {
+    private KafkaProducer<String, String> createKafkaProducerWithProperties(Properties props) {
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
         return producer;
     }
