@@ -37,7 +37,7 @@ public class AdvClick extends Generator {
         initializeWorkloadData();
     }
 
-    public void generate(int sleepFrequency) throws InterruptedException {
+    public void generate(int sleepFrequency) {
         // Obtain a cached thread pool
         ExecutorService cachedPool = Executors.newCachedThreadPool();
 
