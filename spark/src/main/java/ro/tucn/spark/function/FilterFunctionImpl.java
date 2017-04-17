@@ -9,13 +9,13 @@ import ro.tucn.frame.functions.FilterFunction;
 public class FilterFunctionImpl<T> implements Function<T, Boolean> {
 
     private static final long serialVersionUID = -6809290167835550952L;
-    private FilterFunction<T> fun;
+    private FilterFunction<T> function;
 
     public FilterFunctionImpl(FilterFunction<T> function) {
-        fun = function;
+        this.function = function;
     }
 
     public Boolean call(T t) throws Exception {
-        return fun.filter(t);
+        return function.filter(t);
     }
 }

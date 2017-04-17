@@ -8,13 +8,13 @@ import ro.tucn.frame.functions.FlatMapFunction;
  */
 public class FlatMapValuesFunctionImpl<V, R> implements Function<V, Iterable<R>> {
 
-    private FlatMapFunction<V, R> fun;
+    private FlatMapFunction<V, R> function;
 
     public FlatMapValuesFunctionImpl(FlatMapFunction<V, R> function) {
-        this.fun = function;
+        this.function = function;
     }
 
     public Iterable<R> call(V v) throws Exception {
-        return (Iterable<R>) fun.flatMap(v);
+        return (Iterable<R>) function.flatMap(v);
     }
 }

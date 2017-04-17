@@ -11,13 +11,14 @@ import ro.tucn.frame.functions.ReduceFunction;
 public class ReduceFunctionImpl<T> implements Function2<T, T, T> {
 
     private static Logger logger = Logger.getLogger(ReduceFunctionImpl.class.getSimpleName());
-    private ReduceFunction<T> fun;
+
+    private ReduceFunction<T> function;
 
     public ReduceFunctionImpl(ReduceFunction<T> function) {
-        fun = function;
+        function = function;
     }
 
     public T call(T t1, T t2) throws Exception {
-        return fun.reduce(t1, t2);
+        return function.reduce(t1, t2);
     }
 }

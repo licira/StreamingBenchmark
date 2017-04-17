@@ -11,13 +11,13 @@ import java.util.Iterator;
  */
 public class MapPartitionFunctionImpl<T, R> implements FlatMapFunction<Iterator<T>, R> {
 
-    private MapPartitionFunction<T, R> fun;
+    private MapPartitionFunction<T, R> function;
 
     public MapPartitionFunctionImpl(MapPartitionFunction<T, R> function) {
-        fun = function;
+        this.function = function;
     }
 
     public Iterator<R> call(Iterator<T> tIterator) throws Exception {
-        return (Iterator<R>) fun.mapPartition(Utils.iterable(tIterator));
+        return (Iterator<R>) function.mapPartition(Utils.iterable(tIterator));
     }
 }

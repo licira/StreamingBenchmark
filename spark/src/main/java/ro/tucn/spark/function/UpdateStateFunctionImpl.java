@@ -16,10 +16,10 @@ public class UpdateStateFunctionImpl<V> implements Function2<List<V>, Optional<V
     private static final long serialVersionUID = -7713561370480802413L;
     private static Logger logger = Logger.getLogger(ReduceFunctionImpl.class.getSimpleName());
 
-    private ReduceFunction<V> fun;
+    private ReduceFunction<V> function;
 
     public UpdateStateFunctionImpl(ReduceFunction<V> function) {
-        this.fun = function;
+        this.function = function;
     }
 
     public Optional<V> call(List<V> values, Optional<V> vOptional) throws Exception {
@@ -28,7 +28,7 @@ public class UpdateStateFunctionImpl<V> implements Function2<List<V>, Optional<V
             if (null == reducedValue) {
                 reducedValue = value;
             } else {
-                reducedValue = fun.reduce(reducedValue, value);
+                reducedValue = function.reduce(reducedValue, value);
             }
         }
         if (null != reducedValue)

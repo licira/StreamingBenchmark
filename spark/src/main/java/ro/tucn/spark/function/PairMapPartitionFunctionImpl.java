@@ -12,13 +12,13 @@ import java.util.Iterator;
  */
 public class PairMapPartitionFunctionImpl<K, V, R> implements PairFlatMapFunction<Iterator<Tuple2<K, V>>, K, R> {
 
-    private MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun;
+    private MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> function;
 
     public PairMapPartitionFunctionImpl(MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> function) {
-        this.fun = function;
+        this.function = function;
     }
 
     public Iterator<Tuple2<K, R>> call(Iterator<Tuple2<K, V>> tuple2Iterator) throws Exception {
-        return (Iterator<Tuple2<K, R>>) fun.mapPartition(Utils.iterable(tuple2Iterator));
+        return (Iterator<Tuple2<K, R>>) function.mapPartition(Utils.iterable(tuple2Iterator));
     }
 }

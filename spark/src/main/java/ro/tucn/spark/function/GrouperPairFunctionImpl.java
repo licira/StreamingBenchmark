@@ -9,10 +9,10 @@ import scala.Tuple2;
  */
 public class GrouperPairFunctionImpl<K, V> implements PairFunction<Tuple2<K, Iterable<V>>, K, V> {
 
-    private ReduceFunction<V> fun;
+    private ReduceFunction<V> function;
 
     public GrouperPairFunctionImpl(ReduceFunction<V> function) {
-        this.fun = function;
+        this.function = function;
     }
 
     public Tuple2<K, V> call(Tuple2<K, Iterable<V>> kIterableTuple2) throws Exception {
@@ -21,7 +21,7 @@ public class GrouperPairFunctionImpl<K, V> implements PairFunction<Tuple2<K, Ite
             if (null == reducedV) {
                 reducedV = v;
             } else {
-                reducedV = fun.reduce(reducedV, v);
+                reducedV = function.reduce(reducedV, v);
             }
         }
         return new Tuple2(kIterableTuple2._1(), reducedV);

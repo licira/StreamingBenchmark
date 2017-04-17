@@ -10,12 +10,12 @@ import scala.Tuple2;
  */
 public class PairFunctionImpl<T, K, V> implements PairFunction<T, K, V> {
 
-    private MapPairFunction<T, K, V> fun;
+    private MapPairFunction<T, K, V> function;
     private ThroughputLog throughput;
     private boolean enableThroughput;
 
     public PairFunctionImpl(MapPairFunction<T, K, V> function) {
-        fun = function;
+        this.function = function;
     }
 
     public PairFunctionImpl(MapPairFunction<T, K, V> function, boolean enableThroughput) {
@@ -28,6 +28,6 @@ public class PairFunctionImpl<T, K, V> implements PairFunction<T, K, V> {
         if (enableThroughput) {
             throughput.execute();
         }
-        return fun.mapToPair(t);
+        return function.mapToPair(t);
     }
 }

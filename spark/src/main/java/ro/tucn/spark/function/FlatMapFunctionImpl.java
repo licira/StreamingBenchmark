@@ -9,13 +9,13 @@ import java.util.Iterator;
  */
 public class FlatMapFunctionImpl<T, R> implements org.apache.spark.api.java.function.FlatMapFunction<T, R> {
 
-    private FlatMapFunction<T, R> fun;
+    private FlatMapFunction<T, R> function;
 
     public FlatMapFunctionImpl(FlatMapFunction<T, R> function) {
-        this.fun = function;
+        this.function = function;
     }
 
     public Iterator<R> call(T t) throws Exception {
-        return fun.flatMap(t);
+        return function.flatMap(t);
     }
 }

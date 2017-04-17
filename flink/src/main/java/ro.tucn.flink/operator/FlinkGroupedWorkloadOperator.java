@@ -22,7 +22,7 @@ public class FlinkGroupedWorkloadOperator<K, V> extends GroupedWorkloadOperator<
 
     public FlinkPairWorkloadOperator<K, V> reduce(final ReduceFunction<V> fun, String componentId, int parallelism) {
 
-        DataStream<Tuple2<K, V>> newDataSet = this.groupedDataStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
+        DataStream<Tuple2<K, V>> newDataSet = groupedDataStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
         return new FlinkPairWorkloadOperator<>(newDataSet, parallelism);
     }

@@ -10,8 +10,8 @@ public class FunctionImpl<T, R> implements Function<T, R> {
 
     private MapFunction<T, R> function;
 
-    public FunctionImpl(MapFunction<T, R> fun) {
-        function = fun;
+    public FunctionImpl(MapFunction<T, R> function) {
+        this.function = function;
     }
 
     public R call(T t) throws Exception {
