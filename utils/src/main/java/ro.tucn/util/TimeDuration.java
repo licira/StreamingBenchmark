@@ -27,6 +27,22 @@ public class TimeDuration {
         this.length = timeLength;
     }
 
+    public static long getSeconds(TimeDuration durations) {
+        long seconds = 0L;
+        switch (durations.getUnit()) {
+            case MILLISECONDS:
+                seconds = durations.getLength() / 1000L;
+                break;
+            case SECONDS:
+                seconds = durations.getLength();
+                break;
+            case MINUTES:
+                seconds = durations.getLength() * 1000L;
+                break;
+        }
+        return seconds;
+    }
+
     public TimeUnit getUnit() {
         return unit;
     }

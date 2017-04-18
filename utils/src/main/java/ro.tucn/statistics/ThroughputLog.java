@@ -109,4 +109,8 @@ public class ThroughputLog implements Serializable {
     public void disablePrint() {
         printEnabled = false;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

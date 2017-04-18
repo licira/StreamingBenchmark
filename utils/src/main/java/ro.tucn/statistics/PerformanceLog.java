@@ -23,8 +23,22 @@ public class PerformanceLog {
     public static PerformanceLog getLogger(String name) {
         if (singleton == null) {
             singleton = new PerformanceLog(name);
+        } else {
+            singleton.setName(name);
         }
         return singleton;
+    }
+
+    public void info(String msg) {
+        logger.info(msg);
+    }
+
+    public void logThroughput() {
+        throughputLog.execute();
+    }
+
+    public <T> void logLatency(WithTime<T> withTime) {
+        latencyLog.execute(withTime);
     }
 
     public void logThroughputAndLatency(Long time) {
@@ -35,10 +49,6 @@ public class PerformanceLog {
     public void logThroughputAndLatencyWithTime(WithTime<?> value) {
         throughputLog.execute();
         latencyLog.execute(value);
-    }
-
-    public void info(String msg) {
-        logger.info(msg);
     }
 
     public void logTotalThroughputAndTotalLatency() {
@@ -66,5 +76,10 @@ public class PerformanceLog {
     public void disablePrint() {
         throughputLog.disablePrint();
         latencyLog.disablePrint();
+    }
+
+    public void setName(String name) {
+        throughputLog.setName(name);
+        latencyLog.setName(name);
     }
 }
