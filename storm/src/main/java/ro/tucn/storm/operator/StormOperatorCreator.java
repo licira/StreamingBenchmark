@@ -52,7 +52,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
 
     private void initializeProperties() {
         try {
-            properties = ConfigReader.getPropertiesFromResourcesFile("spark-cluster.properties");
+            properties = ConfigReader.getPropertiesFromResourcesFile("storm-cluster.properties");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
