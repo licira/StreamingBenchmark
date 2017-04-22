@@ -9,8 +9,7 @@ import java.util.Properties;
 public class ConfigReader {
 
     public static Properties getPropertiesFromResourcesFile(String fileName) throws IOException {
-        Properties properties = null;
-        properties = new Properties();
+        Properties properties = new Properties();
         properties.load(ConfigReader.class.getClassLoader().getResourceAsStream(fileName));
         return properties;
     }
