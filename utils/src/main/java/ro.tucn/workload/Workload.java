@@ -1,7 +1,6 @@
 package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.or.ThreadGroupRenderer;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
