@@ -16,23 +16,25 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String[] args) throws IOException, WorkloadException {
-        OperatorCreator operatorCreator;
-        Workload workload = null;
-        if (args[0].equalsIgnoreCase(Topics.ADV)) {
-            operatorCreator = new FlinkOperatorCreator(Topics.ADV);
-            workload = new AdvClick(operatorCreator);
-        } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-            operatorCreator = new FlinkOperatorCreator(Topics.K_MEANS);
-            workload = new KMeans(operatorCreator);
-        } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
-            operatorCreator = new FlinkOperatorCreator(Topics.UNIFORM_WORDS);
-            workload = new AdvClick(operatorCreator);
-        } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
-            operatorCreator = new FlinkOperatorCreator(Topics.SKEWED_WORDS);
-            workload = new AdvClick(operatorCreator);
-        } else {
-            return;
+        if (args.length > 0) {
+            OperatorCreator operatorCreator;
+            Workload workload = null;
+            if (args[0].equalsIgnoreCase(Topics.ADV)) {
+                operatorCreator = new FlinkOperatorCreator(Topics.ADV);
+                workload = new AdvClick(operatorCreator);
+            } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
+                operatorCreator = new FlinkOperatorCreator(Topics.K_MEANS);
+                workload = new KMeans(operatorCreator);
+            } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
+                operatorCreator = new FlinkOperatorCreator(Topics.UNIFORM_WORDS);
+                workload = new AdvClick(operatorCreator);
+            } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
+                operatorCreator = new FlinkOperatorCreator(Topics.SKEWED_WORDS);
+                workload = new AdvClick(operatorCreator);
+            } else {
+                return;
+            }
+            workload.Start();
         }
-        workload.Start();
     }
 }
