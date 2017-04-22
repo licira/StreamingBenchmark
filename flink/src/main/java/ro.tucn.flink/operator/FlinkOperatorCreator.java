@@ -86,6 +86,6 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private void initializeProperties() throws IOException {
         properties = new Properties();
-        properties.load(this.getClass().getClassLoader().getResourceAsStream("spark-cluster.properties"));
+        properties.load(this.getClass().getClassLoader().getResourceAsStream("flink-cluster.properties"));
     }
 }
