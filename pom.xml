@@ -14,7 +14,7 @@
         <spark.version>2.1.0</spark.version>
         <spark-streaming-kafka.version>1.6.3</spark-streaming-kafka.version>
         <flink.version>0.10.2</flink.version>
-        <!--<flink-connector-kafka.version>1.2.0</flink-connector-kafka.version>-->
+        <storm.version>0.10.0</storm.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -24,7 +24,36 @@
         <module>consumer</module>
         <module>utils</module>
         <module>spark</module>
+        <module>storm</module>
         <module>flink</module>
     </modules>
+
+    <build>
+        <plugins>
+            <!--<plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>-->
+            <!--<plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerId>eclipse</compilerId>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <optimize>false</optimize>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-compiler-eclipse</artifactId>
+                        <version>2.5</version>
+                    </dependency>
+                </dependencies>
+            </plugin>-->
+        </plugins>
+    </build>
 
 </project>

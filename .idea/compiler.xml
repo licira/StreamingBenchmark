@@ -27,6 +27,7 @@
         <module name="flink" />
         <module name="generator" />
         <module name="spark" />
+        <module name="storm" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
