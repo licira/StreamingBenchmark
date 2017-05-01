@@ -22,8 +22,7 @@ public class Consumer {
     private ConfigReader configReader = new ConfigReader();
     private Properties properties;
     private KafkaConsumer<String, String> consumer;
-    private String bootstrapServersHost;
-    private String bootstrapServersPort;
+    private String bootstrapServerHost;
     private boolean seekToBeginning;
     private boolean assign;
 
@@ -56,7 +55,7 @@ public class Consumer {
 
     public Properties getDefaultConsumerProperties() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", bootstrapServersHost + ":" + bootstrapServersPort);
+        props.put("bootstrap.servers", bootstrapServerHost);
         props.put("group.id", "test");
         //props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
@@ -94,7 +93,6 @@ public class Consumer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
-        bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
+        bootstrapServerHost = properties.getProperty("bootstrap.servers.host");
     }
 }
