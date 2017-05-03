@@ -92,17 +92,19 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
 
     @Override
     public <K, V> PairWorkloadOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
-        /*DataStream<Tuple2<K, V>> newDataStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>() {
+        DataStream<Tuple2<K, V>> newDataStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>() {
             public Tuple2<K, V> map(T t) throws Exception {
                 scala.Tuple2<K, V> tuple2 = fun.mapToPair(t);
                 return new Tuple2<>(tuple2._1(), tuple2._2());
             }
-        });*/
+        });
+        /*
         TypeInformation<Tuple2<K, V>> returnType = TypeExtractor.createTypeInfo(MapFunction.class, fun.getClass(), 1, null, null);
         DataStream<Tuple2<K, V>> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>) t -> {
             Tuple2<K, V> tuple2 = fun.mapToPair(t);
             return new Tuple2<>(tuple2._1(), tuple2._2());
         }).returns(returnType);
+        */
         /*
         TypeInformation<Tuple2<K, V>> returnType = TypeExtractor.createTypeInfo(MapFunction.class, fun.getClass(), 1, null, null);
         DataStream<Tuple2<K, V>> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>) t -> {

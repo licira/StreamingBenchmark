@@ -26,6 +26,7 @@
         <module name="core" />
         <module name="flink" />
         <module name="generator" />
+        <module name="kafka.starter" />
         <module name="spark" />
         <module name="storm" />
       </profile>
@@ -35,6 +36,8 @@
       <module name="core" target="1.8" />
       <module name="flink" target="1.8" />
       <module name="generator" target="1.8" />
+      <module name="kafka" target="1.8" />
+      <module name="kafka.starter" target="1.8" />
       <module name="spark" target="1.8" />
       <module name="storm" target="1.8" />
       <module name="StreamingBenchmark" target="1.8" />

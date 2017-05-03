@@ -26,6 +26,7 @@
         <module>spark</module>
         <module>storm</module>
         <module>flink</module>
+        <module>kafka.starter</module>
     </modules>
 
     <build>
