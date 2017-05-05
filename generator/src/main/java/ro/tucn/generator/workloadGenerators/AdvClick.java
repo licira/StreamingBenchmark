@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class AdvClick extends Generator {
 
     private RandomDataGenerator generator;
+    private ExecutorService cachedPool;
 
     private static String ADV_TOPIC = Topics.ADV;
     private static String CLICK_TOPIC = Topics.CLICK;
@@ -30,10 +31,6 @@ public class AdvClick extends Generator {
 
     @Override
     public void generate(int sleepFrequency) {
-        // Obtain a cached thread pool
-        ExecutorService cachedPool = Executors.newCachedThreadPool();
-        // sub thread use variable in main thread
-        // for loop to generate advertisement
         ArrayList<Advertisement> advList = new ArrayList();
 
         initializePerformanceLogWithCurrentTime();
@@ -41,8 +38,8 @@ public class AdvClick extends Generator {
         for (long i = 0; i < ADV_NUM; ++i) {
             // advertisement id
             String advId = UUID.randomUUID().toString();
-            long timestamp = System.nanoTime();
 
+            long timestamp = System.nanoTime();
             send(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId));
 
             // whether customer clicked this advertisement
@@ -78,6 +75,14 @@ public class AdvClick extends Generator {
         initializeSmallBufferProducer();
         initializeWorkloadData();
         initializeDataGenerators();
+        initializeExecutorService();
+    }
+
+    private void initializeExecutorService() {
+        // Obtain a cached thread pool
+        ExecutorService cachedPool = Executors.newCachedThreadPool();
+        // sub thread use variable in main thread
+        // for loop to generate advertisement
     }
 
     @Override

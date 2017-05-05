@@ -41,15 +41,19 @@ public class SkewedWordCount extends Generator {
                 messageBuilder.append(Utils.intToString(number)).append(" ");
             }
 
-            // Add timestamp
-            messageBuilder.append(Constants.TimeSeparator).append(System.nanoTime());
+            long timestamp = System.nanoTime();
+            messageBuilder.append(Constants.TimeSeparator).append(timestamp);
 
             send(TOPIC, null, messageBuilder.toString());
 
             performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
-                //Thread.sleep(1);
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         performanceLog.logTotalThroughputAndTotalLatency();

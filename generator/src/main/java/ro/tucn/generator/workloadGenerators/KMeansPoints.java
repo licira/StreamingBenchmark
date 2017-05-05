@@ -76,7 +76,6 @@ public class KMeansPoints extends Generator {
 
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     private void generateCentroids() {
-        //ro.tucn.logger.info(" generating centroids...");
         Random random = new Random(10000L);
         List<Point> centroids = new ArrayList<Point>();
         for (int i = 0; i < centroidsNum; ) {
@@ -123,7 +122,6 @@ public class KMeansPoints extends Generator {
     }
 
     private List<Point> loadCentroids() {
-        //ro.tucn.logger.info(" loading centroids...");
         List<Point> centroids = new ArrayList<Point>();
         BufferedReader br = null;
         InputStream stream = null;

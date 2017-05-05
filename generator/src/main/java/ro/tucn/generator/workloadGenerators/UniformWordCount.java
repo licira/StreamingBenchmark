@@ -29,6 +29,12 @@ public class UniformWordCount extends Generator {
     public void generate(int sleepFrequency) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
+        generateData(sleepFrequency);
+        performanceLog.logTotalThroughputAndTotalLatency();
+        producer.close();
+    }
+
+    private void generateData(int sleepFrequency) {
         // for loop to generate message
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
@@ -38,19 +44,21 @@ public class UniformWordCount extends Generator {
                 messageBuilder.append(Utils.intToString(number)).append(" ");
             }
 
-            // Add timestamp
-            messageBuilder.append(Constants.TimeSeparator).append(System.nanoTime());
+            long timestamp = System.nanoTime();
+            messageBuilder.append(Constants.TimeSeparator).append(timestamp);
 
             send(TOPIC, null, messageBuilder.toString());
 
             performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
-                //Thread.sleep(1);
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage());
+                }
             }
         }
-        performanceLog.logTotalThroughputAndTotalLatency();
-        producer.close();
     }
 
     @Override
