@@ -31,32 +31,9 @@ public class AdvClick extends Generator {
 
     @Override
     public void generate(int sleepFrequency) {
-        ArrayList<Advertisement> advList = new ArrayList();
-
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        for (long i = 0; i < ADV_NUM; ++i) {
-            // advertisement id
-            String advId = UUID.randomUUID().toString();
-
-            long timestamp = getNanoTime();
-            send(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId));
-
-            // whether customer clicked this advertisement
-            if (generator.nextUniform(0, 1) <= clickProbability) {
-                // long deltaT = (long)ro.tucn.generator.nextExponential(clickLambda) * 1000;
-                long deltaT = (long) generator.nextGaussian(clickLambda, 1) * 1000;
-                // System.out.println(deltaT);
-                advList.add(new Advertisement(advId, timestamp + deltaT));
-            }
-            if (i % 100 == 0) {
-                cachedPool.submit(new ClickThread(advList));
-                advList = new ArrayList();
-            }
-            performanceLog.logThroughputAndLatency(System.nanoTime());
-
-            temporizeDataGeneration(sleepFrequency, i);
-        }
+        generateData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
         cachedPool.shutdown();
         try {
@@ -65,6 +42,41 @@ public class AdvClick extends Generator {
             logger.info(e.getMessage());
         }
         producer.close();
+    }
+
+    private void submitNewClickThread(long i, ArrayList<Advertisement> advList) {
+        if (i % 100 == 0) {
+            cachedPool.submit(new ClickThread(advList));
+            advList = new ArrayList();
+        }
+    }
+
+    private void addToAdvList(ArrayList<Advertisement> advList, double probability, String advId, long timestamp) {
+        // whether customer clicked this advertisement
+        if (generator.nextUniform(0, 1) <= probability) {
+            // long deltaT = (long) generator.nextExponential(clickLambda) * 1000;
+            long deltaT = (long) generator.nextGaussian(clickLambda, 1) * 1000;
+            advList.add(new Advertisement(advId, timestamp + deltaT));
+        }
+    }
+
+    @Override
+    protected void generateData(int sleepFrequency) {
+        ArrayList<Advertisement> advList = new ArrayList();
+        for (long i = 0; i < ADV_NUM; ++i) {
+            String advId = UUID.randomUUID().toString();
+
+            long timestamp = getNanoTime();
+            send(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId));
+
+            addToAdvList(advList, clickProbability, advId, timestamp);
+
+            submitNewClickThread(i, advList);
+
+            performanceLog.logThroughputAndLatency(getNanoTime());
+
+            temporizeDataGeneration(sleepFrequency, i);
+        }
     }
 
     @Override

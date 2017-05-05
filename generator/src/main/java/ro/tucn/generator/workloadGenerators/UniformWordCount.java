@@ -34,8 +34,8 @@ public class UniformWordCount extends Generator {
         producer.close();
     }
 
-    private void generateData(int sleepFrequency) {
-        // for loop to generate message
+    @Override
+    protected void generateData(int sleepFrequency) {
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
             StringBuilder messageBuilder = new StringBuilder();

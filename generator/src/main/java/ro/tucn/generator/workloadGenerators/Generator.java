@@ -38,8 +38,11 @@ public abstract class Generator {
 
     public abstract void generate(int sleepFrequency);
 
+    protected abstract void generateData(int sleepFrequency);
+
     protected void send(String topic, String key, String value) {
-        newRecord = new ProducerRecord<>(topic, null, System.nanoTime(), key, value);
+        long timestamp = getNanoTime();
+        newRecord = new ProducerRecord<>(topic, null, timestamp, key, value);
         producer.send(newRecord);
         logger.info("Timestamp: " + newRecord.timestamp() + "\tValue: " + newRecord.value());
     }

@@ -32,7 +32,13 @@ public class SkewedWordCount extends Generator {
     public void generate(int sleepFrequency) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        // for loop to generate message
+        generateData(sleepFrequency);
+        performanceLog.logTotalThroughputAndTotalLatency();
+        producer.close();
+    }
+
+    @Override
+    protected void generateData(int sleepFrequency) {
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
             StringBuilder messageBuilder = new StringBuilder();
@@ -50,8 +56,6 @@ public class SkewedWordCount extends Generator {
 
             temporizeDataGeneration(sleepFrequency, sentSentences);
         }
-        performanceLog.logTotalThroughputAndTotalLatency();
-        producer.close();
     }
 
     @Override

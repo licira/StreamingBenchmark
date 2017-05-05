@@ -44,30 +44,35 @@ public class KMeansPoints extends Generator {
     public void generate(int sleepFrequency) {
         generateCentroids();
         centroids = loadCentroids();
-
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
+        generateData(sleepFrequency);
+        performanceLog.logTotalThroughputAndTotalLatency();
+        producer.close();
+    }
+
+    @Override
+    protected void generateData(int sleepFrequency) {
         for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
             int centroidIndex = centroidRandom.nextInt(centroids.size());
             MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
-
-            double[] point = distribution.sample();
-            StringBuilder sb = new StringBuilder();
+            double[] points = distribution.sample();
+            StringBuilder messageBuilder = new StringBuilder();
             for (int i = 0; i < dimension - 1; i++) {
-                point[i] += centroids.get(centroidIndex).location[i];
-                sb.append(point[i]).append("\t");
+                points[i] += centroids.get(centroidIndex).location[i];
+                messageBuilder.append(points[i]).append(" ");
             }
-            point[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
-            sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(getNanoTime());
+            points[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
 
-            send(TOPIC, null, sb.toString());
+            long timestamp = getNanoTime();
+            messageBuilder.append(points[dimension - 1]).append(Constants.TimeSeparator).append(timestamp);
+
+            send(TOPIC, null, messageBuilder.toString());
 
             performanceLog.logThroughputAndLatency(getNanoTime());
 
             temporizeDataGeneration(sleepFrequency, generatedPoints);
         }
-        performanceLog.logTotalThroughputAndTotalLatency();
-        producer.close();
     }
 
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
