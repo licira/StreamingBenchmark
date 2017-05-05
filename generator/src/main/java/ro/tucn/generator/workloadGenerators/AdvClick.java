@@ -58,7 +58,7 @@ public class AdvClick extends Generator {
 
     private void initializeExecutorService() {
         // Obtain a cached thread pool
-        ExecutorService cachedPool = Executors.newCachedThreadPool();
+        cachedPool = Executors.newCachedThreadPool();
         // sub thread use variable in main thread
         // for loop to generate advertisement
     }
@@ -151,6 +151,13 @@ public class AdvClick extends Generator {
 
         @Override
         public void run() {
+                StringBuilder messageData = buildMessageData();
+                send(CLICK_TOPIC, null, messageData.toString());
+                // System.out.println("Clicked: " + adv.id);
+        }
+
+        private StringBuilder buildMessageData() {
+            StringBuilder messageData = new StringBuilder();
             for (Advertisement adv : advList) {
                 if (System.nanoTime() < adv.time) {
                     try {
@@ -159,9 +166,11 @@ public class AdvClick extends Generator {
                         logger.error(e.getMessage());
                     }
                 }
-                send(CLICK_TOPIC, adv.id, String.format("%d\t%s", System.nanoTime(), adv.id));
-                // System.out.println("Clicked: " + adv.id);
+                messageData.append(adv);
             }
+            long timeStamp = getNanoTime();
+            //messageData.append(timestamp).append("Constants.TimeSeparator").append(advId);
+            return messageData;
         }
     }
 }
