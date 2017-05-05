@@ -5,25 +5,25 @@ import ro.tucn.frame.functions.*;
 /**
  * Created by Liviu on 4/8/2017.
  */
-abstract public class WindowedWorkloadOperator<T> extends BaseOperator {
+public abstract class WindowedWorkloadOperator<T> extends BaseOperator {
 
     public WindowedWorkloadOperator(int parallelism) {
         super(parallelism);
     }
 
     // return WorkloadOperator<R>
-    abstract public <R> WorkloadOperator<R> mapPartition(MapPartitionFunction<T, R> fun, String componentId);
+    public abstract <R> WorkloadOperator<R> mapPartition(MapPartitionFunction<T, R> fun, String componentId);
 
     // return new WorkloadOperator<R>();
-    abstract public <R> WorkloadOperator<R> map(MapFunction<T, R> fun, String componentId);
+    public abstract <R> WorkloadOperator<R> map(MapFunction<T, R> fun, String componentId);
 
     // return new WorkloadOperator<T>();
-    abstract public WorkloadOperator<T> filter(FilterFunction<T> fun, String componentId);
+    public abstract WorkloadOperator<T> filter(FilterFunction<T> fun, String componentId);
 
     // return new WorkloadOperator<T>();
-    abstract public WorkloadOperator<T> reduce(ReduceFunction<T> fun, String componentId);
+    public abstract WorkloadOperator<T> reduce(ReduceFunction<T> fun, String componentId);
 
     // return new PairWorkloadOperator<K,V>
-    abstract public <K, V> PairWorkloadOperator<K, V> mapToPair(MapPairFunction<T, K, V> fun, String componentId);
+    public abstract <K, V> PairWorkloadOperator<K, V> mapToPair(MapPairFunction<T, K, V> fun, String componentId);
 
 }

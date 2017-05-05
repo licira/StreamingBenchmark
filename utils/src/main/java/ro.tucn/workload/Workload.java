@@ -52,12 +52,12 @@ public abstract class Workload implements Serializable {
             operatorCreator.Start();
         } catch (Exception e) {
             logger.error("WorkloadException caught when trying to run workload " + this.getClass().getSimpleName()
-                + ": " + e.getClass() + " " + e.getMessage());
+                    + ": " + e.getClass() + " " + e.getMessage());
         }
         logger.info("The end of workload: " + this.getClass().getSimpleName());
     }
 
-    abstract public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    public abstract void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
     protected WorkloadOperator<WithTime<String>> stringStreamWithTime(String componentId, String topicPropertyName) {
         return operatorCreator.stringStreamFromKafkaWithTime(properties, topicPropertyName, componentId, parallelism);

@@ -5,7 +5,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 /**
  * Created by Liviu on 4/8/2017.
  */
-abstract public class BaseOperator {
+public abstract class BaseOperator {
 
     protected int parallelism = -1;
     protected boolean iterativeEnabled = false;
@@ -27,7 +27,7 @@ abstract public class BaseOperator {
         this.iterativeEnabled = true;
     }
 
-    abstract public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException;
+    public abstract void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException;
 
-    abstract public void print();
+    public abstract void print();
 }

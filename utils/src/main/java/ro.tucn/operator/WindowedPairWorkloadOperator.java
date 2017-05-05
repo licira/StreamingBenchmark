@@ -9,7 +9,7 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/8/2017.
  */
-abstract public class WindowedPairWorkloadOperator<K, V> extends BaseOperator {
+public abstract class WindowedPairWorkloadOperator<K, V> extends BaseOperator {
 
     public WindowedPairWorkloadOperator(int parallelism) {
         super(parallelism);
@@ -20,7 +20,7 @@ abstract public class WindowedPairWorkloadOperator<K, V> extends BaseOperator {
      * @param componentId
      * @return PairWorkloadOperator<K, V>
      */
-    abstract public PairWorkloadOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId);
+    public abstract PairWorkloadOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId);
 
     /**
      * cumulate window stream
@@ -29,17 +29,17 @@ abstract public class WindowedPairWorkloadOperator<K, V> extends BaseOperator {
      * @param componentId
      * @return
      */
-    abstract public PairWorkloadOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId);
+    public abstract PairWorkloadOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId);
 
     // return WorkloadOperator<R>
-    abstract public <R> PairWorkloadOperator<K, R> mapPartition(MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun, String componentId);
+    public abstract <R> PairWorkloadOperator<K, R> mapPartition(MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun, String componentId);
 
     // return new WorkloadOperator<R>();
-    abstract public <R> PairWorkloadOperator<K, R> mapValue(MapFunction<Tuple2<K, V>, Tuple2<K, R>> fun, String componentId);
+    public abstract <R> PairWorkloadOperator<K, R> mapValue(MapFunction<Tuple2<K, V>, Tuple2<K, R>> fun, String componentId);
 
     // return new WorkloadOperator<T>();
-    abstract public PairWorkloadOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId);
+    public abstract PairWorkloadOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId);
 
-    abstract public PairWorkloadOperator<K, V> reduce(ReduceFunction<Tuple2<K, V>> fun, String componentId);
+    public abstract PairWorkloadOperator<K, V> reduce(ReduceFunction<Tuple2<K, V>> fun, String componentId);
 
 }
