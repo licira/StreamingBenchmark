@@ -5,6 +5,7 @@ import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.util.Topics;
 
@@ -136,8 +137,8 @@ public class KMeansPoints extends Generator {
         for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
             StringBuilder messageData = buildMessageData();
             send(TOPIC, null, messageData.toString());
-            performanceLog.logThroughputAndLatency(getNanoTime());
-            temporizeDataGeneration(sleepFrequency, generatedPoints);
+            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
+            TimeHelper.temporizeDataGeneration(sleepFrequency, generatedPoints);
         }
     }
 
@@ -154,7 +155,7 @@ public class KMeansPoints extends Generator {
         }
         points[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
         messageData.append(points[dimension - 1]);
-        long timestamp = getNanoTime();
+        long timestamp = TimeHelper.getNanoTime();
         //.append(Constants.TimeSeparator).append(timestamp);
         return messageData;
     }

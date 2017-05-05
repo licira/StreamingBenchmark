@@ -2,6 +2,7 @@ package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
@@ -38,8 +39,8 @@ public class UniformWordCount extends Generator {
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             StringBuilder messageData = buildMessageData();
             send(TOPIC, null, messageData.toString());
-            performanceLog.logThroughputAndLatency(getNanoTime());
-            temporizeDataGeneration(sleepFrequency, sentSentences);
+            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
+            TimeHelper.temporizeDataGeneration(sleepFrequency, sentSentences);
         }
     }
 
@@ -52,7 +53,7 @@ public class UniformWordCount extends Generator {
             messageData.append(Utils.intToString(value));
             messageData.append(" ");
         }
-        long timestamp = getNanoTime();
+        long timestamp = TimeHelper.getNanoTime();
         //messageData.append(Constants.TimeSeparator).append(timestamp);
         return messageData;
     }

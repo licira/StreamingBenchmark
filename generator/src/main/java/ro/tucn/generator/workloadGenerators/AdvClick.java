@@ -1,6 +1,7 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
@@ -79,15 +80,15 @@ public class AdvClick extends Generator {
             StringBuilder messageData = buildMessageData();
             send(ADV_TOPIC, null, messageData.toString());
             submitNewClickThread(i, advList);
-            performanceLog.logThroughputAndLatency(getNanoTime());
-            temporizeDataGeneration(sleepFrequency, i);
+            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
+            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
     }
 
     @Override
     protected StringBuilder buildMessageData() {
         String advId = UUID.randomUUID().toString();
-        long timestamp = getNanoTime();
+        long timestamp = TimeHelper.getNanoTime();
         addToAdvList(advList, clickProbability, advId, timestamp);
         StringBuilder messageData = new StringBuilder();
         messageData.append(advId);
@@ -168,7 +169,7 @@ public class AdvClick extends Generator {
                 }
                 messageData.append(adv);
             }
-            long timeStamp = getNanoTime();
+            long timeStamp = TimeHelper.getNanoTime();
             //messageData.append(timestamp).append("Constants.TimeSeparator").append(advId);
             return messageData;
         }
