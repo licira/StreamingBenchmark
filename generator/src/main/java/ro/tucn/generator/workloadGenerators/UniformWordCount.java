@@ -54,7 +54,7 @@ public class UniformWordCount extends Generator {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         initializeTopic();
         initializeSmallBufferProducer();
         initializeWorkloadData();

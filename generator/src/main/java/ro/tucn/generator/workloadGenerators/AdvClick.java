@@ -74,7 +74,7 @@ public class AdvClick extends Generator {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         initializeTopic();
         initializeSmallBufferProducer();
         initializeWorkloadData();
@@ -99,8 +99,8 @@ public class AdvClick extends Generator {
     }
 
     private static class Advertisement implements Comparable<Advertisement> {
-        String id;
-        long time;
+        private String id;
+        private long time;
 
         Advertisement(String id, long time) {
             this.id = id;

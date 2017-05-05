@@ -57,7 +57,7 @@ public class SkewedWordCount extends Generator {
     }
 
     @Override
-    public void initialize() {
+    protected void initialize() {
         initializeTopic();
         initializeSmallBufferProducer();
         initializeWorkloadData();
