@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
  */
 public class TimeHelper {
 
-    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    protected static final Logger logger = Logger.getLogger(TimeHelper.class.getSimpleName());
 
     public static void temporizeDataGeneration(int sleepFrequency, long step) {
         // control data generate speed
