@@ -44,28 +44,6 @@ public abstract class Generator {
         logger.info("Timestamp: " + newRecord.timestamp() + "\tValue: " + newRecord.value());
     }
 
-    public abstract void initialize();
-
-    protected abstract void initializeTopic();
-
-    protected void initializeSmallBufferProducer() {
-        producer = createSmallBufferProducer();
-    }
-
-    protected void initializeLargeBufferProducer() {
-        producer = createLargeBufferProducer();
-    }
-
-    protected abstract void initializeDataGenerators();
-
-    protected abstract void initializeWorkloadData();
-
-    protected void initializePerformanceLogWithCurrentTime() {
-        Long startTime = System.nanoTime();
-        performanceLog.setStartTime(startTime);
-        performanceLog.setPrevTime(startTime);
-    }
-
     private void initialzeBootstrapServersData() {
         Properties properties = null;
         try {
@@ -133,5 +111,27 @@ public abstract class Generator {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
 
         return props;
+    }
+
+    protected abstract void initialize();
+
+    protected abstract void initializeTopic();
+
+    protected void initializeSmallBufferProducer() {
+        producer = createSmallBufferProducer();
+    }
+
+    protected void initializeLargeBufferProducer() {
+        producer = createLargeBufferProducer();
+    }
+
+    protected abstract void initializeDataGenerators();
+
+    protected abstract void initializeWorkloadData();
+
+    protected void initializePerformanceLogWithCurrentTime() {
+        Long startTime = System.nanoTime();
+        performanceLog.setStartTime(startTime);
+        performanceLog.setPrevTime(startTime);
     }
 }
