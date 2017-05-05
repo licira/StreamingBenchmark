@@ -23,6 +23,7 @@ public class AdvClick extends Generator {
     private static long ADV_NUM = 10;
     private double clickLambda;
     private double clickProbability;
+    private ArrayList<Advertisement> advList;
 
     public AdvClick() {
         super();
@@ -35,12 +36,7 @@ public class AdvClick extends Generator {
         performanceLog.disablePrint();
         generateData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
-        cachedPool.shutdown();
-        try {
-            cachedPool.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.info(e.getMessage());
-        }
+        shutdownExecutorService();
         producer.close();
     }
 
@@ -60,23 +56,43 @@ public class AdvClick extends Generator {
         }
     }
 
+    private void initializeExecutorService() {
+        // Obtain a cached thread pool
+        ExecutorService cachedPool = Executors.newCachedThreadPool();
+        // sub thread use variable in main thread
+        // for loop to generate advertisement
+    }
+    
+    private void shutdownExecutorService() {
+        cachedPool.shutdown();
+        try {
+            cachedPool.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            logger.info(e.getMessage());
+        }
+    }
+
     @Override
     protected void generateData(int sleepFrequency) {
-        ArrayList<Advertisement> advList = new ArrayList();
+        advList = new ArrayList();
         for (long i = 0; i < ADV_NUM; ++i) {
-            String advId = UUID.randomUUID().toString();
-
-            long timestamp = getNanoTime();
-            send(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId));
-
-            addToAdvList(advList, clickProbability, advId, timestamp);
-
+            StringBuilder messageData = buildMessageData();
+            send(ADV_TOPIC, null, messageData.toString());
             submitNewClickThread(i, advList);
-
             performanceLog.logThroughputAndLatency(getNanoTime());
-
             temporizeDataGeneration(sleepFrequency, i);
         }
+    }
+
+    @Override
+    protected StringBuilder buildMessageData() {
+        String advId = UUID.randomUUID().toString();
+        long timestamp = getNanoTime();
+        addToAdvList(advList, clickProbability, advId, timestamp);
+        StringBuilder messageData = new StringBuilder();
+        messageData.append(advId);
+        //messageData.append(timestamp).append("Constants.TimeSeparator").append(advId);
+        return messageData;
     }
 
     @Override
@@ -86,13 +102,6 @@ public class AdvClick extends Generator {
         initializeWorkloadData();
         initializeDataGenerators();
         initializeExecutorService();
-    }
-
-    private void initializeExecutorService() {
-        // Obtain a cached thread pool
-        ExecutorService cachedPool = Executors.newCachedThreadPool();
-        // sub thread use variable in main thread
-        // for loop to generate advertisement
     }
 
     @Override

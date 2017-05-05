@@ -2,7 +2,6 @@ package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
-import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
@@ -37,22 +36,24 @@ public class UniformWordCount extends Generator {
     @Override
     protected void generateData(int sleepFrequency) {
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
-            double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
-            StringBuilder messageBuilder = new StringBuilder();
-            for (int l = 0; l < sentenceLength; ++l) {
-                int number = messageGenerator.nextInt(1, uniformSize);
-                messageBuilder.append(Utils.intToString(number)).append(" ");
-            }
-
-            long timestamp = getNanoTime();
-            messageBuilder.append(Constants.TimeSeparator).append(timestamp);
-
-            send(TOPIC, null, messageBuilder.toString());
-
+            StringBuilder messageData = buildMessageData();
+            send(TOPIC, null, messageData.toString());
             performanceLog.logThroughputAndLatency(getNanoTime());
-
             temporizeDataGeneration(sleepFrequency, sentSentences);
         }
+    }
+
+    @Override
+    protected StringBuilder buildMessageData() {
+        double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
+        StringBuilder messageData = new StringBuilder();
+        for (int l = 0; l < sentenceLength; ++l) {
+            int value = messageGenerator.nextInt(1, uniformSize);
+            messageData.append(Utils.intToString(value));
+        }
+        long timestamp = getNanoTime();
+        //messageData.append(Constants.TimeSeparator).append(timestamp);
+        return messageData;
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.kMeans.Point;
-import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
 
 import java.io.BufferedReader;
@@ -49,30 +48,6 @@ public class KMeansPoints extends Generator {
         generateData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
         producer.close();
-    }
-
-    @Override
-    protected void generateData(int sleepFrequency) {
-        for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
-            int centroidIndex = centroidRandom.nextInt(centroids.size());
-            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
-            double[] points = distribution.sample();
-            StringBuilder messageBuilder = new StringBuilder();
-            for (int i = 0; i < dimension - 1; i++) {
-                points[i] += centroids.get(centroidIndex).location[i];
-                messageBuilder.append(points[i]).append(" ");
-            }
-            points[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
-
-            long timestamp = getNanoTime();
-            messageBuilder.append(points[dimension - 1]).append(Constants.TimeSeparator).append(timestamp);
-
-            send(TOPIC, null, messageBuilder.toString());
-
-            performanceLog.logThroughputAndLatency(getNanoTime());
-
-            temporizeDataGeneration(sleepFrequency, generatedPoints);
-        }
     }
 
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
@@ -129,32 +104,57 @@ public class KMeansPoints extends Generator {
         try {
             String sCurrentLine;
             stream = KMeansPoints.class.getClassLoader().getResourceAsStream("centroids.txt");
-
             br = new BufferedReader(new InputStreamReader(stream));
             while ((sCurrentLine = br.readLine()) != null) {
                 String[] strs = sCurrentLine.split(",");
                 if (strs.length != dimension) {
-                    throw new DimensionMismatchException(strs.length, dimension);
+                    DimensionMismatchException e = new DimensionMismatchException(strs.length, dimension);
+                    logger.error(e.getMessage());
+                    throw e;
                 }
                 double[] position = new double[dimension];
                 for (int i = 0; i < dimension; i++) {
                     position[i] = Double.valueOf(strs[i]);
                 }
                 centroids.add(new Point(position));
-                //System.out.println(String.valueOf(x) + ", " + String.valueOf(y));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             try {
                 if (stream != null) stream.close();
                 if (br != null) br.close();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
             }
         }
-        //ro.tucn.logger.info(" done loading centroids...");
         return centroids;
+    }
+
+    @Override
+    protected void generateData(int sleepFrequency) {
+        for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
+            StringBuilder messageData = buildMessageData();
+            send(TOPIC, null, messageData.toString());
+            performanceLog.logThroughputAndLatency(getNanoTime());
+            temporizeDataGeneration(sleepFrequency, generatedPoints);
+        }
+    }
+
+    @Override
+    protected StringBuilder buildMessageData() {
+        MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
+        double[] points = distribution.sample();;
+        int centroidIndex = centroidRandom.nextInt(centroids.size());
+        StringBuilder messageData = new StringBuilder();
+        for (int i = 0; i < dimension - 1; i++) {
+            points[i] += centroids.get(centroidIndex).location[i];
+            messageData.append(points[i]);
+        }
+        points[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
+        long timestamp = getNanoTime();
+        //messageData.append(points[dimension - 1]).append(Constants.TimeSeparator).append(timestamp);
+        return messageData;
     }
 
     @Override

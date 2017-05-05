@@ -40,6 +40,16 @@ public abstract class Generator {
 
     protected abstract void generateData(int sleepFrequency);
 
+    protected abstract StringBuilder buildMessageData();
+
+    protected abstract void initialize();
+
+    protected abstract void initializeTopic();
+
+    protected abstract void initializeDataGenerators();
+
+    protected abstract void initializeWorkloadData();
+
     protected void send(String topic, String key, String value) {
         long timestamp = getNanoTime();
         newRecord = new ProducerRecord<>(topic, null, timestamp, key, value);
@@ -115,14 +125,6 @@ public abstract class Generator {
 
         return props;
     }
-
-    protected abstract void initialize();
-
-    protected abstract void initializeTopic();
-
-    protected abstract void initializeDataGenerators();
-
-    protected abstract void initializeWorkloadData();
 
     protected void initializeSmallBufferProducer() {
         producer = createSmallBufferProducer();
