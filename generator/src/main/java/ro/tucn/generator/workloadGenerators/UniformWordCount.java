@@ -50,6 +50,7 @@ public class UniformWordCount extends Generator {
         for (int l = 0; l < sentenceLength; ++l) {
             int value = messageGenerator.nextInt(1, uniformSize);
             messageData.append(Utils.intToString(value));
+            messageData.append(" ");
         }
         long timestamp = getNanoTime();
         //messageData.append(Constants.TimeSeparator).append(timestamp);

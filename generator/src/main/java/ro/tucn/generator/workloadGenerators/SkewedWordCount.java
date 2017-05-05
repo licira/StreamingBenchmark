@@ -53,6 +53,7 @@ public class SkewedWordCount extends Generator {
         for (int l = 0; l < sentenceLength; ++l) {
             int value = zipfGenerator.next();
             messageData.append(Utils.intToString(value));
+            messageData.append(" ");
         }
         long timestamp = getNanoTime();
         //messageData.append(Constants.TimeSeparator).append(timestamp);

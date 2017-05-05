@@ -144,16 +144,18 @@ public class KMeansPoints extends Generator {
     @Override
     protected StringBuilder buildMessageData() {
         MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
-        double[] points = distribution.sample();;
+        double[] points = distribution.sample();
         int centroidIndex = centroidRandom.nextInt(centroids.size());
         StringBuilder messageData = new StringBuilder();
         for (int i = 0; i < dimension - 1; i++) {
             points[i] += centroids.get(centroidIndex).location[i];
             messageData.append(points[i]);
+            messageData.append(" ");
         }
         points[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
+        messageData.append(points[dimension - 1]);
         long timestamp = getNanoTime();
-        //messageData.append(points[dimension - 1]).append(Constants.TimeSeparator).append(timestamp);
+        //.append(Constants.TimeSeparator).append(timestamp);
         return messageData;
     }
 
