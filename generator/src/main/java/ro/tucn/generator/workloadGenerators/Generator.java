@@ -50,13 +50,6 @@ public abstract class Generator {
 
     protected abstract void initializeWorkloadData();
 
-    protected void send(String topic, String key, String value) {
-        long timestamp = getNanoTime();
-        newRecord = new ProducerRecord<>(topic, null, timestamp, key, value);
-        producer.send(newRecord);
-        logger.info("Timestamp: " + newRecord.timestamp() + "\tValue: " + newRecord.value());
-    }
-
     private void initialzeBootstrapServersData() {
         Properties properties = null;
         try {
@@ -66,6 +59,13 @@ public abstract class Generator {
         }
         bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
         bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
+    }
+
+    protected void send(String topic, String key, String value) {
+        long timestamp = getNanoTime();
+        newRecord = new ProducerRecord<>(topic, null, timestamp, key, value);
+        producer.send(newRecord);
+        logger.info("Timestamp: " + newRecord.timestamp() + "\tValue: " + newRecord.value());
     }
 
     private KafkaProducer<String, String> createSmallBufferProducer() {
