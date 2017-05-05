@@ -30,7 +30,7 @@ public class WordCount extends Workload {
                             .reduceByKey(UserFunctions.sumReduceWithTime, "sum")
                             .updateStateByKey(UserFunctions.sumReduceWithTime, "accumulate");
             counts.sink();
-            //counts.print();
+            counts.print();
         } catch (Exception e) {
             logger.error(e.getMessage());
             e.printStackTrace();

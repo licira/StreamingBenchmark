@@ -46,7 +46,7 @@ public class KMeans extends Workload {
             points.closeWith(centroids, true);
             centroids.sink();
             //assignedPoints.print();
-            //points.print();
+            points.print();
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

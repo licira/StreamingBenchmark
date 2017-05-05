@@ -30,6 +30,7 @@ public class WordCountFast extends Workload {
                             .reduceByKey(UserFunctions.sumReduceWithTime, "sum")
                             .updateStateByKey(UserFunctions.sumReduceWithTime, "accumulate");
             counts.sink();
+            counts.print();
         } catch (Exception e) {
             logger.error(e.getMessage());
             e.printStackTrace();
