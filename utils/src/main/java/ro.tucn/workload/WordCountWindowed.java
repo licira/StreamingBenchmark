@@ -37,7 +37,7 @@ public class WordCountWindowed extends Workload {
                                     new TimeDuration(TimeUnit.SECONDS, 1), new TimeDuration(TimeUnit.SECONDS, 1));
             counts.sink();
             //cumulate counts
-            //PairWorkloadOperator<String, Integer> cumulateCounts =counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
+            //PairWorkloadOperator<String, Integer> cumulateCounts = counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
             //cumulateCounts.print();
         } catch (Exception e) {
             logger.error(e.getMessage());
