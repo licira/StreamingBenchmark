@@ -74,45 +74,6 @@ public class KMeansPoints extends Generator {
         producer.close();
     }
 
-    @Override
-    protected void initialize() {
-        initializeTopic();
-        initializeSmallBufferProducer();
-        initializeWorkloadData();
-        initializeDataGenerators();
-    }
-
-    @Override
-    protected void initializeTopic() {
-        TOPIC = Topics.K_MEANS;
-    }
-
-    @Override
-    protected void initializeDataGenerators() {
-        centroidRandom = new Random(2342342170123L);
-        pointRandom = new JDKRandomGenerator();
-        pointRandom.setSeed(8624214);
-    }
-
-    @Override
-    protected void initializeWorkloadData() {
-        dimension = Integer.parseInt(properties.getProperty("point.dimension"));
-        centroidsNum = Integer.parseInt(properties.getProperty("centroids.number"));
-        distance = Double.parseDouble(properties.getProperty("centroids.distance"));
-        means = new double[dimension];
-        covariances = new double[dimension][dimension];
-        String covariancesStr = properties.getProperty("covariances");
-        String[] covariancesStrs = covariancesStr.split(",");
-        if (covariancesStrs.length != dimension * dimension) {
-            throw new RuntimeException("Incorrect covariances");
-        }
-        for (int i = 0; i < dimension; i++) {
-            means[i] = 0;
-            for (int j = 0; j < dimension; j++) {
-                covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
-            }
-        }
-    }
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     private void generateCentroids() {
         //ro.tucn.logger.info(" generating centroids...");
@@ -195,6 +156,46 @@ public class KMeansPoints extends Generator {
         }
         //ro.tucn.logger.info(" done loading centroids...");
         return centroids;
+    }
+
+    @Override
+    protected void initialize() {
+        initializeTopic();
+        initializeSmallBufferProducer();
+        initializeWorkloadData();
+        initializeDataGenerators();
+    }
+
+    @Override
+    protected void initializeTopic() {
+        TOPIC = Topics.K_MEANS;
+    }
+
+    @Override
+    protected void initializeDataGenerators() {
+        centroidRandom = new Random(2342342170123L);
+        pointRandom = new JDKRandomGenerator();
+        pointRandom.setSeed(8624214);
+    }
+
+    @Override
+    protected void initializeWorkloadData() {
+        dimension = Integer.parseInt(properties.getProperty("point.dimension"));
+        centroidsNum = Integer.parseInt(properties.getProperty("centroids.number"));
+        distance = Double.parseDouble(properties.getProperty("centroids.distance"));
+        means = new double[dimension];
+        covariances = new double[dimension][dimension];
+        String covariancesStr = properties.getProperty("covariances");
+        String[] covariancesStrs = covariancesStr.split(",");
+        if (covariancesStrs.length != dimension * dimension) {
+            throw new RuntimeException("Incorrect covariances");
+        }
+        for (int i = 0; i < dimension; i++) {
+            means[i] = 0;
+            for (int j = 0; j < dimension; j++) {
+                covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
+            }
+        }
     }
         /*
     private void generateInitCentroids() {
