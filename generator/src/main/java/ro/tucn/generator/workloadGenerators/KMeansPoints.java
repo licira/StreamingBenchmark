@@ -4,8 +4,6 @@ import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.kMeans.Point;
 import ro.tucn.util.Constants;
@@ -24,10 +22,13 @@ import java.util.Random;
  */
 public class KMeansPoints extends Generator {
 
-    private static KafkaProducer<String, String> producer;
-    private static long POINT_NUM = 1000;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-    public List<Point> centroids;
+
+    private Random centroidRandom;
+    private RandomGenerator pointRandom;
+
+    private static long POINT_NUM = 10;
+    private List<Point> centroids;
     private int dimension;
     private int centroidsNum;
     private double distance;
@@ -36,20 +37,16 @@ public class KMeansPoints extends Generator {
 
     public KMeansPoints() {
         super();
-        producer = createSmallBufferProducer();
-        TOPIC = Topics.K_MEANS;
-        initializeWorkloadData();
+        initialize();
     }
 
+    @Override
     public void generate(int sleepFrequency) {
-        //ro.tucn.logger.info(" generating...");
         generateCentroids();
         centroids = loadCentroids();
-        Random centroidRandom = new Random(2342342170123L);
-        RandomGenerator pointRandom = new JDKRandomGenerator();
-        pointRandom.setSeed(8624214);
 
         initializePerformanceLogWithCurrentTime();
+        performanceLog.disablePrint();
         for (long generatedPoints = 0; generatedPoints < POINT_NUM; generatedPoints++) {
             int centroidIndex = centroidRandom.nextInt(centroids.size());
             MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
@@ -63,8 +60,9 @@ public class KMeansPoints extends Generator {
             point[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
             sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(System.nanoTime());
 
-            ProducerRecord<String, String> newRecord = new ProducerRecord<String, String>(TOPIC, sb.toString());
-            producer.send(newRecord);
+            send(TOPIC, null, sb.toString());
+
+
             //System.out.println(sb.toString());
             performanceLog.logThroughputAndLatency(System.nanoTime());
             //control data generate speed
@@ -76,21 +74,45 @@ public class KMeansPoints extends Generator {
         producer.close();
     }
 
-    /*
-    public static void main(String[] args) throws Exception {
-        int SLEEP_FREQUENCY = -1;
-        if (args.length > 0) {
-            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
-        }
-
-        // Generate real centroids
-//        new KMeansPoints().GenerateCentroids();
-        // Generate initialize centroids
-//        new KMeansPoints().GenerateInitCentroids();
-        // Generate points
-        new KMeansPoints().generate(SLEEP_FREQUENCY);
+    @Override
+    public void initialize() {
+        initializeTopic();
+        initializeSmallBufferProducer();
+        initializeWorkloadData();
+        initializeDataGenerators();
     }
-    */
+
+    @Override
+    protected void initializeTopic() {
+        TOPIC = Topics.K_MEANS;
+    }
+
+    @Override
+    protected void initializeDataGenerators() {
+        centroidRandom = new Random(2342342170123L);
+        pointRandom = new JDKRandomGenerator();
+        pointRandom.setSeed(8624214);
+    }
+
+    @Override
+    protected void initializeWorkloadData() {
+        dimension = Integer.parseInt(properties.getProperty("point.dimension"));
+        centroidsNum = Integer.parseInt(properties.getProperty("centroids.number"));
+        distance = Double.parseDouble(properties.getProperty("centroids.distance"));
+        means = new double[dimension];
+        covariances = new double[dimension][dimension];
+        String covariancesStr = properties.getProperty("covariances");
+        String[] covariancesStrs = covariancesStr.split(",");
+        if (covariancesStrs.length != dimension * dimension) {
+            throw new RuntimeException("Incorrect covariances");
+        }
+        for (int i = 0; i < dimension; i++) {
+            means[i] = 0;
+            for (int j = 0; j < dimension; j++) {
+                covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
+            }
+        }
+    }
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     private void generateCentroids() {
         //ro.tucn.logger.info(" generating centroids...");
@@ -114,7 +136,7 @@ public class KMeansPoints extends Generator {
                 }
                 if (nearestP == null || nearestP.distanceSquaredTo(p) > Math.pow(distance, 2)) {
                     centroids.add(p);
-                    logger.info(p.positonString());
+                    //logger.info(p.positonString());
                     i++;
                 }
             }
@@ -139,48 +161,6 @@ public class KMeansPoints extends Generator {
 //        }
     }
 
-    protected void initializeWorkloadData() {
-        dimension = Integer.parseInt(properties.getProperty("point.dimension", "2"));
-        centroidsNum = Integer.parseInt(properties.getProperty("centroids.number", "96"));
-        distance = Double.parseDouble(properties.getProperty("centroids.distance", "9"));
-        means = new double[dimension];
-        covariances = new double[dimension][dimension];
-        String covariancesStr = properties.getProperty("covariances", "4,2,2,4");
-        String[] covariancesStrs = covariancesStr.split(",");
-        if (covariancesStrs.length != dimension * dimension) {
-            throw new RuntimeException("Incorrect covariances");
-        }
-        for (int i = 0; i < dimension; i++) {
-            means[i] = 0;
-            for (int j = 0; j < dimension; j++) {
-                covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
-            }
-        }
-    }
-
-    /*
-    private void generateInitCentroids() {
-        centroids = loadCentroids();
-        Random random = new Random(12397238947287L);
-        List<Point> initCentroids = new ArrayList<Point>();
-        RandomGenerator pointRandom = new JDKRandomGenerator();
-
-        for (Point centroid : centroids) {
-            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
-
-            double[] point = distribution.sample();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < dimension - 1; i++) {
-                point[i] += centroid.location[i];
-                sb.append(point[i]).append(", ");
-            }
-            point[dimension - 1] += centroid.location[dimension - 1];
-            sb.append(point[dimension - 1]);
-
-            ro.tucn.logger.info(sb.toString());
-        }
-    }
-    */
     private List<Point> loadCentroids() {
         //ro.tucn.logger.info(" loading centroids...");
         List<Point> centroids = new ArrayList<Point>();
@@ -216,4 +196,42 @@ public class KMeansPoints extends Generator {
         //ro.tucn.logger.info(" done loading centroids...");
         return centroids;
     }
+        /*
+    private void generateInitCentroids() {
+        centroids = loadCentroids();
+        Random random = new Random(12397238947287L);
+        List<Point> initCentroids = new ArrayList<Point>();
+        RandomGenerator pointRandom = new JDKRandomGenerator();
+
+        for (Point centroid : centroids) {
+            MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
+
+            double[] point = distribution.sample();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < dimension - 1; i++) {
+                point[i] += centroid.location[i];
+                sb.append(point[i]).append(", ");
+            }
+            point[dimension - 1] += centroid.location[dimension - 1];
+            sb.append(point[dimension - 1]);
+
+            ro.tucn.logger.info(sb.toString());
+        }
+    }
+    */
+        /*
+    public static void main(String[] args) throws Exception {
+        int SLEEP_FREQUENCY = -1;
+        if (args.length > 0) {
+            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
+        }
+
+        // Generate real centroids
+//        new KMeansPoints().GenerateCentroids();
+        // Generate initialize centroids
+//        new KMeansPoints().GenerateInitCentroids();
+        // Generate points
+        new KMeansPoints().generate(SLEEP_FREQUENCY);
+    }
+    */
 }

@@ -2,6 +2,7 @@ package ro.tucn.generator.workloadGenerators;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.ConfigReader;
@@ -14,10 +15,13 @@ import java.util.Properties;
  */
 public abstract class Generator {
 
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
     protected ConfigReader configReader = new ConfigReader();
+
+    protected static KafkaProducer<String, String> producer;
+    protected ProducerRecord<String, String> newRecord;
     protected Properties properties;
     protected String bootstrapServersHost;
     protected String bootstrapServersPort;
@@ -32,9 +36,29 @@ public abstract class Generator {
         initialzeBootstrapServersData();
     }
 
-    abstract public void generate(int sleepFrequency);
+    public abstract void generate(int sleepFrequency);
 
-    abstract protected void initializeWorkloadData();
+    protected void send(String topic, String key, String value) {
+        newRecord = new ProducerRecord<>(topic, null, System.nanoTime(), key, value);
+        producer.send(newRecord);
+        logger.info("Timestamp: " + newRecord.timestamp() + "\tValue: " + newRecord.value());
+    }
+
+    public abstract void initialize();
+
+    protected abstract void initializeTopic();
+
+    protected void initializeSmallBufferProducer() {
+        producer = createSmallBufferProducer();
+    }
+
+    protected void initializeLargeBufferProducer() {
+        producer = createLargeBufferProducer();
+    }
+
+    protected abstract void initializeDataGenerators();
+
+    protected abstract void initializeWorkloadData();
 
     protected void initializePerformanceLogWithCurrentTime() {
         Long startTime = System.nanoTime();
@@ -42,17 +66,32 @@ public abstract class Generator {
         performanceLog.setPrevTime(startTime);
     }
 
-    public KafkaProducer<String, String> createSmallBufferProducer() {
+    private void initialzeBootstrapServersData() {
+        Properties properties = null;
+        try {
+            properties = configReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
+        bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
+    }
+
+    private KafkaProducer<String, String> createSmallBufferProducer() {
         Properties props = getDefaultKafkaProducerProperties();
         return createKafkaProducerWithProperties(props);
     }
 
-    public KafkaProducer<String, String> createLargeBufferProducer() {
+    private KafkaProducer<String, String> createLargeBufferProducer() {
         Properties props = getLargeBufferKafkaProducerProperties();
         return createKafkaProducerWithProperties(props);
     }
 
-    public Properties getDefaultKafkaProducerProperties() {
+    private KafkaProducer<String, String> createKafkaProducerWithProperties(Properties props) {
+        return new KafkaProducer<String, String>(props);
+    }
+
+    private Properties getDefaultKafkaProducerProperties() {
         Properties props = new Properties();
         props.put("bootstrap.servers", bootstrapServersHost + ":" + bootstrapServersPort);
         props.put("group.id", "test");
@@ -68,7 +107,7 @@ public abstract class Generator {
         return props;
     }
 
-    public Properties getLargeBufferKafkaProducerProperties() {
+    private Properties getLargeBufferKafkaProducerProperties() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersHost + ":" + bootstrapServersPort);
         props.put("group.id", "test");
@@ -94,29 +133,5 @@ public abstract class Generator {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
 
         return props;
-    }
-
-    private void initialzeBootstrapServersData() {
-        Properties properties = null;
-        try {
-            properties = configReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        bootstrapServersHost = properties.getProperty("bootstrap.servers.host");
-        bootstrapServersPort = properties.getProperty("bootstrap.servers.port");
-    }
-
-    private void initializeProperties() {
-        try {
-            properties = configReader.getPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private KafkaProducer<String, String> createKafkaProducerWithProperties(Properties props) {
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
-        return producer;
     }
 }

@@ -1,8 +1,6 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Topics;
@@ -13,25 +11,24 @@ import ro.tucn.util.Utils;
  */
 public class UniformWordCount extends Generator {
 
-    private static final Logger logger = Logger.getLogger(UniformWordCount.class.getSimpleName());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private static KafkaProducer<String, String> producer;
-    private long SENTENCE_NUM = 1000;
+    private RandomDataGenerator messageGenerator;
+
+    private long SENTENCE_NUM = 10;
     private int uniformSize;
     private double mu;
     private double sigma;
 
     public UniformWordCount() {
         super();
-        producer = createLargeBufferProducer();
-        TOPIC = Topics.UNIFORM_WORDS;
-        initializeWorkloadData();
+        initialize();
     }
 
+    @Override
     public void generate(int sleepFrequency) {
-        RandomDataGenerator messageGenerator = new RandomDataGenerator();
-
         initializePerformanceLogWithCurrentTime();
+        performanceLog.disablePrint();
         // for loop to generate message
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
@@ -44,8 +41,8 @@ public class UniformWordCount extends Generator {
             // Add timestamp
             messageBuilder.append(Constants.TimeSeparator).append(System.nanoTime());
 
-            ProducerRecord<String, String> newRecord = new ProducerRecord<String, String>(TOPIC, messageBuilder.toString());
-            producer.send(newRecord);
+            send(TOPIC, null, messageBuilder.toString());
+
             performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
@@ -56,6 +53,30 @@ public class UniformWordCount extends Generator {
         producer.close();
     }
 
+    @Override
+    public void initialize() {
+        initializeTopic();
+        initializeSmallBufferProducer();
+        initializeWorkloadData();
+        initializeDataGenerators();
+    }
+
+    @Override
+    protected void initializeTopic() {
+        TOPIC = Topics.UNIFORM_WORDS;
+    }
+
+    @Override
+    protected void initializeDataGenerators() {
+        messageGenerator = new RandomDataGenerator();
+    }
+
+    @Override
+    protected void initializeWorkloadData() {
+        uniformSize = Integer.parseInt(this.properties.getProperty("uniform.size"));
+        mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
+        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
+    }
     /*
     public static void main(String[] args) throws InterruptedException {
         int SLEEP_FREQUENCY = -1;
@@ -65,9 +86,4 @@ public class UniformWordCount extends Generator {
         new UniformWordCount().generate(SLEEP_FREQUENCY);
     }
     */
-    protected void initializeWorkloadData() {
-        uniformSize = Integer.parseInt(this.properties.getProperty("uniform.size", "1000"));
-        mu = Double.parseDouble(this.properties.getProperty("sentence.mu", "10"));
-        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma", "1"));
-    }
 }

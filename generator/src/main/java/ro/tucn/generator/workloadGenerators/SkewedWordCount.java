@@ -1,8 +1,6 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.skewedWords.FastZipfGenerator;
 import ro.tucn.util.Constants;
@@ -14,10 +12,12 @@ import ro.tucn.util.Utils;
  */
 public class SkewedWordCount extends Generator {
 
-    private static final Logger logger = Logger.getLogger(SkewedWordCount.class.getSimpleName());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private static KafkaProducer<String, String> producer;
-    private long SENTENCE_NUM = 1000;
+    private RandomDataGenerator messageGenerator;
+    private FastZipfGenerator zipfGenerator;
+
+    private long SENTENCE_NUM = 10;
     private int zipfSize;
     private double zipfExponent;
     private double mu;
@@ -25,27 +25,13 @@ public class SkewedWordCount extends Generator {
 
     public SkewedWordCount() {
         super();
-        producer = createLargeBufferProducer();
-        TOPIC = Topics.SKEWED_WORDS;
-        initializeWorkloadData();
+        initialize();
     }
 
-    /*
-    public static void main(String[] args) throws InterruptedException {
-        int sleepFrequency = -1;
-        if (args.length > 0) {
-            sleepFrequency = Integer.parseInt(args[0]);
-        }
-        new SkewedWordCount().generate(sleepFrequency);
-    }
-    */
+    @Override
     public void generate(int sleepFrequency) {
-        RandomDataGenerator messageGenerator = new RandomDataGenerator();
-        long time = System.nanoTime();
-
-        FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
-
         initializePerformanceLogWithCurrentTime();
+        performanceLog.disablePrint();
         // for loop to generate message
         for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
             double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
@@ -58,8 +44,8 @@ public class SkewedWordCount extends Generator {
             // Add timestamp
             messageBuilder.append(Constants.TimeSeparator).append(System.nanoTime());
 
-            ProducerRecord<String, String> newRecord = new ProducerRecord<String, String>(TOPIC, messageBuilder.toString());
-            producer.send(newRecord);
+            send(TOPIC, null, messageBuilder.toString());
+
             performanceLog.logThroughputAndLatency(System.nanoTime());
             // control data generate speed
             if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
@@ -70,10 +56,39 @@ public class SkewedWordCount extends Generator {
         producer.close();
     }
 
-    protected void initializeWorkloadData() {
-        zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size", "1000"));
-        zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent", "1"));
-        mu = Double.parseDouble(this.properties.getProperty("sentence.mu", "10"));
-        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma", "1"));
+    @Override
+    public void initialize() {
+        initializeTopic();
+        initializeSmallBufferProducer();
+        initializeWorkloadData();
+        initializeDataGenerators();
     }
+
+    @Override
+    protected void initializeTopic() {
+        TOPIC = Topics.SKEWED_WORDS;
+    }
+
+    @Override
+    protected void initializeDataGenerators() {
+        messageGenerator = new RandomDataGenerator();
+        zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
+    }
+
+    @Override
+    protected void initializeWorkloadData() {
+        zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
+        zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));
+        mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
+        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
+    }
+    /*
+    public static void main(String[] args) throws InterruptedException {
+        int sleepFrequency = -1;
+        if (args.length > 0) {
+            sleepFrequency = Integer.parseInt(args[0]);
+        }
+        new SkewedWordCount().generate(sleepFrequency);
+    }
+    */
 }

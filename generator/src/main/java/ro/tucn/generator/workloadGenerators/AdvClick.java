@@ -1,13 +1,7 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
-import ro.tucn.logger.SerializableLogger;
-import ro.tucn.statistics.PerformanceLog;
-import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
@@ -22,39 +16,36 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Generator {
 
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    private RandomDataGenerator generator;
 
-    private static KafkaProducer<String, String> producer;
     private static String ADV_TOPIC = Topics.ADV;
     private static String CLICK_TOPIC = Topics.CLICK;
-    private static long ADV_NUM = 1000;
+    private static long ADV_NUM = 10;
     private double clickLambda;
     private double clickProbability;
 
     public AdvClick() {
         super();
-        producer = createSmallBufferProducer();
-        initializeWorkloadData();
+        initialize();
     }
 
+    @Override
     public void generate(int sleepFrequency) {
         // Obtain a cached thread pool
         ExecutorService cachedPool = Executors.newCachedThreadPool();
-
-        RandomDataGenerator generator = new RandomDataGenerator();
-        generator.reSeed(10000L);
         // sub thread use variable in main thread
         // for loop to generate advertisement
-
         ArrayList<Advertisement> advList = new ArrayList();
+
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
         for (long i = 0; i < ADV_NUM; ++i) {
             // advertisement id
             String advId = UUID.randomUUID().toString();
             long timestamp = System.nanoTime();
-            producer.send(new ProducerRecord<String, String>(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId)));
-            logger.info("Timestamp: " + timestamp + "\tAdvId: " + advId);
+
+            send(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId));
+
             // whether customer clicked this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
                 // long deltaT = (long)ro.tucn.generator.nextExponential(clickLambda) * 1000;
@@ -82,9 +73,29 @@ public class AdvClick extends Generator {
         producer.close();
     }
 
+    @Override
+    public void initialize() {
+        initializeTopic();
+        initializeSmallBufferProducer();
+        initializeWorkloadData();
+        initializeDataGenerators();
+    }
+
+    @Override
+    protected void initializeTopic() {
+        TOPIC = null;
+    }
+
+    @Override
+    protected void initializeDataGenerators() {
+        generator = new RandomDataGenerator();
+        generator.reSeed(10000L);
+    }
+
+    @Override
     protected void initializeWorkloadData() {
-        clickProbability = Double.parseDouble(properties.getProperty("click.probability", "0.3"));
-        clickLambda = Double.parseDouble(properties.getProperty("click.lambda", "10"));
+        clickProbability = Double.parseDouble(properties.getProperty("click.probability"));
+        clickLambda = Double.parseDouble(properties.getProperty("click.lambda"));
     }
 
     private static class Advertisement implements Comparable<Advertisement> {
@@ -96,7 +107,7 @@ public class AdvClick extends Generator {
             this.time = time;
         }
 
-        //@Override
+        @Override
         public int compareTo(Advertisement o) {
             if (this.time > o.time)
                 return 1;
@@ -115,7 +126,7 @@ public class AdvClick extends Generator {
             Collections.sort(this.advList);
         }
 
-        //@Override
+        @Override
         public void run() {
             for (Advertisement adv : advList) {
                 if (System.nanoTime() < adv.time) {
