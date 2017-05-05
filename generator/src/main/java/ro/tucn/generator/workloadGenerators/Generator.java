@@ -94,7 +94,7 @@ public abstract class Generator {
     private Properties getDefaultKafkaProducerProperties() {
         Properties props = new Properties();
         props.put("bootstrap.servers", bootstrapServersHost + ":" + bootstrapServersPort);
-        props.put("group.id", "test");
+        //props.put("group.id", "test");
         /*
         props.put("acks", "all");
         props.put("retries", 0);
@@ -110,7 +110,7 @@ public abstract class Generator {
     private Properties getLargeBufferKafkaProducerProperties() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersHost + ":" + bootstrapServersPort);
-        props.put("group.id", "test");
+        //props.put("group.id", "test");
 
         //props.put(ProducerConfig.RETRIES_CONFIG, "3");
         props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "100");
