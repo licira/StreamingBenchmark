@@ -1,7 +1,6 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
@@ -136,8 +135,7 @@ public class AdvClick extends Generator {
                         logger.error(e.getMessage());
                     }
                 }
-                producer.send(new ProducerRecord(CLICK_TOPIC, adv.id,
-                        String.format("%d\t%s", System.nanoTime(), adv.id)));
+                send(CLICK_TOPIC, adv.id, String.format("%d\t%s", System.nanoTime(), adv.id));
                 // System.out.println("Clicked: " + adv.id);
             }
         }
