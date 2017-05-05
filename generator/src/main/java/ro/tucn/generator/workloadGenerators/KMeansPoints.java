@@ -58,13 +58,13 @@ public class KMeansPoints extends Generator {
                 sb.append(point[i]).append("\t");
             }
             point[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
-            sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(System.nanoTime());
+            sb.append(point[dimension - 1]).append(Constants.TimeSeparator).append(getNanoTime());
 
             send(TOPIC, null, sb.toString());
 
 
             //System.out.println(sb.toString());
-            performanceLog.logThroughputAndLatency(System.nanoTime());
+            performanceLog.logThroughputAndLatency(getNanoTime());
             //control data generate speed
             if (sleepFrequency > 0 && generatedPoints % sleepFrequency == 0) {
                 //Thread.sleep(1);

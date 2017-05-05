@@ -134,4 +134,8 @@ public abstract class Generator {
         performanceLog.setStartTime(startTime);
         performanceLog.setPrevTime(startTime);
     }
+
+    protected long getNanoTime() {
+        return System.nanoTime();
+    }
 }

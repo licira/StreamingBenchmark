@@ -39,7 +39,7 @@ public class AdvClick extends Generator {
             // advertisement id
             String advId = UUID.randomUUID().toString();
 
-            long timestamp = System.nanoTime();
+            long timestamp = getNanoTime();
             send(ADV_TOPIC, advId, String.format("%d\t%s", timestamp, advId));
 
             // whether customer clicked this advertisement
