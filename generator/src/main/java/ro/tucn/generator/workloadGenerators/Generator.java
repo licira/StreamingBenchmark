@@ -117,6 +117,10 @@ public abstract class Generator {
 
     protected abstract void initializeTopic();
 
+    protected abstract void initializeDataGenerators();
+
+    protected abstract void initializeWorkloadData();
+
     protected void initializeSmallBufferProducer() {
         producer = createSmallBufferProducer();
     }
@@ -125,14 +129,21 @@ public abstract class Generator {
         producer = createLargeBufferProducer();
     }
 
-    protected abstract void initializeDataGenerators();
-
-    protected abstract void initializeWorkloadData();
-
     protected void initializePerformanceLogWithCurrentTime() {
         Long startTime = System.nanoTime();
         performanceLog.setStartTime(startTime);
         performanceLog.setPrevTime(startTime);
+    }
+
+    protected void temporizeDataGeneration(int sleepFrequency, long step) {
+        // control data generate speed
+        if (sleepFrequency > 0 && step % sleepFrequency == 0) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+        }
     }
 
     protected long getNanoTime() {

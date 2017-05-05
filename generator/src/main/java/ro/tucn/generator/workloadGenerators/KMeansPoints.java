@@ -62,13 +62,9 @@ public class KMeansPoints extends Generator {
 
             send(TOPIC, null, sb.toString());
 
-
-            //System.out.println(sb.toString());
             performanceLog.logThroughputAndLatency(getNanoTime());
-            //control data generate speed
-            if (sleepFrequency > 0 && generatedPoints % sleepFrequency == 0) {
-                //Thread.sleep(1);
-            }
+
+            temporizeDataGeneration(sleepFrequency, generatedPoints);
         }
         performanceLog.logTotalThroughputAndTotalLatency();
         producer.close();

@@ -54,10 +54,8 @@ public class AdvClick extends Generator {
                 advList = new ArrayList();
             }
             performanceLog.logThroughputAndLatency(System.nanoTime());
-            // control data generate speed
-            if (sleepFrequency > 0 && i % sleepFrequency == 0) {
-                //Thread.sleep(1);
-            }
+
+            temporizeDataGeneration(sleepFrequency, i);
         }
         performanceLog.logTotalThroughputAndTotalLatency();
         cachedPool.shutdown();

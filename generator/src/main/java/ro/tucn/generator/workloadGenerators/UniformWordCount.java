@@ -50,14 +50,8 @@ public class UniformWordCount extends Generator {
             send(TOPIC, null, messageBuilder.toString());
 
             performanceLog.logThroughputAndLatency(getNanoTime());
-            // control data generate speed
-            if (sleepFrequency > 0 && sentSentences % sleepFrequency == 0) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage());
-                }
-            }
+
+            temporizeDataGeneration(sleepFrequency, sentSentences);
         }
     }
 
