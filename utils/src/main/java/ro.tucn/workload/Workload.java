@@ -24,6 +24,8 @@ public abstract class Workload implements Serializable {
     protected int parallelism;
     private OperatorCreator operatorCreator;
 
+    public abstract void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+
     public Workload(OperatorCreator operatorCreator) throws WorkloadException {
         this.operatorCreator = operatorCreator;
         Configuration.LoadConfigure();
@@ -57,7 +59,9 @@ public abstract class Workload implements Serializable {
         logger.info("The end of workload: " + this.getClass().getSimpleName());
     }
 
-    public abstract void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    protected Operator<String> getStringStreamOperator(String componentId, String topicPropertyName) {
+        return operatorCreator.stringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+    }
 
     protected Operator<WithTime<String>> getStringStreamWithTimeOperator(String componentId, String topicPropertyName) {
         return operatorCreator.stringStreamFromKafkaWithTime(properties, topicPropertyName, componentId, parallelism);
@@ -65,9 +69,5 @@ public abstract class Workload implements Serializable {
 
     protected Operator<Point> getPointStreamOperator(String componentId, String topicPropertyName) {
         return operatorCreator.pointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
-    }
-
-    protected Operator<String> getStringStreamOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.stringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 }
