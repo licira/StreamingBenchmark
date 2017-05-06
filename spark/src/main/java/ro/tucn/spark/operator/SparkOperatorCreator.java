@@ -1,6 +1,7 @@
 package ro.tucn.spark.operator;
 
 import kafka.serializer.StringDecoder;
+import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -33,6 +34,8 @@ import java.util.Properties;
  */
 public class SparkOperatorCreator extends OperatorCreator {
 
+    private static final Logger logger = Logger.getLogger(SparkOperatorCreator.class);
+
     private static Function<Tuple2<String, String>, String> mapFunction
             = (Function<Tuple2<String, String>, String>) stringStringTuple2 -> stringStringTuple2._2();
     private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
@@ -56,7 +59,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     public void Start() {
         jssc.addStreamingListener(new PerformanceStreamingListener());
         //jssc.checkpoint("/tmp/log-analyzer-streaming");
-        //jssc.checkpoint("/tmp/spark/checkpoint");
+        jssc.checkpoint("/tmp/spark/checkpoint");
         jssc.start();
         try {
             jssc.awaitTermination();
@@ -76,6 +79,7 @@ public class SparkOperatorCreator extends OperatorCreator {
         HashMap<String, String> kafkaParams = createKafkaParams(properties);
         // Create direct kafka stream with brokers and topics
         JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
+        //logger.info(topic);
         print(messages);
         JavaDStream<String> lines = messages.map(mapFunction);
         print(lines);
@@ -93,6 +97,7 @@ public class SparkOperatorCreator extends OperatorCreator {
         HashMap<String, String> kafkaParams = createKafkaParams(properties);
         // Create direct kafka stream with brokers and topics
         JavaPairInputDStream<String, String> messages = (JavaPairInputDStream<String, String>) createDirectStream(kafkaParams, topicsSet);
+        print(messages);
         JavaDStream<WithTime<String>> lines = messages.map(mapFunctionWithTime);
         return new SparkWorkloadOperator(lines, parallelism);
     }
@@ -102,7 +107,18 @@ public class SparkOperatorCreator extends OperatorCreator {
                                                         String topicPropertyName,
                                                         String componentId,
                                                         int parallelism) {
-        return null;
+        /*NOT OK*/
+        String topic = properties.getProperty(topicPropertyName);
+        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
+
+        HashMap<String, String> kafkaParams = createKafkaParams(properties);
+        // Create direct kafka stream with brokers and topics
+        JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
+        //logger.info(topic);
+        print(messages);
+        JavaDStream<String> lines = messages.map(mapFunction);
+        print(lines);
+        return new SparkWorkloadOperator(lines, parallelism);
     }
 
     private void initializeProperties() throws IOException {
@@ -140,11 +156,12 @@ public class SparkOperatorCreator extends OperatorCreator {
 
     private void print(JavaPairDStream<String, String> messages) {
         VoidFunction2<JavaPairRDD<String, String>, Time> function2 = (VoidFunction2<JavaPairRDD<String, String>, Time>) (newEventsRdd, time) -> {
-            System.out.println("\n===================================");
-            System.out.println("New Events for " + time + " batch:");
+            logger.info("===================================");
+            logger.info("New Events for " + time + " batch:");
             for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
-                System.out.println("Tuples: " + tuple._1 + ": " + tuple._2);
+                logger.info("Tuples: " + tuple._1 + ": " + tuple._2);
             }
+            logger.info("===================================");
         };
         messages.foreachRDD(function2);
     }
@@ -152,9 +169,9 @@ public class SparkOperatorCreator extends OperatorCreator {
     private void print(JavaDStream<String> lines) {
         VoidFunction2<JavaRDD<String>, Time> voidFunction2 = (VoidFunction2<JavaRDD<String>, Time>) (rdd, time) -> {
             rdd.collect();
-            System.out.println("\n===================================");
-            System.out.println(" Number of records in this batch: "
-                    + rdd.count());
+            logger.info("===================================");
+            logger.info(" Number of records in this batch: " + rdd.count());
+            logger.info("===================================");
         };
         lines.foreachRDD(voidFunction2);
     }
