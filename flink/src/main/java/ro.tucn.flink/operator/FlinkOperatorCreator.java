@@ -65,7 +65,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
             if (list.length == 2) {
                 time = Long.parseLong(list[1]);
             }
-            String[] strs = list[0].split("\t");
+            String[] strs = list[0].split(" ");
             double[] position = new double[strs.length];
             for (int i = 0; i < strs.length; i++) {
                 position[i] = Double.parseDouble(strs[i]);
