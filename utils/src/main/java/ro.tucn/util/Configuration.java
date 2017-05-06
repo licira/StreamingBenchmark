@@ -11,8 +11,6 @@ import java.util.Properties;
  */
 public class Configuration {
 
-    public static final String COMMON_CONFIGURE = "config.properties";
-
     public static Properties config;
     public static String operatorCreator;
     public static Integer throughputFrequency; // milliseconds
@@ -21,6 +19,7 @@ public class Configuration {
     public static Integer clusterHosts;
     public static Integer hostCores;
 
+    private static final String COMMON_CONFIGURE = "config.properties";
     // configure properties
     private static final String OPERATOR_CREATOR = "operator.creator";
     private static final String THROUGHPUT_FREQUENCY = "throughput.frequency";
