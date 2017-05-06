@@ -23,7 +23,7 @@ public class WordCount extends Workload {
 
     public void process() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            Operator<WithTime<String>> operator = stringStreamWithTime("source", "topic1");
+            Operator<WithTime<String>> operator = getStringStreamWithTimeOperator("source", "topic1");
             PairOperator<String, WithTime<Integer>> counts =
                     operator.flatMap(UserFunctions.splitFlatMapWithTime, "splitter")
                             .mapToPair(UserFunctions.mapToStrIntPairWithTime, "pair")

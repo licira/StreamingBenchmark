@@ -24,7 +24,7 @@ public class WordCountFast extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            Operator<String> operator = createKafkaStreamOperator("adv", "topic1");
+            Operator<String> operator = getStringStreamOperator("adv", "topic1");
             PairOperator<String, WithTime<Integer>> counts =
                     operator.flatMapToPair(UserFunctions.flatMapToPairAddTime, "splitter")
                             .reduceByKey(UserFunctions.sumReduceWithTime, "sum")

@@ -29,7 +29,7 @@ public class WordCountWindowed extends Workload {
             // Flink doesn't support shuffle().window()
             // Actually Flink does keyGrouping().window().update()
             // It is the same situation to Spark streaming
-            Operator<WithTime<String>> operator = stringStreamWithTime("source", "topic1");
+            Operator<WithTime<String>> operator = getStringStreamWithTimeOperator("source", "topic1");
             PairOperator<String, WithTime<Integer>> counts =
                     operator.flatMap(UserFunctions.splitFlatMapWithTime, "splitter")
                             .mapToPair(UserFunctions.mapToStrIntPairWithTime, "pair")

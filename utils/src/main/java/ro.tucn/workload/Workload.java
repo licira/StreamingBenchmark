@@ -59,15 +59,15 @@ public abstract class Workload implements Serializable {
 
     public abstract void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
-    protected Operator<WithTime<String>> stringStreamWithTime(String componentId, String topicPropertyName) {
+    protected Operator<WithTime<String>> getStringStreamWithTimeOperator(String componentId, String topicPropertyName) {
         return operatorCreator.stringStreamFromKafkaWithTime(properties, topicPropertyName, componentId, parallelism);
     }
 
-    protected Operator<Point> getPointStream(String componentId, String topicPropertyName) {
+    protected Operator<Point> getPointStreamOperator(String componentId, String topicPropertyName) {
         return operatorCreator.pointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
-    protected Operator<String> createKafkaStreamOperator(String componentId, String topicPropertyName) {
+    protected Operator<String> getStringStreamOperator(String componentId, String topicPropertyName) {
         return operatorCreator.stringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 }
