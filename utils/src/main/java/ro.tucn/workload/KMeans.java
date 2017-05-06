@@ -6,7 +6,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.Operator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,10 +36,10 @@ public class KMeans extends Workload {
 
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            WorkloadOperator<Point> points = getPointStream("source", "topic1");
+            Operator<Point> points = getPointStream("source", "topic1");
             points.iterative(); // points iteration
-            WorkloadOperator<Point> assignedPoints = points.map(UserFunctions.assign, initCentroids, "assign", Point.class);
-            WorkloadOperator<Point> centroids = assignedPoints
+            Operator<Point> assignedPoints = points.map(UserFunctions.assign, initCentroids, "assign", Point.class);
+            Operator<Point> centroids = assignedPoints
                     .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
                     .reduceByKey(UserFunctions.pointAggregator, "aggregator")
                     .map(UserFunctions.computeCentroid, "centroid", Point.class);

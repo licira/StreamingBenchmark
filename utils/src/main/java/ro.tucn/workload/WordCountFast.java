@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.util.WithTime;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +24,8 @@ public class WordCountFast extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            WorkloadOperator<String> operator = createKafkaStreamOperator("adv", "topic1");
-            PairWorkloadOperator<String, WithTime<Integer>> counts =
+            Operator<String> operator = createKafkaStreamOperator("adv", "topic1");
+            PairOperator<String, WithTime<Integer>> counts =
                     operator.flatMapToPair(UserFunctions.flatMapToPairAddTime, "splitter")
                             .reduceByKey(UserFunctions.sumReduceWithTime, "sum")
                             .updateStateByKey(UserFunctions.sumReduceWithTime, "accumulate");

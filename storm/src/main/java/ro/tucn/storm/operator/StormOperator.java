@@ -5,9 +5,9 @@ import backtype.storm.topology.TopologyBuilder;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WindowedWorkloadOperator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.WindowedOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.storm.bolt.*;
 import ro.tucn.util.TimeDuration;
 
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class StormOperator<T> extends WorkloadOperator<T> {
+public class StormOperator<T> extends Operator<T> {
 
     protected TopologyBuilder topologyBuilder;
     protected String previousComponent;
@@ -29,66 +29,66 @@ public class StormOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapFunction<T, R> fun, String componentId) {
+    public <R> Operator<R> map(MapFunction<T, R> fun, String componentId) {
         MapBolt<T, R> bolt = new MapBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) {
+    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) {
         MapWithInitListBolt<T, R> bolt = new MapWithInitListBolt<>(fun, initList);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
+    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
         return map(fun, initList, componentId);
     }
 
     @Override
-    public <K, V> PairWorkloadOperator<K, V> mapToPair(MapPairFunction<T, K, V> fun, String componentId) {
+    public <K, V> PairOperator<K, V> mapToPair(MapPairFunction<T, K, V> fun, String componentId) {
         MapToPairBolt<T, K, V> bolt = new MapToPairBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormPairOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public WorkloadOperator<T> reduce(ReduceFunction<T> fun, String componentId) {
+    public Operator<T> reduce(ReduceFunction<T> fun, String componentId) {
         ReduceBolt<T> bolt = new ReduceBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public WorkloadOperator<T> filter(FilterFunction<T> fun, String componentId) {
+    public Operator<T> filter(FilterFunction<T> fun, String componentId) {
         FilterBolt<T> bolt = new FilterBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public <R> WorkloadOperator<R> flatMap(FlatMapFunction<T, R> fun, String componentId) {
+    public <R> Operator<R> flatMap(FlatMapFunction<T, R> fun, String componentId) {
         FlatMapBolt<T, R> bolt = new FlatMapBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public <K, V> PairWorkloadOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun, String componentId) {
+    public <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun, String componentId) {
         FlatMapToPairBolt<T, K, V> bolt = new FlatMapToPairBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
         return new StormPairOperator<>(topologyBuilder, componentId, parallelism);
     }
 
     @Override
-    public WindowedWorkloadOperator<T> window(TimeDuration windowDuration) {
+    public WindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
 
     @Override
-    public WindowedWorkloadOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration) {
+    public WindowedOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration) {
         return new StormWindowedOperator<T>(topologyBuilder, previousComponent, windowDuration, slideDuration, parallelism);
     }
 

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.WithTime;
 
@@ -59,15 +59,15 @@ public abstract class Workload implements Serializable {
 
     public abstract void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
-    protected WorkloadOperator<WithTime<String>> stringStreamWithTime(String componentId, String topicPropertyName) {
+    protected Operator<WithTime<String>> stringStreamWithTime(String componentId, String topicPropertyName) {
         return operatorCreator.stringStreamFromKafkaWithTime(properties, topicPropertyName, componentId, parallelism);
     }
 
-    protected WorkloadOperator<Point> getPointStream(String componentId, String topicPropertyName) {
+    protected Operator<Point> getPointStream(String componentId, String topicPropertyName) {
         return operatorCreator.pointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
-    protected WorkloadOperator<String> createKafkaStreamOperator(String componentId, String topicPropertyName) {
+    protected Operator<String> createKafkaStreamOperator(String componentId, String topicPropertyName) {
         return operatorCreator.stringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 }

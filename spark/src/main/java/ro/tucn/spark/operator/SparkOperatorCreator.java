@@ -17,7 +17,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
 import ro.tucn.util.Constants;
 import ro.tucn.util.WithTime;
@@ -69,7 +69,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public WorkloadOperator<String> stringStreamFromKafka(Properties properties,
+    public Operator<String> stringStreamFromKafka(Properties properties,
                                                           String topicPropertyName,
                                                           String componentId,
                                                           int parallelism) {
@@ -83,11 +83,11 @@ public class SparkOperatorCreator extends OperatorCreator {
         print(messages);
         JavaDStream<String> lines = messages.map(mapFunction);
         print(lines);
-        return new SparkWorkloadOperator(lines, parallelism);
+        return new SparkOperator(lines, parallelism);
     }
 
     @Override
-    public SparkWorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
+    public SparkOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
                                                                                  String topicPropertyName,
                                                                                  String componentId,
                                                                                  int parallelism) {
@@ -99,11 +99,11 @@ public class SparkOperatorCreator extends OperatorCreator {
         JavaPairInputDStream<String, String> messages = (JavaPairInputDStream<String, String>) createDirectStream(kafkaParams, topicsSet);
         print(messages);
         JavaDStream<WithTime<String>> lines = messages.map(mapFunctionWithTime);
-        return new SparkWorkloadOperator(lines, parallelism);
+        return new SparkOperator(lines, parallelism);
     }
 
     @Override
-    public WorkloadOperator<Point> pointStreamFromKafka(Properties properties,
+    public Operator<Point> pointStreamFromKafka(Properties properties,
                                                         String topicPropertyName,
                                                         String componentId,
                                                         int parallelism) {
@@ -118,7 +118,7 @@ public class SparkOperatorCreator extends OperatorCreator {
         print(messages);
         JavaDStream<String> lines = messages.map(mapFunction);
         print(lines);
-        return new SparkWorkloadOperator(lines, parallelism);
+        return new SparkOperator(lines, parallelism);
     }
 
     private void initializeProperties() throws IOException {

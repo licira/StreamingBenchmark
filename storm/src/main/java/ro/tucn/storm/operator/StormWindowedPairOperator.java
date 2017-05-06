@@ -9,8 +9,8 @@ import ro.tucn.frame.functions.MapFunction;
 import ro.tucn.frame.functions.MapPartitionFunction;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WindowedPairWorkloadOperator;
+import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.WindowedPairOperator;
 import ro.tucn.storm.bolt.PairPrintBolt;
 import ro.tucn.storm.bolt.constants.BoltConstants;
 import ro.tucn.storm.bolt.windowed.*;
@@ -20,7 +20,7 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperator<K, V> {
+public class StormWindowedPairOperator<K, V> extends WindowedPairOperator<K, V> {
 
     private TopologyBuilder topologyBuilder;
     private String preComponentId;
@@ -44,7 +44,7 @@ public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperato
 
 
     @Override
-    public PairWorkloadOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId) {
+    public PairOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId) {
         try {
             WindowPairReduceByKeyBolt<K, V> bolt = new WindowPairReduceByKeyBolt<>(fun, windowDuration, slideDuration);
             topologyBuilder.setBolt(componentId, bolt, parallelism)
@@ -63,7 +63,7 @@ public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperato
      * @return
      */
     @Override
-    public PairWorkloadOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId) {
+    public PairOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId) {
 //        try {
 //            topologyBuilder.setBolt(componentId, new UpdateStateBolt<>(fun, windowDuration, slideDuration))
 //                    .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
@@ -75,7 +75,7 @@ public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperato
     }
 
     @Override
-    public <R> PairWorkloadOperator<K, R> mapPartition(MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun,
+    public <R> PairOperator<K, R> mapPartition(MapPartitionFunction<Tuple2<K, V>, Tuple2<K, R>> fun,
                                                        String componentId) {
         try {
             WindowPairMapPartitionBolt<K, V, R> bolt = new WindowPairMapPartitionBolt<>(fun, windowDuration, slideDuration);
@@ -88,7 +88,7 @@ public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperato
     }
 
     @Override
-    public <R> PairWorkloadOperator<K, R> mapValue(MapFunction<Tuple2<K, V>, Tuple2<K, R>> fun, String componentId) {
+    public <R> PairOperator<K, R> mapValue(MapFunction<Tuple2<K, V>, Tuple2<K, R>> fun, String componentId) {
         try {
             WindowMapValueBolt<K, V, R> bolt = new WindowMapValueBolt<>(fun, windowDuration, slideDuration);
             topologyBuilder.setBolt(componentId, bolt, parallelism)
@@ -100,7 +100,7 @@ public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperato
     }
 
     @Override
-    public PairWorkloadOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId) {
+    public PairOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId) {
         try {
             WindowPairFilterBolt<K, V> bolt = new WindowPairFilterBolt<>(fun, windowDuration, slideDuration);
             topologyBuilder.setBolt(componentId, bolt, parallelism)
@@ -112,7 +112,7 @@ public class StormWindowedPairOperator<K, V> extends WindowedPairWorkloadOperato
     }
 
     @Override
-    public PairWorkloadOperator<K, V> reduce(ReduceFunction<Tuple2<K, V>> fun, String componentId) {
+    public PairOperator<K, V> reduce(ReduceFunction<Tuple2<K, V>> fun, String componentId) {
         try {
             WindowPairReduceBolt<K, V> bolt = new WindowPairReduceBolt<>(fun, windowDuration, slideDuration);
             topologyBuilder.setBolt(componentId, bolt, parallelism)

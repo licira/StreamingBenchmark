@@ -7,9 +7,9 @@ import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WindowedWorkloadOperator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.WindowedOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.spark.function.*;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
@@ -20,78 +20,78 @@ import java.util.List;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class SparkWorkloadOperator<T> extends WorkloadOperator<T> {
+public class SparkOperator<T> extends Operator<T> {
 
     private JavaDStream<T> dStream;
 
-    public SparkWorkloadOperator(JavaDStream<T> stream, int parallelism) {
+    public SparkOperator(JavaDStream<T> stream, int parallelism) {
         super(parallelism);
         dStream = stream;
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(final MapFunction<T, R> fun,
+    public <R> Operator<R> map(final MapFunction<T, R> fun,
                                        String componentId) {
         JavaDStream<R> newStream = dStream.map(new FunctionImpl(fun));
-        return new SparkWorkloadOperator<R>(newStream, parallelism);
+        return new SparkOperator<R>(newStream, parallelism);
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
+    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
         throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
+    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
         throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override
-    public <K, V> PairWorkloadOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
+    public <K, V> PairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
         JavaPairDStream<K, V> pairDStream = dStream.mapToPair(new PairFunctionImpl(fun));
-        return new SparkPairWorkloadOperator(pairDStream, parallelism);
+        return new SparkPairOperator(pairDStream, parallelism);
     }
 
     @Override
-    public WorkloadOperator<T> reduce(final ReduceFunction<T> fun, String componentId) {
+    public Operator<T> reduce(final ReduceFunction<T> fun, String componentId) {
         JavaDStream<T> newStream = dStream.reduce(new ReduceFunctionImpl(fun));
-        return new SparkWorkloadOperator(newStream, parallelism);
+        return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public WorkloadOperator<T> filter(final FilterFunction<T> fun, String componentId) {
+    public Operator<T> filter(final FilterFunction<T> fun, String componentId) {
         JavaDStream<T> newStream = dStream.filter(new FilterFunctionImpl(fun));
-        return new SparkWorkloadOperator(newStream, parallelism);
+        return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public <R> WorkloadOperator<R> flatMap(final FlatMapFunction<T, R> fun,
+    public <R> Operator<R> flatMap(final FlatMapFunction<T, R> fun,
                                            String componentId) {
         JavaDStream<R> newStream = dStream.flatMap(new FlatMapFunctionImpl(fun));
-        return new SparkWorkloadOperator(newStream, parallelism);
+        return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public <K, V> PairWorkloadOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
+    public <K, V> PairOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
                                                            String componentId) {
         JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair((PairFlatMapFunction<T, K, V>) t ->
                 (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t));
-        return new SparkPairWorkloadOperator(pairDStream, parallelism);
+        return new SparkPairOperator(pairDStream, parallelism);
     }
 
     @Override
-    public WindowedWorkloadOperator<T> window(TimeDuration windowDuration) {
+    public WindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
 
     @Override
-    public WindowedWorkloadOperator<T> window(TimeDuration windowDuration,
+    public WindowedOperator<T> window(TimeDuration windowDuration,
                                               TimeDuration slideDuration) {
         Duration windowDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(windowDuration);
         Duration slideDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(slideDuration);
 
         JavaDStream<T> windowedStream = dStream.window(windowDurations, slideDurations);
-        return new SparkWindowedWorkloadOperator(windowedStream, parallelism);
+        return new SparkWindowedOperator(windowedStream, parallelism);
     }
 
     @Override

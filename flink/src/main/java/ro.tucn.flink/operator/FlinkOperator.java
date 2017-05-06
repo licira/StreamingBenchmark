@@ -14,9 +14,9 @@ import ro.tucn.flink.function.MapFunctionWithInitList;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WindowedWorkloadOperator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.WindowedOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.TimeDuration;
 import ro.tucn.util.WithTime;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkOperator<T> extends WorkloadOperator<T> {
+public class FlinkOperator<T> extends Operator<T> {
 
     protected DataStream<T> dataStream;
     private IterativeStream<T> iterativeStream;
@@ -38,13 +38,13 @@ public class FlinkOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(final MapFunction<T, R> fun, String componentId) {
+    public <R> Operator<R> map(final MapFunction<T, R> fun, String componentId) {
         DataStream<R> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, R>) t -> fun.map(t));
         return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(final MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
+    public <R> Operator<R> map(final MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
         final MapFunctionWithInitList<T, R> map = new MapFunctionWithInitList<>(fun, initList);
         TypeExtractor.getForClass(Point.class);
         TypeInformation<R> outType = TypeExtractor.getMapReturnTypes(dataStream.getExecutionEnvironment().clean(map), dataStream.getType(),
@@ -64,7 +64,7 @@ public class FlinkOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
+    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
         final MapFunctionWithInitList<T, R> map = new MapFunctionWithInitList<>(fun, initList);
         TypeInformation<R> outType = TypeExtractor.getForClass(outputClass);
         DataStream<R> newDataStream;
@@ -84,7 +84,7 @@ public class FlinkOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public <K, V> PairWorkloadOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
+    public <K, V> PairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>() {
             public Tuple2<K, V> map(T t) throws Exception {
                 scala.Tuple2<K, V> tuple2 = fun.mapToPair(t);
@@ -114,20 +114,20 @@ public class FlinkOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public WorkloadOperator<T> reduce(final ReduceFunction<T> fun, String componentId) {
+    public Operator<T> reduce(final ReduceFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = dataStream.keyBy(0).reduce((org.apache.flink.api.common.functions.ReduceFunction<T>) (t, t1) -> fun.reduce(t, t1));
         return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
-    public WorkloadOperator<T> filter(final FilterFunction<T> fun, String componentId) {
+    public Operator<T> filter(final FilterFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = dataStream.filter((org.apache.flink.api.common.functions.FilterFunction<T>) t ->
                 fun.filter(t));
         return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
-    public <R> WorkloadOperator<R> flatMap(final FlatMapFunction<T, R> fun, String componentId) {
+    public <R> Operator<R> flatMap(final FlatMapFunction<T, R> fun, String componentId) {
         TypeInformation<R> returnType = TypeExtractor.createTypeInfo(FlatMapFunction.class, fun.getClass(), 1, null, null);
         DataStream<R> newDataStream = dataStream.flatMap((org.apache.flink.api.common.functions.FlatMapFunction<T, R>) (t, collector) -> {
             Iterable<R> flatResults = (Iterable<R>) fun.flatMap(t);
@@ -139,7 +139,7 @@ public class FlinkOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public <K, V> PairWorkloadOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
+    public <K, V> PairOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
                                                            String componentId) {
         //TypeInformation returnType = TypeExtractor.createTypeInfo(FlatMapFunction.class, fun.getClass(), 1, null, null);
         DataStream<Tuple2<K, V>> newDataStream = dataStream.flatMap((org.apache.flink.api.common.functions.FlatMapFunction<T, Tuple2<K, V>>) (t, collector) -> {
@@ -152,12 +152,12 @@ public class FlinkOperator<T> extends WorkloadOperator<T> {
     }
 
     @Override
-    public WindowedWorkloadOperator<T> window(TimeDuration windowDuration) {
+    public WindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
 
     @Override
-    public WindowedWorkloadOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration) {
+    public WindowedOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration) {
         WindowedStream<T, T, TimeWindow> windowedStream = dataStream.keyBy((KeySelector<T, T>) value ->
                 value).timeWindow(Time.of(windowDuration.getLength(), windowDuration.getUnit()),
                 Time.of(slideDuration.getLength(), slideDuration.getUnit()));

@@ -8,16 +8,16 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public abstract class PairWorkloadOperator<K, V> extends BaseOperator {
+public abstract class PairOperator<K, V> extends BaseOperator {
 
-    public PairWorkloadOperator(int parallelism) {
+    public PairOperator(int parallelism) {
         super(parallelism);
     }
 
-    public abstract GroupedWorkloadOperator<K, V> groupByKey();
+    public abstract GroupedOperator<K, V> groupByKey();
 
     // TODO: translate to reduce on each node, then group merge
-    public abstract PairWorkloadOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId);
+    public abstract PairOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId);
 
     /**
      * Map <K,V> tuple to <K,R>
@@ -25,21 +25,21 @@ public abstract class PairWorkloadOperator<K, V> extends BaseOperator {
      * @param fun         map V to R
      * @param componentId component Id of this bolt
      * @param <R>
-     * @return maped PairWorkloadOperator<K,R>
+     * @return maped PairOperator<K,R>
      */
-    public abstract <R> PairWorkloadOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId);
+    public abstract <R> PairOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId);
 
-    public abstract <R> WorkloadOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId);
+    public abstract <R> Operator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId);
 
-    public abstract <R> WorkloadOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId, Class<R> outputClass);
+    public abstract <R> Operator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId, Class<R> outputClass);
 
-    public abstract <R> PairWorkloadOperator<K, R> flatMapValue(FlatMapFunction<V, R> fun, String componentId);
+    public abstract <R> PairOperator<K, R> flatMapValue(FlatMapFunction<V, R> fun, String componentId);
 
-    public abstract PairWorkloadOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId);
+    public abstract PairOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId);
 
-    public abstract PairWorkloadOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId);
+    public abstract PairOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId);
 
-    public abstract PairWorkloadOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration);
+    public abstract PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration);
 
     /**
      * Pre-aggregation -> key group -> reduce
@@ -50,12 +50,12 @@ public abstract class PairWorkloadOperator<K, V> extends BaseOperator {
      * @param slideDuration
      * @return
      */
-    public abstract PairWorkloadOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
+    public abstract PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
                                                                     TimeDuration windowDuration, TimeDuration slideDuration);
 
-    public abstract WindowedPairWorkloadOperator<K, V> window(TimeDuration windowDuration);
+    public abstract WindowedPairOperator<K, V> window(TimeDuration windowDuration);
 
-    public abstract WindowedPairWorkloadOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideDuration);
+    public abstract WindowedPairOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideDuration);
 
     /**
      * Join two pair streams which have the same type of key -- K
@@ -66,8 +66,8 @@ public abstract class PairWorkloadOperator<K, V> extends BaseOperator {
      * @param <R>                Value type of joinStream
      * @return joined stream
      */
-    public abstract <R> PairWorkloadOperator<K, Tuple2<V, R>> join(
-            String componentId, PairWorkloadOperator<K, R> joinStream,
+    public abstract <R> PairOperator<K, Tuple2<V, R>> join(
+            String componentId, PairOperator<K, R> joinStream,
             TimeDuration windowDuration, TimeDuration joinWindowDuration) throws WorkloadException;
 
     /**
@@ -81,8 +81,8 @@ public abstract class PairWorkloadOperator<K, V> extends BaseOperator {
      * @param eventTimeAssigner2 event time assignment for joinStream
      * @return joined stream
      */
-    public abstract <R> PairWorkloadOperator<K, Tuple2<V, R>> join(
-            String componentId, PairWorkloadOperator<K, R> joinStream,
+    public abstract <R> PairOperator<K, Tuple2<V, R>> join(
+            String componentId, PairOperator<K, R> joinStream,
             TimeDuration windowDuration, TimeDuration windowDuration2,
             AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException;
 

@@ -7,7 +7,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer082;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.WithTime;
 
@@ -29,7 +29,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public WorkloadOperator<String> stringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<String> stringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         env.setParallelism(parallelism);
         DataStream<String> stream = env
@@ -38,7 +38,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public WorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         env.setParallelism(parallelism);
         DataStream<String> stream = env
@@ -54,7 +54,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public WorkloadOperator<Point> pointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<Point> pointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         env.setParallelism(parallelism);
         DataStream<String> stream = env

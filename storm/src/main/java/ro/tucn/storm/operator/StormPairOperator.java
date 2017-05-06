@@ -17,7 +17,7 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
+public class StormPairOperator<K, V> extends PairOperator<K, V> {
 
     protected TopologyBuilder topologyBuilder;
     protected String preComponentId;
@@ -29,13 +29,13 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
     }
 
     @Override
-    public GroupedWorkloadOperator<K, V> groupByKey() {
+    public GroupedOperator<K, V> groupByKey() {
         return new StormGroupedOperator<>(topologyBuilder, this.preComponentId, parallelism);
     }
 
     // Set bolt with fieldsGrouping
     @Override
-    public PairWorkloadOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId) {
+    public PairOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId) {
         PairReduceBolt<K, V> bolt = new PairReduceBolt<>(fun);
         topologyBuilder.setBolt(componentId, bolt, parallelism)
                 .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
@@ -43,7 +43,7 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
     }
 
     @Override
-    public <R> PairWorkloadOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId) {
+    public <R> PairOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId) {
         MapValueBolt<V, R> bolt = new MapValueBolt<>(fun);
         topologyBuilder.setBolt(componentId, bolt, parallelism)
                 .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
@@ -51,7 +51,7 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId) {
+    public <R> Operator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId) {
         PairMapBolt<K, V, R> bolt = new PairMapBolt<>(fun);
         topologyBuilder.setBolt(componentId, bolt, parallelism)
                 .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
@@ -59,12 +59,12 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
     }
 
     @Override
-    public <R> WorkloadOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId, Class<R> outputClass) {
+    public <R> Operator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId, Class<R> outputClass) {
         return map(fun, componentId);
     }
 
     @Override
-    public <R> PairWorkloadOperator<K, R> flatMapValue(FlatMapFunction<V, R> fun, String componentId) {
+    public <R> PairOperator<K, R> flatMapValue(FlatMapFunction<V, R> fun, String componentId) {
         FlatMapValueBolt<V, R> bolt = new FlatMapValueBolt<>(fun);
         topologyBuilder.setBolt(componentId, bolt, parallelism)
                 .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
@@ -72,7 +72,7 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
     }
 
     @Override
-    public PairWorkloadOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId) {
+    public PairOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId) {
         PairFilterBolt<K, V> bolt = new PairFilterBolt<>(fun);
         topologyBuilder.setBolt(componentId, bolt, parallelism)
                 .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
@@ -81,17 +81,17 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
 
     // Set bolt with fieldsGrouping
     @Override
-    public PairWorkloadOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId) {
+    public PairOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId) {
         return this;
     }
 
     @Override
-    public PairWorkloadOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration) {
+    public PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration) {
         return reduceByKeyAndWindow(fun, componentId, windowDuration, windowDuration);
     }
 
     @Override
-    public PairWorkloadOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration, TimeDuration slideDuration) {
+    public PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration, TimeDuration slideDuration) {
         try {
             WindowPairReduceByKeyBolt<K, V> reduceByKeyBolt
                     = new WindowPairReduceByKeyBolt<>(fun, windowDuration, slideDuration);
@@ -112,18 +112,18 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
     }
 
     @Override
-    public WindowedPairWorkloadOperator<K, V> window(TimeDuration windowDuration) {
+    public WindowedPairOperator<K, V> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
 
     @Override
-    public WindowedPairWorkloadOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideDuration) {
+    public WindowedPairOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideDuration) {
         return new StormWindowedPairOperator<>(topologyBuilder, preComponentId, windowDuration, slideDuration, parallelism);
     }
 
     @Override
-    public <R> PairWorkloadOperator<K, Tuple2<V, R>> join(String componentId,
-                                                          PairWorkloadOperator<K, R> joinStream,
+    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
+                                                          PairOperator<K, R> joinStream,
                                                           TimeDuration windowDuration,
                                                           TimeDuration joinWindowDuration) throws WorkloadException {
 
@@ -141,7 +141,7 @@ public class StormPairOperator<K, V> extends PairWorkloadOperator<K, V> {
 
     // Event time join
     @Override
-    public <R> PairWorkloadOperator<K, Tuple2<V, R>> join(String componentId, PairWorkloadOperator<K, R> joinStream,
+    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId, PairOperator<K, R> joinStream,
                                                           TimeDuration windowDuration, TimeDuration joinWindowDuration,
                                                           AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
         if (joinStream instanceof StormPairOperator) {

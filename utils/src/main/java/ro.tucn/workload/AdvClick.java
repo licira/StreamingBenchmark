@@ -6,7 +6,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairWorkloadOperator;
+import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
@@ -33,19 +33,19 @@ public class AdvClick extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            PairWorkloadOperator<String, Long> advs = createKafkaStreamOperator("adv", "topic1")
+            PairOperator<String, Long> advs = createKafkaStreamOperator("adv", "topic1")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
-            PairWorkloadOperator<String, Long> clicks = createKafkaStreamOperator("click", "topic2")
+            PairOperator<String, Long> clicks = createKafkaStreamOperator("click", "topic2")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
             //advs.print();
             //clicks.print();
-            /*PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
+            /*PairOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
                     "Join",
                     clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
             */
-            PairWorkloadOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
+            PairOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
             "Join",
             clicks,
             new TimeDuration(TimeUnit.SECONDS, streamWindowOne),

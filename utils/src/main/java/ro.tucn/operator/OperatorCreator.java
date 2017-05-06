@@ -17,7 +17,7 @@ public abstract class OperatorCreator implements Serializable {
         this.appName = appName;
     }
 
-    public abstract WorkloadOperator<String> stringStreamFromKafka(Properties properties,
+    public abstract Operator<String> stringStreamFromKafka(Properties properties,
                                                                    String topicPropertyName,
                                                                    String componentId,
                                                                    int parallelism);
@@ -27,7 +27,7 @@ public abstract class OperatorCreator implements Serializable {
      * topics: Topic1,Topic2
      * offset smallest
      **/
-    public abstract WorkloadOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
+    public abstract Operator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
                                                                                      String topicPropertyName,
                                                                                      String componentId,
                                                                                      int parallelism);
@@ -35,7 +35,7 @@ public abstract class OperatorCreator implements Serializable {
     /**
      * Consume point stream from kafka for workload 3
      */
-    public abstract WorkloadOperator<Point> pointStreamFromKafka(Properties properties,
+    public abstract Operator<Point> pointStreamFromKafka(Properties properties,
                                                                  String topicPropertyName,
                                                                  String componentId,
                                                                  int parallelism);

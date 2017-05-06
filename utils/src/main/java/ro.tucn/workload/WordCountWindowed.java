@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairWorkloadOperator;
-import ro.tucn.operator.WorkloadOperator;
+import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.util.TimeDuration;
 import ro.tucn.util.WithTime;
 
@@ -29,15 +29,15 @@ public class WordCountWindowed extends Workload {
             // Flink doesn't support shuffle().window()
             // Actually Flink does keyGrouping().window().update()
             // It is the same situation to Spark streaming
-            WorkloadOperator<WithTime<String>> operator = stringStreamWithTime("source", "topic1");
-            PairWorkloadOperator<String, WithTime<Integer>> counts =
+            Operator<WithTime<String>> operator = stringStreamWithTime("source", "topic1");
+            PairOperator<String, WithTime<Integer>> counts =
                     operator.flatMap(UserFunctions.splitFlatMapWithTime, "splitter")
                             .mapToPair(UserFunctions.mapToStrIntPairWithTime, "pair")
                             .reduceByKeyAndWindow(UserFunctions.sumReduceWithTime2, "counter",
                                     new TimeDuration(TimeUnit.SECONDS, 1), new TimeDuration(TimeUnit.SECONDS, 1));
             counts.sink();
             //cumulate counts
-            //PairWorkloadOperator<String, Integer> cumulateCounts = counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
+            //PairOperator<String, Integer> cumulateCounts = counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
             //cumulateCounts.print();
         } catch (Exception e) {
             logger.error(e.getMessage());

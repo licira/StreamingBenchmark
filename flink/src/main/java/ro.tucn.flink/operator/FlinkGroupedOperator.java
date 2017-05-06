@@ -5,13 +5,13 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.GroupedWorkloadOperator;
+import ro.tucn.operator.GroupedOperator;
 import scala.Tuple2;
 
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkGroupedOperator<K, V> extends GroupedWorkloadOperator<K, V> {
+public class FlinkGroupedOperator<K, V> extends GroupedOperator<K, V> {
 
     private KeyedStream<Tuple2<K, V>, Object> groupedDataStream;
 
