@@ -36,17 +36,17 @@ public class KMeans extends Workload {
 
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            Operator<Point> points = getPointStreamOperator("source", "topic1");
-            points.iterative(); // points iteration
-            Operator<Point> assignedPoints = points.map(UserFunctions.assign, initCentroids, "assign", Point.class);
+            Operator<Point> pointOperators = getPointStreamOperator("source", "topic1");
+            pointOperators.iterative(); // points iteration
+            Operator<Point> assignedPoints = pointOperators.map(UserFunctions.assign, initCentroids, "assign", Point.class);
             Operator<Point> centroids = assignedPoints
                     .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
                     .reduceByKey(UserFunctions.pointAggregator, "aggregator")
                     .map(UserFunctions.computeCentroid, "centroid", Point.class);
-            points.closeWith(centroids, true);
+            pointOperators.closeWith(centroids, true);
             centroids.sink();
             //assignedPoints.print();
-            points.print();
+            pointOperators.print();
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

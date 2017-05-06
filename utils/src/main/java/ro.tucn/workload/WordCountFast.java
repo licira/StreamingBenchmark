@@ -3,9 +3,9 @@ package ro.tucn.workload;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.userfunctions.UserFunctions;
+import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
-import ro.tucn.operator.Operator;
 import ro.tucn.util.WithTime;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,9 +24,9 @@ public class WordCountFast extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            Operator<String> operator = getStringStreamOperator("adv", "topic1");
+            Operator<String> wordOperators = getStringStreamOperator("adv", "topic1");
             PairOperator<String, WithTime<Integer>> counts =
-                    operator.flatMapToPair(UserFunctions.flatMapToPairAddTime, "splitter")
+                    wordOperators.flatMapToPair(UserFunctions.flatMapToPairAddTime, "splitter")
                             .reduceByKey(UserFunctions.sumReduceWithTime, "sum")
                             .updateStateByKey(UserFunctions.sumReduceWithTime, "accumulate");
             counts.sink();

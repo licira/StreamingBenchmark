@@ -33,9 +33,9 @@ public class AdvClick extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            PairOperator<String, Long> advs = getStringStreamOperator("adv", "topic1")
+            PairOperator<String, Long> advPairOperators = getStringStreamOperator("adv", "topic1")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
-            PairOperator<String, Long> clicks = getStringStreamOperator("click", "topic2")
+            PairOperator<String, Long> clickPaiOperators = getStringStreamOperator("click", "topic2")
                     .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
             //advs.print();
             //clicks.print();
@@ -45,9 +45,9 @@ public class AdvClick extends Workload {
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
             */
-            PairOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
+            PairOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advPairOperators.join(
             "Join",
-            clicks,
+            clickPaiOperators,
             new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
             new TimeDuration(TimeUnit.SECONDS, streamWindowTwo),
             new TimeAssigner(),
