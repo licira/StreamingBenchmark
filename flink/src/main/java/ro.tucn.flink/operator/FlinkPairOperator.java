@@ -32,20 +32,20 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> {
+public class FlinkPairOperator<K, V> extends PairWorkloadOperator<K, V> {
 
     private DataStream<Tuple2<K, V>> dataStream;
 
-    public FlinkPairWorkloadOperator(DataStream<Tuple2<K, V>> dataStream, int parallelism) {
+    public FlinkPairOperator(DataStream<Tuple2<K, V>> dataStream, int parallelism) {
         super(parallelism);
         dataStream = dataStream;
     }
 
-    public FlinkGroupedWorkloadOperator<K, V> groupByKey() {
+    public FlinkGroupedOperator<K, V> groupByKey() {
         KeyedStream<Tuple2<K, V>, Object> keyedStream = dataStream.keyBy(
                 (KeySelector<Tuple2<K, V>, Object>) value -> value._1()
         );
-        return new FlinkGroupedWorkloadOperator<>(keyedStream, parallelism);
+        return new FlinkGroupedOperator<>(keyedStream, parallelism);
     }
 
     // TODO: reduceByKey - reduce first then groupByKey, at last reduce again
@@ -54,21 +54,21 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
         DataStream<Tuple2<K, V>> newDataStream = dataStream.keyBy((KeySelector<Tuple2<K, V>, Object>) value -> value._1())
                 .reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2)
                         -> new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
     public <R> PairWorkloadOperator<K, R> mapValue(final MapFunction<V, R> fun, String componentId) {
         DataStream<Tuple2<K, R>> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<Tuple2<K, V>, Tuple2<K, R>>) tuple2
                 -> new Tuple2<>(tuple2._1(), fun.map(tuple2._2())));
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
     public <R> WorkloadOperator<R> map(final MapFunction<Tuple2<K, V>, R> fun, final String componentId) {
         DataStream<R> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<Tuple2<K, V>, R>) value ->
                 fun.map(value));
-        return new FlinkWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
         TypeInformation<R> outType = TypeExtractor.getForClass(outputClass);
         DataStream<R> newDataStream = dataStream.transform("Map", outType,
                 new StreamMap<>(dataStream.getExecutionEnvironment().clean(mapper)));
-        return new FlinkWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -88,14 +88,14 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
             for (R r : rIterable)
                 collector.collect(new Tuple2<>(tuple2._1(), r));
         });
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
     public PairWorkloadOperator<K, V> filter(final FilterFunction<scala.Tuple2<K, V>> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = dataStream.filter((org.apache.flink.api.common.functions.FilterFunction<Tuple2<K, V>>) kvTuple2 ->
                 fun.filter(kvTuple2));
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     /**
@@ -140,7 +140,7 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
                         Time.of(slideDuration.getLength(),
                                 slideDuration.getUnit()))
                 .reduce(reduceFunction);
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
         WindowedStream<Tuple2<K, V>, K, TimeWindow> windowedDataStream = dataStream.keyBy((KeySelector<Tuple2<K, V>, K>) tuple2 -> tuple2._1())
                 .timeWindow(Time.of(windowDuration.getLength(), windowDuration.getUnit()),
                         Time.of(slideDuration.getLength(), slideDuration.getUnit()));
-        return new FlinkWindowedPairWorkloadOperator<>(windowedDataStream, parallelism);
+        return new FlinkWindowedPairOperator<>(windowedDataStream, parallelism);
     }
 
     /**
@@ -204,8 +204,8 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
         else
             env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
-        if (joinStream instanceof FlinkPairWorkloadOperator) {
-            FlinkPairWorkloadOperator<K, R> joinFlinkStream = ((FlinkPairWorkloadOperator<K, R>) joinStream);
+        if (joinStream instanceof FlinkPairOperator) {
+            FlinkPairOperator<K, R> joinFlinkStream = ((FlinkPairOperator<K, R>) joinStream);
 
             final KeySelector<Tuple2<K, V>, K> keySelector1 = (KeySelector<Tuple2<K, V>, K>) kvTuple2 -> kvTuple2._1();
             final KeySelector<Tuple2<K, R>, K> keySelector2 = (KeySelector<Tuple2<K, R>, K>) krTuple2 -> krTuple2._1();
@@ -290,9 +290,9 @@ public class FlinkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
                             .buffer(Time.of(joinWindowDuration.toMilliSeconds(), TimeUnit.MILLISECONDS))
                             .apply((JoinFunction<Tuple2<K, V>, Tuple2<K, R>, Tuple2<K, Tuple2<V, R>>>) (first, second) -> new Tuple2<>(first._1(), new Tuple2<>(first._2(), second._2())));
 
-            return new FlinkPairWorkloadOperator<>(joineStream, parallelism);
+            return new FlinkPairOperator<>(joineStream, parallelism);
         } else {
-            throw new WorkloadException("Cast joinStrem to FlinkPairWorkloadOperator failed");
+            throw new WorkloadException("Cast joinStrem to FlinkPairOperator failed");
         }
     }
 

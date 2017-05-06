@@ -19,11 +19,11 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkWindowedWorkloadOperator<T, W extends Window> extends WindowedWorkloadOperator<T> {
+public class FlinkWindowedOperator<T, W extends Window> extends WindowedWorkloadOperator<T> {
 
     private WindowedStream<T, T, W> windowStream;
 
-    public FlinkWindowedWorkloadOperator(WindowedStream<T, T, W> stream, int parallelism) {
+    public FlinkWindowedOperator(WindowedStream<T, T, W> stream, int parallelism) {
         super(parallelism);
         windowStream = stream;
     }
@@ -36,7 +36,7 @@ public class FlinkWindowedWorkloadOperator<T, W extends Window> extends Windowed
                 collector.collect(r);
             }
         });
-        return new FlinkWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class FlinkWindowedWorkloadOperator<T, W extends Window> extends Windowed
                 collector.collect(result);
             }
         });
-        return new FlinkWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -58,14 +58,14 @@ public class FlinkWindowedWorkloadOperator<T, W extends Window> extends Windowed
                     collector.collect(value);
             }
         });
-        return new FlinkWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
     public WorkloadOperator<T> reduce(ro.tucn.frame.functions.ReduceFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = windowStream.reduce((ReduceFunction<T>) (t, t1) ->
                 fun.reduce(t, t1));
-        return new FlinkWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class FlinkWindowedWorkloadOperator<T, W extends Window> extends Windowed
                 collector.collect(result);
             }
         });
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override

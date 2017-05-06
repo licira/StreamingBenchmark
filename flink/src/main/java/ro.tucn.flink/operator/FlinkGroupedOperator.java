@@ -11,20 +11,20 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkGroupedWorkloadOperator<K, V> extends GroupedWorkloadOperator<K, V> {
+public class FlinkGroupedOperator<K, V> extends GroupedWorkloadOperator<K, V> {
 
     private KeyedStream<Tuple2<K, V>, Object> groupedDataStream;
 
-    public FlinkGroupedWorkloadOperator(KeyedStream<Tuple2<K, V>, Object> groupedDataStream, int parallelism) {
+    public FlinkGroupedOperator(KeyedStream<Tuple2<K, V>, Object> groupedDataStream, int parallelism) {
         super(parallelism);
         this.groupedDataStream = groupedDataStream;
     }
 
-    public FlinkPairWorkloadOperator<K, V> reduce(final ReduceFunction<V> fun, String componentId, int parallelism) {
+    public FlinkPairOperator<K, V> reduce(final ReduceFunction<V> fun, String componentId, int parallelism) {
 
         DataStream<Tuple2<K, V>> newDataSet = groupedDataStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
-        return new FlinkPairWorkloadOperator<>(newDataSet, parallelism);
+        return new FlinkPairOperator<>(newDataSet, parallelism);
     }
 
     @Override

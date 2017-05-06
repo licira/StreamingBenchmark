@@ -1,12 +1,9 @@
 package ro.tucn.flink.operator;
 
-import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.Utils;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple1;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
-import org.apache.flink.api.java.typeutils.TypeInfoParser;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.IterativeStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
@@ -15,10 +12,6 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.flink.function.MapFunctionWithInitList;
 import ro.tucn.frame.functions.*;
-import ro.tucn.frame.functions.FilterFunction;
-import ro.tucn.frame.functions.FlatMapFunction;
-import ro.tucn.frame.functions.MapFunction;
-import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairWorkloadOperator;
@@ -34,12 +27,12 @@ import java.util.List;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
+public class FlinkOperator<T> extends WorkloadOperator<T> {
 
     protected DataStream<T> dataStream;
     private IterativeStream<T> iterativeStream;
 
-    public FlinkWorkloadOperator(DataStream<T> dataSet, int parallelism) {
+    public FlinkOperator(DataStream<T> dataSet, int parallelism) {
         super(parallelism);
         dataStream = dataSet;
     }
@@ -47,7 +40,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
     @Override
     public <R> WorkloadOperator<R> map(final MapFunction<T, R> fun, String componentId) {
         DataStream<R> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, R>) t -> fun.map(t));
-        return new FlinkWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -67,7 +60,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
             newDataStream =
                     dataStream.transform("Map", outType, new FlinkPointAssignMapOperator<>(dataStream.getExecutionEnvironment().clean(map)));
         }
-        return new FlinkWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -87,7 +80,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
                             outType,
                             new FlinkPointAssignMapOperator<>(dataStream.getExecutionEnvironment().clean(map)));
         }
-        return new FlinkWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -114,23 +107,23 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
 
         newDataStream.print();
 
-        return new FlinkPairWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkPairOperator<>(newDataStream, getParallelism());
         */
         newDataStream.print();
-        return new FlinkPairWorkloadOperator<K, V>(newDataStream, getParallelism());
+        return new FlinkPairOperator<K, V>(newDataStream, getParallelism());
     }
 
     @Override
     public WorkloadOperator<T> reduce(final ReduceFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = dataStream.keyBy(0).reduce((org.apache.flink.api.common.functions.ReduceFunction<T>) (t, t1) -> fun.reduce(t, t1));
-        return new FlinkWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
     public WorkloadOperator<T> filter(final FilterFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = dataStream.filter((org.apache.flink.api.common.functions.FilterFunction<T>) t ->
                 fun.filter(t));
-        return new FlinkWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -142,7 +135,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
                 collector.collect(r);
             }
         }).returns(returnType);
-        return new FlinkWorkloadOperator<>(newDataStream, getParallelism());
+        return new FlinkOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -155,7 +148,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
                 collector.collect(tuple2);
             }
         });
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -168,7 +161,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
         WindowedStream<T, T, TimeWindow> windowedStream = dataStream.keyBy((KeySelector<T, T>) value ->
                 value).timeWindow(Time.of(windowDuration.getLength(), windowDuration.getUnit()),
                 Time.of(slideDuration.getLength(), slideDuration.getUnit()));
-        return new FlinkWindowedWorkloadOperator<>(windowedStream, parallelism);
+        return new FlinkWindowedOperator<>(windowedStream, parallelism);
     }
 
     @Override
@@ -180,7 +173,7 @@ public class FlinkWorkloadOperator<T> extends WorkloadOperator<T> {
         } else if (!iterativeEnabled) {
             throw new UnsupportOperatorException("Iterative is not enabled.");
         } else {
-            FlinkWorkloadOperator<T> operator_close = (FlinkWorkloadOperator<T>) operator;
+            FlinkOperator<T> operator_close = (FlinkOperator<T>) operator;
             if (broadcast) {
                 iterativeStream.closeWith(operator_close.dataStream.broadcast());
             } else {

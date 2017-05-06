@@ -17,11 +17,11 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkWindowedPairWorkloadOperator<K, V, W extends Window> extends WindowedPairWorkloadOperator<K, V> {
+public class FlinkWindowedPairOperator<K, V, W extends Window> extends WindowedPairWorkloadOperator<K, V> {
 
     private WindowedStream<Tuple2<K, V>, K, W> windowStream;
 
-    public FlinkWindowedPairWorkloadOperator(WindowedStream<Tuple2<K, V>, K, W> stream, int parallelism) {
+    public FlinkWindowedPairOperator(WindowedStream<Tuple2<K, V>, K, W> stream, int parallelism) {
         super(parallelism);
         windowStream = stream;
     }
@@ -30,7 +30,7 @@ public class FlinkWindowedPairWorkloadOperator<K, V, W extends Window> extends W
     public PairWorkloadOperator<K, V> reduceByKey(final ReduceFunction<V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = windowStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     /**
@@ -45,7 +45,7 @@ public class FlinkWindowedPairWorkloadOperator<K, V, W extends Window> extends W
     public PairWorkloadOperator<K, V> updateStateByKey(final ReduceFunction<V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = windowStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class FlinkWindowedPairWorkloadOperator<K, V, W extends Window> extends W
                 collector.collect(r);
             }
         });
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class FlinkWindowedPairWorkloadOperator<K, V, W extends Window> extends W
                 collector.collect(result);
             }
         });
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -78,14 +78,14 @@ public class FlinkWindowedPairWorkloadOperator<K, V, W extends Window> extends W
                     collector.collect(value);
             }
         });
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override
     public PairWorkloadOperator<K, V> reduce(final ReduceFunction<Tuple2<K, V>> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = windowStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 fun.reduce(t1, t2));
-        return new FlinkPairWorkloadOperator<>(newDataStream, parallelism);
+        return new FlinkPairOperator<>(newDataStream, parallelism);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
         env.setParallelism(parallelism);
         DataStream<String> stream = env
                 .addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
-        return new FlinkWorkloadOperator<>(stream, parallelism);
+        return new FlinkOperator<>(stream, parallelism);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
             }
             return new WithTime<>(value, System.currentTimeMillis());
         });
-        return new FlinkWorkloadOperator<>(withTimeDataStream, parallelism);
+        return new FlinkOperator<>(withTimeDataStream, parallelism);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
             }
             return new Point(position, time);
         });
-        return new FlinkWorkloadOperator<>(pointStream, parallelism);
+        return new FlinkOperator<>(pointStream, parallelism);
     }
 
     @Override
