@@ -15,30 +15,35 @@ public class PerformanceStreamingListener implements StreamingListener {
      * Called when a receiver has been started
      */
     public void onReceiverStarted(StreamingListenerReceiverStarted receiverStarted) {
+        logger.info("Receiver Started");
     }
 
     /**
      * Called when a receiver has reported an error
      */
     public void onReceiverError(StreamingListenerReceiverError receiverError) {
+        logger.info("Receiver Error");
     }
 
     /**
      * Called when a receiver has been stopped
      */
     public void onReceiverStopped(StreamingListenerReceiverStopped receiverStopped) {
+        logger.info("Batch Stopped");
     }
 
     /**
      * Called when a batch of jobs has been submitted for processing.
      */
     public void onBatchSubmitted(StreamingListenerBatchSubmitted batchSubmitted) {
+        logger.info("Batch Submitted");
     }
 
     /**
      * Called when processing of a batch of jobs has started.
      */
     public void onBatchStarted(StreamingListenerBatchStarted batchStarted) {
+        logger.info("Batch Started");
     }
 
     /**
