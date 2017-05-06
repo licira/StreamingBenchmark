@@ -64,14 +64,14 @@ public abstract class Workload implements Serializable {
     }
 
     protected Operator<String> getStringStreamOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.stringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+        return operatorCreator.getStringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
     protected Operator<WithTime<String>> getStringStreamWithTimeOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.stringStreamFromKafkaWithTime(properties, topicPropertyName, componentId, parallelism);
+        return operatorCreator.getStringStreamWithTimeFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
     protected Operator<Point> getPointStreamOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.pointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+        return operatorCreator.getPointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 }

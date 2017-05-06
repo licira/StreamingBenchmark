@@ -59,7 +59,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
     }
 
     @Override
-    public Operator<String> stringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<String> getStringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         conf.setNumWorkers(parallelism);
         SpoutConfig spoutConfig = createSpoutConfig(properties);
         topologyBuilder.setSpout(componentId, new KafkaSpout(spoutConfig), parallelism);
@@ -67,7 +67,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
     }
 
     @Override
-    public Operator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         conf.setNumWorkers(parallelism);
         SpoutConfig spoutConfig = createSpoutConfig(properties);
         topologyBuilder.setSpout("spout", new KafkaSpout(spoutConfig), parallelism);
@@ -76,7 +76,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
     }
 
     @Override
-    public Operator<Point> pointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         conf.setNumWorkers(parallelism);
         SpoutConfig spoutConfig = createSpoutConfig(properties);
         topologyBuilder.setSpout(componentId, new KafkaSpout(spoutConfig), parallelism);
@@ -85,7 +85,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
 
     /*
         @Override
-        public Operator<WithTime<String>> stringStreamFromKafkaWithTime(String zkConStr,
+        public Operator<WithTime<String>> getStringStreamWithTimeFromKafka(String zkConStr,
                                                                                 String kafkaServers,
                                                                                 String group,
                                                                                 String topics,
@@ -110,7 +110,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
         }
 
         @Override
-        public Operator<Point> pointStreamFromKafka(String zkConStr, String kafkaServers, String group, String topics, String offset, String componentId, int parallelism) {
+        public Operator<Point> getPointStreamFromKafka(String zkConStr, String kafkaServers, String group, String topics, String offset, String componentId, int parallelism) {
             conf.setNumWorkers(parallelism);
             BrokerHosts hosts = new ZkHosts(zkConStr);
             SpoutConfig spoutConfig = new SpoutConfig(hosts, topics, "/" + topics, UUID.randomUUID().toString());
@@ -129,7 +129,7 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
         }
 
         @Override
-        public Operator<String> stringStreamFromKafka(String zkConStr,
+        public Operator<String> getStringStreamFromKafka(String zkConStr,
                                                               String kafkaServers,
                                                               String group,
                                                               String topics,

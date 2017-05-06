@@ -69,7 +69,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<String> stringStreamFromKafka(Properties properties,
+    public Operator<String> getStringStreamFromKafka(Properties properties,
                                                           String topicPropertyName,
                                                           String componentId,
                                                           int parallelism) {
@@ -87,7 +87,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public SparkOperator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties,
+    public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties,
                                                                                  String topicPropertyName,
                                                                                  String componentId,
                                                                                  int parallelism) {
@@ -103,7 +103,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<Point> pointStreamFromKafka(Properties properties,
+    public Operator<Point> getPointStreamFromKafka(Properties properties,
                                                         String topicPropertyName,
                                                         String componentId,
                                                         int parallelism) {

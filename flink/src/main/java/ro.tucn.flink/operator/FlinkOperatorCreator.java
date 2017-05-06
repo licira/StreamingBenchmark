@@ -29,7 +29,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<String> stringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<String> getStringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         env.setParallelism(parallelism);
         DataStream<String> stream = env
@@ -38,7 +38,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<WithTime<String>> stringStreamFromKafkaWithTime(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         env.setParallelism(parallelism);
         DataStream<String> stream = env
@@ -54,7 +54,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<Point> pointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         env.setParallelism(parallelism);
         DataStream<String> stream = env
