@@ -4,9 +4,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.storm.operator.StormOperatorCreator;
 import ro.tucn.util.Topics;
-import ro.tucn.workload.AdvClick;
-import ro.tucn.workload.KMeans;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.*;
 
 import java.io.IOException;
 
@@ -27,10 +25,10 @@ public class Application {
                 workload = new KMeans(operatorCreator);
             } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
                 operatorCreator = new StormOperatorCreator(Topics.UNIFORM_WORDS);
-                workload = new AdvClick(operatorCreator);
+                workload = new WordCount(operatorCreator);
             } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
                 operatorCreator = new StormOperatorCreator(Topics.SKEWED_WORDS);
-                workload = new AdvClick(operatorCreator);
+                workload = new WordCountFast(operatorCreator);
             } else {
                 return;
             }
