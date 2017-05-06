@@ -1,6 +1,10 @@
 package ro.tucn.spark.operator;
 
+import org.apache.log4j.Logger;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
@@ -18,6 +22,8 @@ import scala.Tuple2;
  * Created by Liviu on 4/8/2017.
  */
 public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> {
+
+    private static final Logger logger = Logger.getLogger(SparkPairWorkloadOperator.class);
 
     private JavaPairDStream<K, V> pairDStream;
 
@@ -166,6 +172,13 @@ public class SparkPairWorkloadOperator<K, V> extends PairWorkloadOperator<K, V> 
     }
 
     public void print() {
+        VoidFunction2<JavaPairRDD<K, V>, Time> voidFunction2 = (VoidFunction2<JavaPairRDD<K, V>, Time>) (rdd, time) -> {
+            rdd.collect();
+            logger.info("===================================");
+            logger.info(" Number of records in this batch: " + rdd.count());
+            logger.info("===================================");
+        };
+        this.pairDStream.foreachRDD(voidFunction2);
         this.pairDStream.print();
     }
 
