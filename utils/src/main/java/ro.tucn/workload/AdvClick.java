@@ -56,7 +56,7 @@ public class AdvClick extends Workload {
                     .sink();
             clicksWithCreateTime.print();
         } catch (Exception e) {
-            //logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
