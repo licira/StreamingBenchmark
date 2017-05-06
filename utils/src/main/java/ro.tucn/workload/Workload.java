@@ -28,7 +28,7 @@ public abstract class Workload implements Serializable {
 
     public Workload(OperatorCreator operatorCreator) throws WorkloadException {
         this.operatorCreator = operatorCreator;
-        Configuration.LoadConfigure();
+        Configuration.loadConfiguration();
         parallelism = Configuration.clusterHosts * Configuration.hostCores;
         // load specific configure for each workload
         properties = new Properties();

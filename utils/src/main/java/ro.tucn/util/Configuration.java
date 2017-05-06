@@ -12,14 +12,7 @@ import java.util.Properties;
 public class Configuration {
 
     public static final String COMMON_CONFIGURE = "config.properties";
-    // configure properties
-    private static final String OPERATOR_CREATOR = "operator.creator";
-    private static final String THROUGHPUT_FREQUENCY = "throughput.frequency";
-    private static final String LATENCY_FREQUENCY = "latency.frequency";
-    private static final String KMEANS_CENTROIDS_FREQUENCY = "kmeans.centroids.frequency";
-    private static final String CLUSTER_HOSTS = "cluster.hosts";
-    private static final String HOST_CORES = "host.cores";
-    private static final Logger logger = Logger.getLogger(Configuration.class.getSimpleName());
+
     public static Properties config;
     public static String operatorCreator;
     public static Integer throughputFrequency; // milliseconds
@@ -28,8 +21,17 @@ public class Configuration {
     public static Integer clusterHosts;
     public static Integer hostCores;
 
+    // configure properties
+    private static final String OPERATOR_CREATOR = "operator.creator";
+    private static final String THROUGHPUT_FREQUENCY = "throughput.frequency";
+    private static final String LATENCY_FREQUENCY = "latency.frequency";
+    private static final String KMEANS_CENTROIDS_FREQUENCY = "kmeans.centroids.frequency";
+    private static final String CLUSTER_HOSTS = "cluster.hosts";
+    private static final String HOST_CORES = "host.cores";
+    private static final Logger logger = Logger.getLogger(Configuration.class.getSimpleName());
+
     // load configuration from config.properties
-    public static void LoadConfigure() throws WorkloadException {
+    public static void loadConfiguration() throws WorkloadException {
         if (null == config) {
             config = new Properties();
             try {
@@ -41,7 +43,6 @@ public class Configuration {
                 kmeansCentroidsFrequency = Double.valueOf(config.getProperty(KMEANS_CENTROIDS_FREQUENCY));
                 clusterHosts = Integer.valueOf(config.getProperty(CLUSTER_HOSTS));
                 hostCores = Integer.valueOf(config.getProperty(HOST_CORES));
-
                 if (null == operatorCreator || null == throughputFrequency) {
                     throw new WorkloadException("Configuration missing");
                 }

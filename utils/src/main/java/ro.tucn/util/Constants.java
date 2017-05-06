@@ -35,7 +35,7 @@ public class Constants {
     public static Integer hostCores;
 
     // load configuration from config.properties
-    public static void LoadConfigure() throws WorkloadException {
+    public static void loadConfiguration() throws WorkloadException {
         if (null == config) {
             config = new Properties();
             try {
