@@ -16,7 +16,7 @@ import java.util.Properties;
  */
 public abstract class Generator {
 
-    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    protected static final Logger logger = Logger.getLogger(Generator.class);
 
     private ProducerCreator producerCreator = new ProducerCreator();
 
@@ -24,7 +24,7 @@ public abstract class Generator {
     protected ConfigReader configReader = new ConfigReader();
 
     protected static KafkaProducer<String, String> producer;
-    protected ProducerRecord<String, String> newRecord;
+    protected static ProducerRecord<String, String> newRecord;
     protected Properties properties;
     protected String bootstrapServers;
     protected String TOPIC;
@@ -62,11 +62,13 @@ public abstract class Generator {
         bootstrapServers = properties.getProperty("bootstrap.servers");
     }
 
-    protected void send(String topic, String key, String value) {
+    protected static void send(String topic, String key, String value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord<>(topic, null, timestamp, key, value);
         producer.send(newRecord);
-        logger.info("Timestamp: " + newRecord.timestamp() + "\tValue: " + newRecord.value());
+        logger.info("Topic: " + topic
+                + "\tTimestamp: " + newRecord.timestamp()
+                + "\tValue: " + newRecord.value());
     }
 
     protected void initializeSmallBufferProducer() {

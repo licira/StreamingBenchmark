@@ -1,12 +1,13 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
+import ro.tucn.generator.entity.Adv;
+import ro.tucn.generator.entity.Click;
+import ro.tucn.generator.helper.AdvHelper;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -16,15 +17,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Generator {
 
-    private RandomDataGenerator generator;
-    private ExecutorService cachedPool;
-
     private static String ADV_TOPIC = Topics.ADV;
     private static String CLICK_TOPIC = Topics.CLICK;
-    private static long ADV_NUM = 10;
+    private static Long advNum;
     private double clickLambda;
     private double clickProbability;
-    private ArrayList<Advertisement> advList;
+
+    private RandomDataGenerator generator;
+    private ExecutorService cachedPool;
+    private ArrayList<Adv> advList;
 
     public AdvClick() {
         super();
@@ -41,20 +42,11 @@ public class AdvClick extends Generator {
         producer.close();
     }
 
-    private void submitNewClickThread(long i, ArrayList<Advertisement> advList) {
-        if (i % 100 == 0) {
-            cachedPool.submit(new ClickThread(advList));
-            advList = new ArrayList();
-        }
-    }
-
-    private void addToAdvList(ArrayList<Advertisement> advList, double probability, String advId, long timestamp) {
-        // whether customer clicked this advertisement
-        if (generator.nextUniform(0, 1) <= probability) {
-            // long deltaT = (long) generator.nextExponential(clickLambda) * 1000;
-            long deltaT = (long) generator.nextGaussian(clickLambda, 1) * 1000;
-            advList.add(new Advertisement(advId, timestamp + deltaT));
-        }
+    private void addToAdvList(Adv adv) {
+        // long deltaT = (long) generator.nextExponential(clickLambda) * 1000;
+        long deltaT = (long) generator.nextGaussian(clickLambda, 1) * advNum;
+        adv.setTime(adv.getTime() + deltaT);
+        advList.add(adv);
     }
 
     private void initializeExecutorService() {
@@ -63,7 +55,7 @@ public class AdvClick extends Generator {
         // sub thread use variable in main thread
         // for loop to generate advertisement
     }
-    
+
     private void shutdownExecutorService() {
         cachedPool.shutdown();
         try {
@@ -76,24 +68,68 @@ public class AdvClick extends Generator {
     @Override
     protected void generateData(int sleepFrequency) {
         advList = new ArrayList();
-        for (long i = 0; i < ADV_NUM; ++i) {
-            StringBuilder messageData = buildMessageData();
-            send(ADV_TOPIC, null, messageData.toString());
-            submitNewClickThread(i, advList);
+        for (long i = 0; i < advNum; ++i) {
+            Adv adv = submitNewAdv();
+            addToAdvList(adv);
+            if (clickSubmissionCondition(i)) {
+                submitNewClick();
+            }
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
     }
 
-    @Override
-    protected StringBuilder buildMessageData() {
-        String advId = UUID.randomUUID().toString();
-        long timestamp = TimeHelper.getNanoTime();
-        addToAdvList(advList, clickProbability, advId, timestamp);
+    private Adv submitNewAdv() {
+        Adv adv = AdvHelper.createNewAdv();
+        submitAdv(adv);
+        return adv;
+    }
+
+    private void submitAdv(Adv adv) {
+        StringBuilder messageData = getAdvMessageData(adv);
+        send(ADV_TOPIC, null, messageData.toString());
+    }
+
+    private void submitNewClick() {
+        for (Adv adv : advList) {
+            // probability that the customer would click this advertisement
+            if (generator.nextUniform(0, 1) <= clickProbability) {
+                StringBuilder messageData = getClickMessageData(new Click(adv));
+                send(CLICK_TOPIC, null, messageData.toString());
+                long currentTime = System.nanoTime();
+                if (currentTime < adv.getTime()) {
+                    try {
+                        Thread.sleep(adv.getTime() - currentTime);
+                    } catch (InterruptedException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+        }
+        advList.clear();
+    }
+
+    private StringBuilder getAdvMessageData(Adv adv) {
         StringBuilder messageData = new StringBuilder();
-        messageData.append(advId);
+        messageData.append(adv.getId());
         //messageData.append(timestamp).append("Constants.TimeSeparator").append(advId);
         return messageData;
+    }
+
+    private StringBuilder getClickMessageData(Click click) {
+        StringBuilder messageData = new StringBuilder();
+        messageData.append(click.getAdv().getId());
+        return messageData;
+    }
+
+    private boolean clickSubmissionCondition(long value) {
+        long submissionThreshold = (long) (clickProbability * advNum);
+        return (value % submissionThreshold == submissionThreshold - 1);
+    }
+
+    @Override
+    protected StringBuilder buildMessageData() {
+        return null;
     }
 
     @Override
@@ -120,58 +156,6 @@ public class AdvClick extends Generator {
     protected void initializeWorkloadData() {
         clickProbability = Double.parseDouble(properties.getProperty("click.probability"));
         clickLambda = Double.parseDouble(properties.getProperty("click.lambda"));
-    }
-
-    private static class Advertisement implements Comparable<Advertisement> {
-        private String id;
-        private long time;
-
-        Advertisement(String id, long time) {
-            this.id = id;
-            this.time = time;
-        }
-
-        @Override
-        public int compareTo(Advertisement o) {
-            if (this.time > o.time)
-                return 1;
-            else if (this.time == o.time)
-                return 0;
-            else
-                return -1;
-        }
-    }
-
-    private class ClickThread implements Runnable {
-        private ArrayList<Advertisement> advList;
-
-        public ClickThread(ArrayList<Advertisement> advList) {
-            this.advList = advList;
-            Collections.sort(this.advList);
-        }
-
-        @Override
-        public void run() {
-                StringBuilder messageData = buildMessageData();
-                send(CLICK_TOPIC, null, messageData.toString());
-                // System.out.println("Clicked: " + adv.id);
-        }
-
-        private StringBuilder buildMessageData() {
-            StringBuilder messageData = new StringBuilder();
-            for (Advertisement adv : advList) {
-                if (System.nanoTime() < adv.time) {
-                    try {
-                        Thread.sleep(adv.time - System.nanoTime());
-                    } catch (InterruptedException e) {
-                        logger.error(e.getMessage());
-                    }
-                }
-                messageData.append(adv);
-            }
-            long timeStamp = TimeHelper.getNanoTime();
-            //messageData.append(timestamp).append("Constants.TimeSeparator").append(advId);
-            return messageData;
-        }
+        advNum = Long.parseLong(properties.getProperty("adv.num"));
     }
 }
