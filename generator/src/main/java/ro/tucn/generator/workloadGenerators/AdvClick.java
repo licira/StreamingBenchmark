@@ -5,6 +5,9 @@ import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.helper.AdvHelper;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractSender;
+import ro.tucn.generator.sender.AdvSender;
+import ro.tucn.generator.sender.ClickSender;
 import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
@@ -17,12 +20,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class AdvClick extends Generator {
 
-    private static String ADV_TOPIC = Topics.ADV;
-    private static String CLICK_TOPIC = Topics.CLICK;
+    public static String ADV_TOPIC = Topics.ADV;
+    public static String CLICK_TOPIC = Topics.CLICK;
+
     private static Long advNum;
     private double clickLambda;
     private double clickProbability;
-
+    private AbstractSender advSender;
+    private AbstractSender clickSender;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
     private ArrayList<Adv> advList;
@@ -69,72 +74,43 @@ public class AdvClick extends Generator {
     protected void generateData(int sleepFrequency) {
         advList = new ArrayList();
         for (long i = 0; i < advNum; ++i) {
-            Adv adv = submitNewAdv();
+            Adv adv = submitAdv();
             addToAdvList(adv);
             if (clickSubmissionCondition(i)) {
-                submitNewClick();
+                submitClick();
             }
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
     }
 
-    private Adv submitNewAdv() {
+    private Adv submitAdv() {
         Adv adv = AdvHelper.createNewAdv();
-        submitAdv(adv);
+        advSender.send(adv);
         return adv;
     }
 
-    private void submitAdv(Adv adv) {
-        StringBuilder messageValue = getAdvMessageDataValue(adv);
-        StringBuilder messageKey = getAdvMessageDataKey(adv);
-        send(ADV_TOPIC, messageKey.toString(), messageValue.toString());
-    }
-
-    private void submitNewClick() {
+    private void submitClick() {
         for (Adv adv : advList) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
                 Click click = new Click(adv);
-                StringBuilder messageValue = getClickMessageDataValue(click);
-                StringBuilder messageKey = getClickMessageDataKey(click);
-                //send(CLICK_TOPIC, null, messageData.toString());
-                send(CLICK_TOPIC, messageKey.toString(), messageValue.toString());
-                long currentTime = System.nanoTime();
-                if (currentTime < adv.getTimestamp()) {
-                    try {
-                        Thread.sleep(adv.getTimestamp() - currentTime);
-                    } catch (InterruptedException e) {
-                        logger.error(e.getMessage());
-                    }
-                }
+                clickSender.send(click);
+                attemptSleep(adv.getTimestamp());
             }
         }
         advList.clear();
     }
 
-    private StringBuilder getAdvMessageDataValue(Adv adv) {
-        StringBuilder messageData = new StringBuilder();
-        messageData.append(adv.getTimestamp());
-        return messageData;
-    }
-
-    private StringBuilder getAdvMessageDataKey(Adv adv) {
-        StringBuilder messageData = new StringBuilder();
-        messageData.append(adv.getId());
-        return messageData;
-    }
-
-    private StringBuilder getClickMessageDataValue(Click click) {
-        StringBuilder messageData = new StringBuilder();
-        messageData.append(click.getTimestamp());
-        return messageData;
-    }
-
-    private StringBuilder getClickMessageDataKey(Click click) {
-        StringBuilder messageData = new StringBuilder();
-        messageData.append(click.getAdv().getId());
-        return messageData;
+    private void attemptSleep(long time) {
+        long currentTime = System.nanoTime();
+        if (currentTime < time) {
+            try {
+                Thread.sleep(time - currentTime);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+        }
     }
 
     private boolean clickSubmissionCondition(long value) {
@@ -143,8 +119,12 @@ public class AdvClick extends Generator {
     }
 
     @Override
-    protected StringBuilder buildMessageData() {
-        return null;
+    protected void initializeSmallBufferProducer() {
+        producer = producerCreator.createSmallBufferProducer(bootstrapServers);
+        advSender = new AdvSender();
+        advSender.setProducer(producer);
+        clickSender = new ClickSender();
+        clickSender.setProducer(producer);
     }
 
     @Override

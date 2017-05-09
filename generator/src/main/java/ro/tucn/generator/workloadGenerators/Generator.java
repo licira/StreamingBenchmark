@@ -1,9 +1,7 @@
 package ro.tucn.generator.workloadGenerators;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.producer.ProducerCreator;
 import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.ConfigReader;
@@ -14,17 +12,16 @@ import java.util.Properties;
 /**
  * Created by Liviu on 4/5/2017.
  */
-public abstract class Generator {
+public abstract class Generator<K, V> {
 
     protected static final Logger logger = Logger.getLogger(Generator.class);
 
-    private ProducerCreator producerCreator = new ProducerCreator();
-
+    protected ProducerCreator producerCreator = new ProducerCreator();
     protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
     protected ConfigReader configReader = new ConfigReader();
 
     protected static KafkaProducer<String, String> producer;
-    protected static ProducerRecord<String, String> newRecord;
+
     protected Properties properties;
     protected String bootstrapServers;
     protected String TOPIC;
@@ -40,9 +37,11 @@ public abstract class Generator {
 
     public abstract void generate(int sleepFrequency);
 
-    protected abstract void generateData(int sleepFrequency);
+    public void send(String topic, K key, V value) {
+        send(topic, key, value);
+    }
 
-    protected abstract StringBuilder buildMessageData();
+    protected abstract void generateData(int sleepFrequency);
 
     protected abstract void initialize();
 
@@ -62,14 +61,14 @@ public abstract class Generator {
         bootstrapServers = properties.getProperty("bootstrap.servers");
     }
 
-    protected static void send(String topic, String key, String value) {
+    /*protected static void send(String topic, String key, String value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, null, timestamp, key, value);
         producer.send(newRecord);
         logger.info("Topic: " + topic
                 + "\tTimestamp: " + newRecord.timestamp()
                 + "\tValue: " + newRecord.value());
-    }
+    }*/
 
     protected void initializeSmallBufferProducer() {
         producer = producerCreator.createSmallBufferProducer(bootstrapServers);

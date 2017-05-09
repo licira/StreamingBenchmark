@@ -36,17 +36,24 @@ public class KMeans extends Workload {
 
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            Operator<Point> pointOperators = getPointStreamOperator("source", "topic1");
-            pointOperators.iterative(); // points iteration
-            Operator<Point> assignedPoints = pointOperators.map(UserFunctions.assign, initCentroids, "assign", Point.class);
-            Operator<Point> centroids = assignedPoints
+            Operator<Point> pointOperator = getPointStreamOperator("source", "topic1");
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
+            pointOperator.iterative(); // points iteration
+
+            //Operator<Point> assignedPoints = pointOperators.map(UserFunctions.assign, initCentroids, "assign", Point.class);
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
+            Operator<Point> centroid = pointOperator
                     .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
                     .reduceByKey(UserFunctions.pointAggregator, "aggregator")
                     .map(UserFunctions.computeCentroid, "centroid", Point.class);
-            pointOperators.closeWith(centroids, true);
-            centroids.sink();
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
+            pointOperator.closeWith(centroid, true);
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");
+            //centroids.sink();
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>5");
             //assignedPoints.print();
-            pointOperators.print();
+            centroid.print();
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>6");
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

@@ -44,7 +44,6 @@ public class UniformWordCount extends Generator {
         }
     }
 
-    @Override
     protected StringBuilder buildMessageData() {
         double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
         StringBuilder messageData = new StringBuilder();
