@@ -5,6 +5,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.WithTime;
 
@@ -65,6 +66,10 @@ public abstract class Workload implements Serializable {
 
     protected Operator<String> getStringStreamOperator(String componentId, String topicPropertyName) {
         return operatorCreator.getStringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+    }
+
+    protected PairOperator<String, String> getPairStreamOperator(String componentId, String topicPropertyName) {
+        return operatorCreator.getPairStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
     protected Operator<WithTime<String>> getStringStreamWithTimeOperator(String componentId, String topicPropertyName) {
