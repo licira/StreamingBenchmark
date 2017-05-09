@@ -1,6 +1,7 @@
 package ro.tucn.frame.userfunctions;
 
 import com.google.common.base.Optional;
+import org.apache.log4j.Logger;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
 import ro.tucn.statistics.CentroidLog;
@@ -16,6 +17,8 @@ import java.util.*;
  * Created by Liviu on 4/8/2017.
  */
 public class UserFunctions implements Serializable {
+
+    private static final Logger logger = Logger.getLogger(UserFunctions.class);
 
     public static MapFunction<String, String> mapToSelf = new MapFunction<String, String>() {
         public String map(String var1) {
@@ -152,7 +155,7 @@ public class UserFunctions implements Serializable {
                     String advId = list[1];
                     return new Tuple2(advId, timestamp);
                 } catch (NumberFormatException ex) {
-                    return null;
+                    logger.error(ex.getMessage());
                 }
             }
             return null;
@@ -240,9 +243,8 @@ public class UserFunctions implements Serializable {
             = new MapFunction<Tuple2<Integer, Tuple2<Long, Point>>, Point>() {
 
         //Logger logger = Logger.getLogger("CentroidLogger");
-
-        ThroughputLog throughput = new ThroughputLog("Centroid");
-        CentroidLog centroidLog = new CentroidLog();
+        private ThroughputLog throughput = new ThroughputLog("Centroid");
+        private CentroidLog centroidLog = new CentroidLog();
 
         public Point map(Tuple2<Integer, Tuple2<Long, Point>> var1) {
             throughput.execute();
