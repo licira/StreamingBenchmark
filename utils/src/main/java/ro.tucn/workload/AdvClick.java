@@ -1,10 +1,9 @@
 package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
-import ro.tucn.logger.SerializableLogger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
-import ro.tucn.frame.userfunctions.UserFunctions;
+import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
@@ -33,28 +32,15 @@ public class AdvClick extends Workload {
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
-            PairOperator<String, Long> advPairOperators = getStringStreamOperator("adv", "topic1")
-                    .mapToPair(UserFunctions.mapToStringLongPair, "Extractor");
-            PairOperator<String, Long> clickPaiOperators = getStringStreamOperator("click", "topic2")
-                    .mapToPair(UserFunctions.mapToStringLongPair, "Extractor2");
-            //advs.print();
-            //clicks.print();
-            /*PairOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advs.join(
-                    "Join",
+            PairOperator<String, String> advs = getPairStreamOperator("adv", "topic1");
+            PairOperator<String, String> clicks = getPairStreamOperator("click", "topic2");
+            advs.print();
+            clicks.print();
+            PairOperator<String, Tuple2<String, String>> advClick = advs.join("Join",
                     clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
-            */
-            PairOperator<String, Tuple2<Long, Long>> clicksWithCreateTime = advPairOperators.join(
-            "Join",
-            clickPaiOperators,
-            new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
-            new TimeDuration(TimeUnit.SECONDS, streamWindowTwo),
-            new TimeAssigner(),
-            new TimeAssigner());
-            clicksWithCreateTime.mapValue(UserFunctions.mapToWithTime, "MapToWithTime")
-                    .sink();
-            clicksWithCreateTime.print();
+            advClick.print();
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

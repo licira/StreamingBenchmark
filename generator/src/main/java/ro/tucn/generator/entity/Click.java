@@ -10,13 +10,14 @@ public class Click {
 
     public Click(Adv adv) {
         this.adv = adv;
+        timestamp = System.nanoTime();
     }
 
     public Adv getAdv() {
         return adv;
     }
 
-    public void setAdv(Adv adv) {
-        this.adv = adv;
+    public long getTime() {
+        return timestamp;
     }
 }

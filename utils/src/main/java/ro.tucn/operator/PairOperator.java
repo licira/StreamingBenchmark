@@ -87,5 +87,7 @@ public abstract class PairOperator<K, V> extends BaseOperator {
             AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException;
 
     public abstract void sink();
+
+    public abstract void count();
 }
 

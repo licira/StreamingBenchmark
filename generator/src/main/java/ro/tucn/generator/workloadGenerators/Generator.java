@@ -64,7 +64,7 @@ public abstract class Generator {
 
     protected static void send(String topic, String key, String value) {
         long timestamp = TimeHelper.getNanoTime();
-        newRecord = new ProducerRecord<>(topic, null, timestamp, key, value);
+        newRecord = new ProducerRecord(topic, null, timestamp, key, value);
         producer.send(newRecord);
         logger.info("Topic: " + topic
                 + "\tTimestamp: " + newRecord.timestamp()

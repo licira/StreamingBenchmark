@@ -8,6 +8,7 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.Operator;
+import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.WithTime;
 
@@ -35,6 +36,11 @@ public class FlinkOperatorCreator extends OperatorCreator {
         DataStream<String> stream = env
                 .addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
         return new FlinkOperator<>(stream, parallelism);
+    }
+
+    @Override
+    public PairOperator<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+        return null;
     }
 
     @Override

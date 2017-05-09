@@ -318,4 +318,9 @@ public class FlinkPairOperator<K, V> extends PairOperator<K, V> {
             }
         });
     }
+
+    @Override
+    public void count() {
+
+    }
 }

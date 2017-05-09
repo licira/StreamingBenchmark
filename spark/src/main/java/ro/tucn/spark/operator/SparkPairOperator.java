@@ -25,7 +25,7 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
 
     private static final Logger logger = Logger.getLogger(SparkPairOperator.class);
 
-    private JavaPairDStream<K, V> pairDStream;
+    public JavaPairDStream<K, V> pairDStream;
 
     public SparkPairOperator(JavaPairDStream<K, V> stream, int parallelism) {
         super(parallelism);
@@ -110,6 +110,7 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
                                                           PairOperator<K, R> joinStream,
                                                           TimeDuration windowDuration,
                                                           TimeDuration joinWindowDuration) throws WorkloadException {
+        /*
         if (windowDuration.toMilliSeconds() % windowDuration.toMilliSeconds() != 0) {
             throw new WorkloadException("WindowDuration should be multi times of joinWindowDuration");
         }
@@ -123,10 +124,13 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
                     .window(windowDurations.plus(windowDurations2), windowDurations2)
                     .join(joinSparkStream.pairDStream.window(windowDurations2, windowDurations2));
             // filter illegal joined data
-
             return new SparkPairOperator(joinedStream, parallelism);
         }
         throw new WorkloadException("Cast joinStream to SparkPairOperator failed");
+        */
+        SparkPairOperator<K, R> joinSparkStream = ((SparkPairOperator<K, R>) joinStream);
+        JavaPairDStream<K, Tuple2<V, R>> join = pairDStream.join(joinSparkStream.pairDStream, 1);
+        return new SparkPairOperator(join, parallelism);
     }
 
     /**
@@ -178,12 +182,17 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
             logger.info(" Number of records in this batch: " + rdd.count());
             logger.info("===================================");
         };
-        this.pairDStream.foreachRDD(voidFunction2);
+        //this.pairDStream.foreachRDD(voidFunction2);
         this.pairDStream.print();
     }
 
     public void sink() {
-        this.pairDStream = this.pairDStream.filter(new PairLatencySinkFunction<K, V>());
+        /*this.pairDStream = this.pairDStream.filter(new PairLatencySinkFunction<K, V>());
+        this.pairDStream.count().print();*/
+    }
+
+    @Override
+    public void count() {
         this.pairDStream.count().print();
     }
 }

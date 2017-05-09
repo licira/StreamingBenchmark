@@ -16,8 +16,9 @@ import org.apache.spark.streaming.api.java.JavaPairInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.Operator;
+import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.PairOperator;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
 import ro.tucn.util.Constants;
 import ro.tucn.util.WithTime;
@@ -46,6 +47,21 @@ public class SparkOperatorCreator extends OperatorCreator {
         }
         return new WithTime(stringStringTuple2._2(), System.nanoTime());
     };
+    private static Function<Tuple2<String, String>, Point> mapToPointFunction
+            = (Function<Tuple2<String, String>, Point>) stringStringTuple2 -> {
+                String value = stringStringTuple2._2();
+                String[] locationsString = value.split(" ");
+                Point point = new Point();
+                //point.setTime(Long.parseLong(stringStringTuple2._1()));
+                Double[] locations = new Double[locationsString.length];
+                int idx = 0;
+                for (String location : locationsString) {
+                    locations[idx] = Double.parseDouble(location);
+                    idx++;
+                }
+                return point;
+            };
+
     public JavaStreamingContext jssc;
     private Properties properties;
 
@@ -70,9 +86,9 @@ public class SparkOperatorCreator extends OperatorCreator {
 
     @Override
     public Operator<String> getStringStreamFromKafka(Properties properties,
-                                                          String topicPropertyName,
-                                                          String componentId,
-                                                          int parallelism) {
+                                                     String topicPropertyName,
+                                                     String componentId,
+                                                     int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         HashSet<String> topicsSet = new HashSet(Arrays.asList(topic.split(",")));
 
@@ -80,17 +96,26 @@ public class SparkOperatorCreator extends OperatorCreator {
         // Create direct kafka stream with brokers and topics
         JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
         //logger.info(topic);
-        print(messages);
+        messages.print();
         JavaDStream<String> lines = messages.map(mapFunction);
-        print(lines);
+        lines.print();
         return new SparkOperator(lines, parallelism);
     }
 
     @Override
+    public PairOperator<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+        String topic = properties.getProperty(topicPropertyName);
+        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic.split(",")));
+        HashMap<String, String> kafkaParams = createKafkaParams(properties);
+        JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
+        return new SparkPairOperator(messages, parallelism);
+    }
+
+    @Override
     public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties,
-                                                                                 String topicPropertyName,
-                                                                                 String componentId,
-                                                                                 int parallelism) {
+                                                                            String topicPropertyName,
+                                                                            String componentId,
+                                                                            int parallelism) {
         String topic = properties.getProperty(topicPropertyName);
         HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
 
@@ -104,9 +129,9 @@ public class SparkOperatorCreator extends OperatorCreator {
 
     @Override
     public Operator<Point> getPointStreamFromKafka(Properties properties,
-                                                        String topicPropertyName,
-                                                        String componentId,
-                                                        int parallelism) {
+                                                   String topicPropertyName,
+                                                   String componentId,
+                                                   int parallelism) {
         /*NOT OK*/
         String topic = properties.getProperty(topicPropertyName);
         HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
@@ -114,10 +139,10 @@ public class SparkOperatorCreator extends OperatorCreator {
         HashMap<String, String> kafkaParams = createKafkaParams(properties);
         // Create direct kafka stream with brokers and topics
         JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
-        //logger.info(topic);
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + topic);
         print(messages);
-        JavaDStream<String> lines = messages.map(mapFunction);
-        print(lines);
+        JavaDStream<Point> lines = messages.map(mapToPointFunction);
+        printPoints(lines);
         return new SparkOperator(lines, parallelism);
     }
 
@@ -155,19 +180,33 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     private void print(JavaPairDStream<String, String> messages) {
-        VoidFunction2<JavaPairRDD<String, String>, Time> function2 = (VoidFunction2<JavaPairRDD<String, String>, Time>) (newEventsRdd, time) -> {
+        VoidFunction2<JavaPairRDD<String, String>, Time> function = (VoidFunction2<JavaPairRDD<String, String>, Time>) (rdd, time) -> {
             logger.info("===================================");
             logger.info("New Events for " + time + " batch:");
-            for (Tuple2<String, String> tuple : newEventsRdd.collect()) {
+            for (Tuple2<String, String> tuple : rdd.collect()) {
                 logger.info("Tuples: " + tuple._1 + ": " + tuple._2);
             }
             logger.info("===================================");
         };
-        messages.foreachRDD(function2);
+        //messages.foreachRDD(function);
+        messages.print();
     }
 
     private void print(JavaDStream<String> lines) {
-        VoidFunction2<JavaRDD<String>, Time> voidFunction2 = (VoidFunction2<JavaRDD<String>, Time>) (rdd, time) -> {
+        VoidFunction2<JavaRDD<String>, Time> voidFunction = (VoidFunction2<JavaRDD<String>, Time>) (rdd, time) -> {
+            logger.info("===================================");
+            logger.info(" Number of records in this batch: " + rdd.count());
+            for (String value : rdd.collect()) {
+                logger.info("Values: " + value);
+            }
+            logger.info("===================================");
+        };
+        //lines.foreachRDD(voidFunction);
+        lines.print();
+    }
+
+    private void printPoints(JavaDStream<Point> lines) {
+        VoidFunction2<JavaRDD<Point>, Time> voidFunction2 = (VoidFunction2<JavaRDD<Point>, Time>) (rdd, time) -> {
             rdd.collect();
             logger.info("===================================");
             logger.info(" Number of records in this batch: " + rdd.count());

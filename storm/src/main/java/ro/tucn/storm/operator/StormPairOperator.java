@@ -174,4 +174,9 @@ public class StormPairOperator<K, V> extends PairOperator<K, V> {
         topologyBuilder.setBolt("latency", new PairLatencyBolt<>(), parallelism).localOrShuffleGrouping(preComponentId);
 
     }
+
+    @Override
+    public void count() {
+
+    }
 }

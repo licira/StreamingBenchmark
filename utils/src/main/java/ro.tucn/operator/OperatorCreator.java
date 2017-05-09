@@ -22,6 +22,11 @@ public abstract class OperatorCreator implements Serializable {
                                                                    String componentId,
                                                                    int parallelism);
 
+    public abstract PairOperator<String, String> getPairStreamFromKafka(Properties properties,
+                                                              String topicPropertyName,
+                                                              String componentId,
+                                                              int parallelism);
+
     /**
      * zkConStr: zoo1:2181
      * topics: Topic1,Topic2

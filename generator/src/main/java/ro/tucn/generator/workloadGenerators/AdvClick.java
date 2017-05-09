@@ -86,16 +86,20 @@ public class AdvClick extends Generator {
     }
 
     private void submitAdv(Adv adv) {
-        StringBuilder messageData = getAdvMessageData(adv);
-        send(ADV_TOPIC, null, messageData.toString());
+        StringBuilder messageValue = getAdvMessageDataValue(adv);
+        StringBuilder messageKey = getAdvMessageDataKey(adv);
+        send(ADV_TOPIC, messageKey.toString(), messageValue.toString());
     }
 
     private void submitNewClick() {
         for (Adv adv : advList) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
-                StringBuilder messageData = getClickMessageData(new Click(adv));
-                send(CLICK_TOPIC, null, messageData.toString());
+                Click click = new Click(adv);
+                StringBuilder messageValue = getClickMessageDataValue(click);
+                StringBuilder messageKey = getClickMessageDataKey(click);
+                //send(CLICK_TOPIC, null, messageData.toString());
+                send(CLICK_TOPIC, messageKey.toString(), messageValue.toString());
                 long currentTime = System.nanoTime();
                 if (currentTime < adv.getTime()) {
                     try {
@@ -109,14 +113,25 @@ public class AdvClick extends Generator {
         advList.clear();
     }
 
-    private StringBuilder getAdvMessageData(Adv adv) {
+    private StringBuilder getAdvMessageDataValue(Adv adv) {
         StringBuilder messageData = new StringBuilder();
-        messageData.append(adv.getId());
-        //messageData.append(timestamp).append("Constants.TimeSeparator").append(advId);
+        messageData.append(adv.getTime());
         return messageData;
     }
 
-    private StringBuilder getClickMessageData(Click click) {
+    private StringBuilder getAdvMessageDataKey(Adv adv) {
+        StringBuilder messageData = new StringBuilder();
+        messageData.append(adv.getId());
+        return messageData;
+    }
+
+    private StringBuilder getClickMessageDataValue(Click click) {
+        StringBuilder messageData = new StringBuilder();
+        messageData.append(click.getTime());
+        return messageData;
+    }
+
+    private StringBuilder getClickMessageDataKey(Click click) {
         StringBuilder messageData = new StringBuilder();
         messageData.append(click.getAdv().getId());
         return messageData;

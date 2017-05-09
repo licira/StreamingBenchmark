@@ -10,6 +10,7 @@ import backtype.storm.topology.TopologyBuilder;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.Operator;
+import ro.tucn.operator.PairOperator;
 import ro.tucn.storm.bolt.BoltWithTime;
 import ro.tucn.util.ConfigReader;
 import ro.tucn.util.WithTime;
@@ -64,6 +65,11 @@ public class StormOperatorCreator extends OperatorCreator implements Serializabl
         SpoutConfig spoutConfig = createSpoutConfig(properties);
         topologyBuilder.setSpout(componentId, new KafkaSpout(spoutConfig), parallelism);
         return new StormOperator<>(topologyBuilder, componentId, parallelism);
+    }
+
+    @Override
+    public PairOperator<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+        return null;
     }
 
     @Override
