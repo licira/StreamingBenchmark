@@ -7,7 +7,7 @@ import static ro.tucn.generator.workloadGenerators.AdvClick.CLICK_TOPIC;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public class ClickSender extends AbstractSender {
+public class ClickSender extends AbstractMessageSender {
 
     private Click click;
 

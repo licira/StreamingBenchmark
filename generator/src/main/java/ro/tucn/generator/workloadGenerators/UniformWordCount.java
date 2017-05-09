@@ -76,6 +76,11 @@ public class UniformWordCount extends Generator {
     }
 
     @Override
+    protected void initializeMessageSender() {
+
+    }
+
+    @Override
     protected void initializeWorkloadData() {
         uniformSize = Integer.parseInt(this.properties.getProperty("uniform.size"));
         mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));

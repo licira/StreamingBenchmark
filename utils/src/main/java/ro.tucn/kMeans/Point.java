@@ -1,9 +1,11 @@
 package ro.tucn.kMeans;
 
+import java.io.Serializable;
+
 /**
  * Created by Liviu on 4/6/2017.
  */
-public class Point {
+public class Point implements Serializable {
 
     public int id; // Centroid id: 0, 1, 2, ...
     public double[] location;
@@ -86,10 +88,6 @@ public class Point {
         return squareSum;
     }
 
-//    public void clear() {
-//        x = y = 0.0;
-//    }
-
     @Override
     public String toString() {
         String str = "(";
@@ -100,14 +98,5 @@ public class Point {
         if (-1 != this.id)
             return id + ":" + str;
         return str;
-    }
-
-    public String positonString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.location.length - 1; ++i) {
-            sb.append(this.location[i]).append(", ");
-        }
-        sb.append(this.location[location.length - 1]);
-        return sb.toString();
     }
 }

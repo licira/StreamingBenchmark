@@ -80,6 +80,11 @@ public class SkewedWordCount extends Generator {
     }
 
     @Override
+    protected void initializeMessageSender() {
+
+    }
+
+    @Override
     protected void initializeWorkloadData() {
         zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
         zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));

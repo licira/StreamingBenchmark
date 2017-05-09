@@ -7,7 +7,7 @@ import static ro.tucn.generator.workloadGenerators.AdvClick.ADV_TOPIC;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public class AdvSender extends AbstractSender {
+public class AdvSender extends AbstractMessageSender {
 
     private Adv adv;
 

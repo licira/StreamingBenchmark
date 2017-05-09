@@ -49,6 +49,8 @@ public abstract class Generator<K, V> {
 
     protected abstract void initializeDataGenerators();
 
+    protected abstract void initializeMessageSender();
+
     protected abstract void initializeWorkloadData();
 
     private void initialzeBootstrapServersData() {

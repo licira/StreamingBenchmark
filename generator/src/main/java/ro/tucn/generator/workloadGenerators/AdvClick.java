@@ -5,7 +5,7 @@ import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.helper.AdvHelper;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractSender;
+import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.AdvSender;
 import ro.tucn.generator.sender.ClickSender;
 import ro.tucn.util.Topics;
@@ -26,8 +26,8 @@ public class AdvClick extends Generator {
     private static Long advNum;
     private double clickLambda;
     private double clickProbability;
-    private AbstractSender advSender;
-    private AbstractSender clickSender;
+    private AbstractMessageSender advSender;
+    private AbstractMessageSender clickSender;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
     private ArrayList<Adv> advList;
@@ -70,20 +70,6 @@ public class AdvClick extends Generator {
         }
     }
 
-    @Override
-    protected void generateData(int sleepFrequency) {
-        advList = new ArrayList();
-        for (long i = 0; i < advNum; ++i) {
-            Adv adv = submitAdv();
-            addToAdvList(adv);
-            if (clickSubmissionCondition(i)) {
-                submitClick();
-            }
-            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
-        }
-    }
-
     private Adv submitAdv() {
         Adv adv = AdvHelper.createNewAdv();
         advSender.send(adv);
@@ -119,17 +105,30 @@ public class AdvClick extends Generator {
     }
 
     @Override
+    protected void generateData(int sleepFrequency) {
+        advList = new ArrayList();
+        for (long i = 0; i < advNum; ++i) {
+            Adv adv = submitAdv();
+            addToAdvList(adv);
+            if (clickSubmissionCondition(i)) {
+                submitClick();
+            }
+            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
+            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
+        }
+    }
+
+    @Override
     protected void initializeSmallBufferProducer() {
         producer = producerCreator.createSmallBufferProducer(bootstrapServers);
-        advSender = new AdvSender();
         advSender.setProducer(producer);
-        clickSender = new ClickSender();
         clickSender.setProducer(producer);
     }
 
     @Override
     protected void initialize() {
         initializeTopic();
+        initializeMessageSender();
         initializeSmallBufferProducer();
         initializeWorkloadData();
         initializeDataGenerators();
@@ -139,6 +138,12 @@ public class AdvClick extends Generator {
     @Override
     protected void initializeTopic() {
         TOPIC = null;
+    }
+
+    @Override
+    protected void initializeMessageSender() {
+        clickSender = new ClickSender();
+        advSender = new AdvSender();
     }
 
     @Override
