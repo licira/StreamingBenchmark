@@ -17,7 +17,7 @@ public class Click {
         return adv;
     }
 
-    public long getTime() {
+    public long getTimestamp() {
         return timestamp;
     }
 }

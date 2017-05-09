@@ -15,9 +15,9 @@ public class Adv implements Comparable<Adv> {
 
     @Override
     public int compareTo(Adv o) {
-        if (this.timestamp > o.getTime())
+        if (this.timestamp > o.getTimestamp())
             return 1;
-        else if (this.timestamp == o.getTime())
+        else if (this.timestamp == o.getTimestamp())
             return 0;
         else
             return -1;
@@ -31,11 +31,11 @@ public class Adv implements Comparable<Adv> {
         this.id = id;
     }
 
-    public long getTime() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTime(long time) {
+    public void setTimestamp(long time) {
         this.timestamp = time;
     }
 }

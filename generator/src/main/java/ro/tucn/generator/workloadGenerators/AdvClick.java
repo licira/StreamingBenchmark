@@ -45,7 +45,7 @@ public class AdvClick extends Generator {
     private void addToAdvList(Adv adv) {
         // long deltaT = (long) generator.nextExponential(clickLambda) * 1000;
         long deltaT = (long) generator.nextGaussian(clickLambda, 1) * advNum;
-        adv.setTime(adv.getTime() + deltaT);
+        adv.setTimestamp(adv.getTimestamp() + deltaT);
         advList.add(adv);
     }
 
@@ -101,9 +101,9 @@ public class AdvClick extends Generator {
                 //send(CLICK_TOPIC, null, messageData.toString());
                 send(CLICK_TOPIC, messageKey.toString(), messageValue.toString());
                 long currentTime = System.nanoTime();
-                if (currentTime < adv.getTime()) {
+                if (currentTime < adv.getTimestamp()) {
                     try {
-                        Thread.sleep(adv.getTime() - currentTime);
+                        Thread.sleep(adv.getTimestamp() - currentTime);
                     } catch (InterruptedException e) {
                         logger.error(e.getMessage());
                     }
@@ -115,7 +115,7 @@ public class AdvClick extends Generator {
 
     private StringBuilder getAdvMessageDataValue(Adv adv) {
         StringBuilder messageData = new StringBuilder();
-        messageData.append(adv.getTime());
+        messageData.append(adv.getTimestamp());
         return messageData;
     }
 
@@ -127,7 +127,7 @@ public class AdvClick extends Generator {
 
     private StringBuilder getClickMessageDataValue(Click click) {
         StringBuilder messageData = new StringBuilder();
-        messageData.append(click.getTime());
+        messageData.append(click.getTimestamp());
         return messageData;
     }
 
