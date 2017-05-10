@@ -134,7 +134,7 @@ public class KMeans extends Generator {
     @Override
     protected void generateData(int sleepFrequency) {
         for (long i = 0; i < POINT_NUM; i++) {
-            submitPoints();
+            submitPoint();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
@@ -190,9 +190,9 @@ public class KMeans extends Generator {
         kMeansHelper.setCovariances(covariances);
     }
 
-    private void submitPoints() {
-        double[] points = kMeansHelper.createNewPoints(centroids);
-        kMeansSender.send(points);
+    private void submitPoint() {
+        Point point = kMeansHelper.createNewPoint(centroids);
+        kMeansSender.send(point);
     }
 
     private double[][] getCovariancesFromString(String covariancesAsString, double[] means) {

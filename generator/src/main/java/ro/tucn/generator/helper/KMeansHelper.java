@@ -18,15 +18,17 @@ public class KMeansHelper {
     private double[] means; // origin point
     private double[][] covariances;
 
-    public double[] createNewPoints(List<Point> centroids) {
+    public Point createNewPoint(List<Point> centroids) {
         MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(pointRandom, means, covariances);
-        double[] points = distribution.sample();
+        double[] location = distribution.sample();
         int centroidIndex = centroidRandom.nextInt(centroids.size());
         for (int i = 0; i < dimension - 1; i++) {
-            points[i] += centroids.get(centroidIndex).location[i];
+            location[i] += centroids.get(centroidIndex).location[i];
         }
-        points[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
-        return points;
+        location[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
+        int pointId = pointRandom.nextInt(100000) + 1000;
+        Point point = new Point(pointId, location);
+        return point;
     }
 
     public void setCentroidRandom(Random centroidRandom) {
