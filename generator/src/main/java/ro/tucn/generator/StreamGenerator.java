@@ -23,7 +23,7 @@ public class StreamGenerator {
         if (args[0].equalsIgnoreCase(Topics.ADV)) {
             generator = new AdvClick();
         } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-            generator = new KMeansPoints();
+            generator = new KMeans();
         } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
             generator = new SkewedWordCount();
         } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {

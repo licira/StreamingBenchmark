@@ -22,7 +22,7 @@ import java.util.Random;
 /**
  * Created by Liviu on 4/5/2017.
  */
-public class KMeansPoints extends Generator {
+public class KMeans extends Generator {
 
     private static long POINT_NUM = 10;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
@@ -35,7 +35,7 @@ public class KMeansPoints extends Generator {
     private int centroidsNo;
     private double distance;
 
-    public KMeansPoints() {
+    public KMeans() {
         super();
         initialize();
     }
@@ -103,7 +103,7 @@ public class KMeansPoints extends Generator {
         InputStream stream = null;
         try {
             String sCurrentLine;
-            stream = KMeansPoints.class.getClassLoader().getResourceAsStream("centroids.txt");
+            stream = KMeans.class.getClassLoader().getResourceAsStream("centroids.txt");
             br = new BufferedReader(new InputStreamReader(stream));
             while ((sCurrentLine = br.readLine()) != null) {
                 String[] strs = sCurrentLine.split(",");
@@ -240,11 +240,11 @@ public class KMeansPoints extends Generator {
         }
 
         // Generate real centroids
-//        new KMeansPoints().GenerateCentroids();
+//        new KMeans().GenerateCentroids();
         // Generate initialize centroids
-//        new KMeansPoints().GenerateInitCentroids();
+//        new KMeans().GenerateInitCentroids();
         // Generate points
-        new KMeansPoints().generate(SLEEP_FREQUENCY);
+        new KMeans().generate(SLEEP_FREQUENCY);
     }
     */
 }
