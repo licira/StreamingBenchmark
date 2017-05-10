@@ -5,8 +5,8 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.Operator;
+import ro.tucn.operator.OperatorCreator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,22 +38,16 @@ public class KMeans extends Workload {
         try {
             Operator<Point> pointOperator = getPointStreamOperator("source", "topic1");
             logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
-            pointOperator.iterative(); // points iteration
-
-            //Operator<Point> assignedPoints = pointOperators.map(UserFunctions.assign, initCentroids, "assign", Point.class);
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
+            pointOperator.iterative();
+            pointOperator.print();
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
             Operator<Point> centroid = pointOperator
                     .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
                     .reduceByKey(UserFunctions.pointAggregator, "aggregator")
                     .map(UserFunctions.computeCentroid, "centroid", Point.class);
             logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
-            pointOperator.closeWith(centroid, true);
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");
-            //centroids.sink();
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>5");
-            //assignedPoints.print();
             centroid.print();
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>6");
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

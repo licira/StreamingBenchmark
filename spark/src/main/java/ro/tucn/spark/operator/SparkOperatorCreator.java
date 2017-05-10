@@ -49,17 +49,18 @@ public class SparkOperatorCreator extends OperatorCreator {
     };
     private static Function<Tuple2<String, String>, Point> mapToPointFunction
             = (Function<Tuple2<String, String>, Point>) stringStringTuple2 -> {
+                String key = stringStringTuple2._1();
                 String value = stringStringTuple2._2();
-                String[] locationsString = value.split(" ");
-                Point point = new Point();
+                String[] locationsAsString = value.split(" ");
                 //point.setTime(Long.parseLong(stringStringTuple2._1()));
-                Double[] locations = new Double[locationsString.length];
+                double[] location = new double[locationsAsString.length];
                 int idx = 0;
-                for (String location : locationsString) {
-                    locations[idx] = Double.parseDouble(location);
+                for (String locationAsString: locationsAsString) {
+                    location[idx] = Double.parseDouble(locationAsString);
                     idx++;
                 }
-                return point;
+                int id = Integer.parseInt(key);
+                return new Point(id, location);
             };
 
     public JavaStreamingContext jssc;
@@ -132,17 +133,15 @@ public class SparkOperatorCreator extends OperatorCreator {
                                                    String topicPropertyName,
                                                    String componentId,
                                                    int parallelism) {
-        /*NOT OK*/
         String topic = properties.getProperty(topicPropertyName);
         HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
 
         HashMap<String, String> kafkaParams = createKafkaParams(properties);
-        // Create direct kafka stream with brokers and topics
         JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + topic);
-        print(messages);
+        //print(messages);
         JavaDStream<Point> lines = messages.map(mapToPointFunction);
-        printPoints(lines);
+        //printPoints(lines);
         return new SparkOperator(lines, parallelism);
     }
 
@@ -212,7 +211,8 @@ public class SparkOperatorCreator extends OperatorCreator {
             logger.info(" Number of records in this batch: " + rdd.count());
             logger.info("===================================");
         };
-        lines.foreachRDD(voidFunction2);
+        //lines.foreachRDD(voidFunction2);
+        lines.print();
     }
 
     private String getMaster() {

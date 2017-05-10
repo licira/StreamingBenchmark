@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import org.apache.log4j.Logger;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
-import ro.tucn.statistics.CentroidLog;
 import ro.tucn.statistics.LatencyLog;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.WithTime;
@@ -243,11 +242,11 @@ public class UserFunctions implements Serializable {
             = new MapFunction<Tuple2<Integer, Tuple2<Long, Point>>, Point>() {
 
         //Logger logger = Logger.getLogger("CentroidLogger");
-        private ThroughputLog throughput = new ThroughputLog("Centroid");
-        private CentroidLog centroidLog = new CentroidLog();
+        //private ThroughputLog throughput = new ThroughputLog("Centroid");
+        //private CentroidLog centroidLog = new CentroidLog();
 
         public Point map(Tuple2<Integer, Tuple2<Long, Point>> var1) {
-            throughput.execute();
+            //throughput.execute();
             long counts = var1._2()._1();
 
             double[] location = new double[var1._2._2.dimension()];
@@ -255,7 +254,7 @@ public class UserFunctions implements Serializable {
                 location[i] = var1._2._2.location[i] / counts;
             }
 
-            centroidLog.execute(counts, location);
+            //centroidLog.execute(counts, location);
             return new Point(var1._1, location, var1._2._2.getTime());
         }
     };

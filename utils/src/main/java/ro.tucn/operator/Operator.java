@@ -57,4 +57,5 @@ public abstract class Operator<T> extends BaseOperator {
     public abstract WindowedOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration);
 
     public abstract void sink();
+
 }
