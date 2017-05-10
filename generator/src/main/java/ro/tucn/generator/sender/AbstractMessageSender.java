@@ -24,6 +24,7 @@ public abstract class AbstractMessageSender implements Serializable {
         producer.send(newRecord);
         logger.info("Topic: " + topic
                 + "\tTimestamp: " + newRecord.timestamp()
+                + "\tKey: " + newRecord.key()
                 + "\tValue: " + newRecord.value());
     }
 
