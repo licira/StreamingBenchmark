@@ -23,7 +23,7 @@ public class KMeansHelper {
     private double[] means; // origin point
     private double[][] covariances;
 
-    public Point createNewPoint(List<Point> centroids) {
+    public Point getNewPoint(List<Point> centroids) {
         MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(randomGenerator, means, covariances);
         double[] location = distribution.sample();
         int centroidIndex = centroidRandom.nextInt(centroids.size());

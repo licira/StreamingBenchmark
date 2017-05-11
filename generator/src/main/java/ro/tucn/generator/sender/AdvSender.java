@@ -2,7 +2,7 @@ package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Adv;
 
-import static ro.tucn.generator.workloadGenerators.AdvClick.ADV_TOPIC;
+import static ro.tucn.generator.workloadGenerators.AdvClickGenerator.ADV_TOPIC;
 
 /**
  * Created by Liviu on 5/9/2017.

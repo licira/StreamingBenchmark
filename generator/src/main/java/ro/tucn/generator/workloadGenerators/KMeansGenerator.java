@@ -9,7 +9,6 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.KMeansSender;
 import ro.tucn.kMeans.Point;
-import ro.tucn.util.Topics;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.Random;
 /**
  * Created by Liviu on 4/5/2017.
  */
-public class KMeans extends Generator {
+public class KMeansGenerator extends AbstractGenerator {
 
     private static long POINT_NUM = 10;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
@@ -35,7 +34,7 @@ public class KMeans extends Generator {
     private int centroidsNo;
     private double distance;
 
-    public KMeans() {
+    public KMeansGenerator() {
         super();
         initialize();
     }
@@ -46,15 +45,20 @@ public class KMeans extends Generator {
         centroids = loadCentroids();
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        generateData(sleepFrequency);
+        submitData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
-        producer.close();
+        shutdownSender();
     }
 
     private void initializeHelper() {
         kMeansHelper = new KMeansHelper();
     }
- 
+
+    private void initializeMessageSenderWithSmallBuffer() {
+        kMeansSender = new KMeansSender();
+        kMeansSender.initializeSmallBufferProducer(bootstrapServers);
+    }
+
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     private void generateCentroids() {
         Random random = new Random(10000L);
@@ -101,13 +105,22 @@ public class KMeans extends Generator {
         */
     }
 
+    private void shutdownSender() {
+        kMeansSender.close();
+    }
+
+    private void submitNewPoint() {
+        Point point = kMeansHelper.getNewPoint(centroids);
+        kMeansSender.send(point);
+    }
+
     private List<Point> loadCentroids() {
         List<Point> centroids = new ArrayList<Point>();
         BufferedReader br = null;
         InputStream stream = null;
         try {
             String sCurrentLine;
-            stream = KMeans.class.getClassLoader().getResourceAsStream("centroids.txt");
+            stream = KMeansGenerator.class.getClassLoader().getResourceAsStream("centroids.txt");
             br = new BufferedReader(new InputStreamReader(stream));
             while ((sCurrentLine = br.readLine()) != null) {
                 String[] strs = sCurrentLine.split(",");
@@ -135,8 +148,23 @@ public class KMeans extends Generator {
         return centroids;
     }
 
+    private double[][] getCovariancesFromString(String covariancesAsString, double[] means) {
+        double[][] covariances = new double[dimension][dimension];
+        String[] covariancesStrs = covariancesAsString.split(",");
+        if (covariancesStrs.length != (dimension * dimension)) {
+            throw new RuntimeException("Incorrect covariances");
+        }
+        for (int i = 0; i < dimension; i++) {
+            means[i] = 0;
+            for (int j = 0; j < dimension; j++) {
+                covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
+            }
+        }
+        return covariances;
+    }
+
     @Override
-    protected void generateData(int sleepFrequency) {
+    protected void submitData(int sleepFrequency) {
         for (long i = 0; i < POINT_NUM; i++) {
             submitNewPoint();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
@@ -146,28 +174,10 @@ public class KMeans extends Generator {
 
     @Override
     protected void initialize() {
-        initializeTopic();
         initializeHelper();
-        initializeMessageSender();
-        initializeSmallBufferProducer();
+        initializeMessageSenderWithSmallBuffer();
         initializeWorkloadData();
         initializeDataGenerators();
-    }
-
-    @Override
-    protected void initializeTopic() {
-        TOPIC = Topics.K_MEANS;
-    }
-
-    @Override
-    protected void initializeMessageSender() {
-        kMeansSender = new KMeansSender();
-    }
-
-    @Override
-    protected void initializeSmallBufferProducer() {
-        producer = producerCreator.createSmallBufferProducer(bootstrapServers);
-        kMeansSender.setProducer(producer);
     }
 
     @Override
@@ -194,27 +204,7 @@ public class KMeans extends Generator {
         kMeansHelper.setCovariances(covariances);
     }
 
-    private void submitNewPoint() {
-        Point point = kMeansHelper.createNewPoint(centroids);
-        kMeansSender.send(point);
-    }
-
-    private double[][] getCovariancesFromString(String covariancesAsString, double[] means) {
-        double[][] covariances = new double[dimension][dimension];
-        String[] covariancesStrs = covariancesAsString.split(",");
-        if (covariancesStrs.length != (dimension * dimension)) {
-            throw new RuntimeException("Incorrect covariances");
-        }
-        for (int i = 0; i < dimension; i++) {
-            means[i] = 0;
-            for (int j = 0; j < dimension; j++) {
-                covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
-            }
-        }
-        return covariances;
-    }
-        /*
-    private void generateInitCentroids() {
+    /*private void generateInitCentroids() {
         centroids = loadCentroids();
         Random random = new Random(12397238947287L);
         List<Point> initCentroids = new ArrayList<Point>();
@@ -234,21 +224,19 @@ public class KMeans extends Generator {
 
             ro.tucn.logger.info(sb.toString());
         }
-    }
-    */
-        /*
-    public static void main(String[] args) throws Exception {
+    }*/
+
+    /*public static void main(String[] args) throws Exception {
         int SLEEP_FREQUENCY = -1;
         if (args.length > 0) {
             SLEEP_FREQUENCY = Integer.parseInt(args[0]);
         }
 
         // Generate real centroids
-//        new KMeans().GenerateCentroids();
+        //  new KMeansGenerator().GenerateCentroids();
         // Generate initialize centroids
-//        new KMeans().GenerateInitCentroids();
+        // new KMeansGenerator().GenerateInitCentroids();
         // Generate points
-        new KMeans().generate(SLEEP_FREQUENCY);
-    }
-    */
+        new KMeansGenerator().generate(SLEEP_FREQUENCY);
+    }*/
 }

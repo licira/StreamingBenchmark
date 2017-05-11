@@ -7,22 +7,21 @@ import ro.tucn.generator.helper.SentenceHelper;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
-import ro.tucn.util.Topics;
-import ro.tucn.util.Utils;
+import ro.tucn.skewedWords.FastZipfGenerator;
 
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class UniformWordCount extends Generator {
+public class SkewedWordsGenerator extends AbstractGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private SentenceHelper sentenceHelper;
     private AbstractMessageSender sentenceSender;
-
+    
     private long SENTENCE_NUM = 10;
 
-    public UniformWordCount() {
+    public SkewedWordsGenerator() {
         super();
         initialize();
     }
@@ -31,14 +30,13 @@ public class UniformWordCount extends Generator {
     public void generate(int sleepFrequency) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        generateData(sleepFrequency);
+        submitData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
-        producer.close();
+        shutdownSender();
     }
 
-
     private void submitNewSentence() {
-        Sentence sentence = sentenceHelper.createNewUniformWordsSentence();
+        Sentence sentence = sentenceHelper.getNewSkewedWordsSentence();
         sentenceSender.send(sentence);
     }
 
@@ -46,10 +44,19 @@ public class UniformWordCount extends Generator {
         sentenceHelper = new SentenceHelper();
     }
 
+    private void initializeMessageSenderWithSmallBuffer() {
+        sentenceSender = new SentenceSender();
+        sentenceSender.initializeSmallBufferProducer(bootstrapServers);
+    }
+
+    private void shutdownSender() {
+        sentenceSender.close();
+    }
+
     @Override
-    protected void generateData(int sleepFrequency) {
+    protected void submitData(int sleepFrequency) {
         for (long i = 0; i < SENTENCE_NUM; ++i) {
-            submitNewSentence();
+            submitNewSentence();            
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
@@ -57,36 +64,27 @@ public class UniformWordCount extends Generator {
 
     @Override
     protected void initialize() {
-        initializeTopic();
         initializeHelper();
-        initializeSmallBufferProducer();
+        initializeMessageSenderWithSmallBuffer();
         initializeWorkloadData();
         initializeDataGenerators();
     }
 
     @Override
-    protected void initializeTopic() {
-        TOPIC = Topics.UNIFORM_WORDS;
-    }
-
-    @Override
     protected void initializeDataGenerators() {
+        int zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
+        double zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
+        FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
         sentenceHelper.setMessageGenerator(messageGenerator);
-    }
-
-    @Override
-    protected void initializeMessageSender() {
-        sentenceSender = new SentenceSender();
+        sentenceHelper.setZipfGenerator(zipfGenerator);
     }
 
     @Override
     protected void initializeWorkloadData() {
-        int upperBound = Integer.parseInt(this.properties.getProperty("uniform.size"));
         double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
         sentenceHelper.setMu(mu);
-        sentenceHelper.setSigma(sigma);
-        sentenceHelper.setUpperBound(upperBound);
+        sentenceHelper.setSigma(sigma);        
     }
 }

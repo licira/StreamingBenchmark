@@ -9,7 +9,7 @@ import java.util.UUID;
  */
 public class AdvHelper {
 
-    public static Adv createNewAdv() {
+    public static Adv getNewAdv() {
         String advId = UUID.randomUUID().toString();
         long timestamp = TimeHelper.getNanoTime();
         return new Adv(advId, timestamp);

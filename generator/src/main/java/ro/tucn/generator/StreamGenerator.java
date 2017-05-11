@@ -18,16 +18,16 @@ public class StreamGenerator {
         } catch (Exception e) {
         }
 
-        Generator generator = null;
+        AbstractGenerator generator = null;
         logger.info(args[0]);
         if (args[0].equalsIgnoreCase(Topics.ADV)) {
-            generator = new AdvClick();
+            generator = new AdvClickGenerator();
         } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-            generator = new KMeans();
+            generator = new KMeansGenerator();
         } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
-            generator = new SkewedWordCount();
+            generator = new SkewedWordsGenerator();
         } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
-            generator = new UniformWordCount();
+            generator = new UniformWordsGenerator();
         } else {
             return;
         }

@@ -26,11 +26,11 @@ public class SentenceHelper {
 		SKEWED_WORDS_SENTENCE, UNIFORM_WORDS_SENTENCE
 	}
 
-	public Sentence createNewSkewedWordsSentence() {
+	public Sentence getNewSkewedWordsSentence() {
 		return getNewSentence(SKEWED_WORDS_SENTENCE);
 	}
 
-	public Sentence createNewUniformWordsSentence() {
+	public Sentence getNewUniformWordsSentence() {
 		return getNewSentence(UNIFORM_WORDS_SENTENCE);
 	}
 

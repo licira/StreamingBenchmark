@@ -11,7 +11,7 @@ public class TimeHelper {
 
     public static void temporizeDataGeneration(int sleepFrequency, long step) {
         // control data generate speed
-        if (sleepFrequency > 0 && step % sleepFrequency == 0) {
+        if ((sleepFrequency > 0) && (step % sleepFrequency == 0)) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {

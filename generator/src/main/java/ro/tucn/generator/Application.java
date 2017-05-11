@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
  */
 public class Application {
 
-    private static final Logger logger = Logger.getLogger("Generator");
+    private static final Logger logger = Logger.getLogger("AbstractGenerator");
 
     public static void main(String args[]) {
         if (args.length > 0) {

@@ -19,21 +19,22 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Liviu on 4/4/2017.
  */
-public class AdvClick extends Generator {
+public class AdvClickGenerator extends AbstractGenerator {
 
     public static String ADV_TOPIC = Topics.ADV;
     public static String CLICK_TOPIC = Topics.CLICK;
 
-    private static Long advNum;
-    private double clickLambda;
-    private double clickProbability;
     private AbstractMessageSender advSender;
     private AbstractMessageSender clickSender;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
-    private ArrayList<Adv> advList;
 
-    public AdvClick() {
+    private ArrayList<Adv> advs;
+    private static Long advNum;
+    private double clickLambda;
+    private double clickProbability;
+
+    public AdvClickGenerator() {
         super();
         initialize();
     }
@@ -42,17 +43,17 @@ public class AdvClick extends Generator {
     public void generate(int sleepFrequency) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        generateData(sleepFrequency);
+        submitData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
         shutdownExecutorService();
-        producer.close();
+        shutdownSender();
     }
 
     private void addToAdvList(Adv adv) {
         // long deltaT = (long) generator.nextExponential(clickLambda) * 1000;
         long deltaT = (long) generator.nextGaussian(clickLambda, 1) * advNum;
         adv.setTimestamp(adv.getTimestamp() + deltaT);
-        advList.add(adv);
+        advs.add(adv);
     }
 
     private void initializeExecutorService() {
@@ -60,6 +61,13 @@ public class AdvClick extends Generator {
         cachedPool = Executors.newCachedThreadPool();
         // sub thread use variable in main thread
         // for loop to generate advertisement
+    }
+
+    private void initializeMessageSendersWithSmallBuffers() {
+        advSender = new AdvSender();
+        advSender.initializeSmallBufferProducer(bootstrapServers);
+        clickSender = new ClickSender();
+        clickSender.initializeSmallBufferProducer(bootstrapServers);
     }
 
     private void shutdownExecutorService() {
@@ -71,14 +79,19 @@ public class AdvClick extends Generator {
         }
     }
 
+    private void shutdownSender() {
+        advSender.close();
+        clickSender.close();
+    }
+
     private Adv submitNewAdv() {
-        Adv adv = AdvHelper.createNewAdv();
+        Adv adv = AdvHelper.getNewAdv();
         advSender.send(adv);
         return adv;
     }
 
     private void submitNewClick() {
-        for (Adv adv : advList) {
+        for (Adv adv : advs) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
                 Click click = ClickHelper.createNewClick(adv);
@@ -86,7 +99,7 @@ public class AdvClick extends Generator {
                 attemptSleep(adv.getTimestamp());
             }
         }
-        advList.clear();
+        advs.clear();
     }
 
     private void attemptSleep(long time) {
@@ -106,8 +119,8 @@ public class AdvClick extends Generator {
     }
 
     @Override
-    protected void generateData(int sleepFrequency) {
-        advList = new ArrayList();
+    protected void submitData(int sleepFrequency) {
+        advs = new ArrayList();
         for (long i = 0; i < advNum; ++i) {
             Adv adv = submitNewAdv();
             addToAdvList(adv);
@@ -120,31 +133,11 @@ public class AdvClick extends Generator {
     }
 
     @Override
-    protected void initializeSmallBufferProducer() {
-        producer = producerCreator.createSmallBufferProducer(bootstrapServers);
-        advSender.setProducer(producer);
-        clickSender.setProducer(producer);
-    }
-
-    @Override
     protected void initialize() {
-        initializeTopic();
-        initializeMessageSender();
-        initializeSmallBufferProducer();
+        initializeMessageSendersWithSmallBuffers();
         initializeWorkloadData();
         initializeDataGenerators();
         initializeExecutorService();
-    }
-
-    @Override
-    protected void initializeTopic() {
-        TOPIC = null;
-    }
-
-    @Override
-    protected void initializeMessageSender() {
-        clickSender = new ClickSender();
-        advSender = new AdvSender();
     }
 
     @Override
