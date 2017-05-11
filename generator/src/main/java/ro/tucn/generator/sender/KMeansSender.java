@@ -26,9 +26,9 @@ public class KMeansSender extends AbstractMessageSender {
 
     @Override
     protected String getMessageValue() {
-        StringBuilder messageData = new StringBuilder();
         double[] location = point.getLocation();
         int locationSize = location.length;
+        StringBuilder messageData = new StringBuilder();
         for(int i = 0; i < locationSize; i++) {
             messageData.append(location[i]);
             messageData.append(" ");

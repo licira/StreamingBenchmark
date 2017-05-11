@@ -51,6 +51,10 @@ public class KMeans extends Generator {
         producer.close();
     }
 
+    private void initializeHelper() {
+        kMeansHelper = new KMeansHelper();
+    }
+ 
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     private void generateCentroids() {
         Random random = new Random(10000L);
@@ -134,7 +138,7 @@ public class KMeans extends Generator {
     @Override
     protected void generateData(int sleepFrequency) {
         for (long i = 0; i < POINT_NUM; i++) {
-            submitPoint();
+            submitNewPoint();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
@@ -143,6 +147,7 @@ public class KMeans extends Generator {
     @Override
     protected void initialize() {
         initializeTopic();
+        initializeHelper();
         initializeMessageSender();
         initializeSmallBufferProducer();
         initializeWorkloadData();
@@ -181,8 +186,7 @@ public class KMeans extends Generator {
         double[] means = new double[dimension];
         String covariancesAsString = properties.getProperty("covariances");
         double[][] covariances = getCovariancesFromString(covariancesAsString, means);
-        
-        kMeansHelper = new KMeansHelper();
+
         kMeansHelper.setCentroidRandom(centroidRandom);
         kMeansHelper.setPointRandom(pointRandom);
         kMeansHelper.setDimension(dimension);
@@ -190,7 +194,7 @@ public class KMeans extends Generator {
         kMeansHelper.setCovariances(covariances);
     }
 
-    private void submitPoint() {
+    private void submitNewPoint() {
         Point point = kMeansHelper.createNewPoint(centroids);
         kMeansSender.send(point);
     }

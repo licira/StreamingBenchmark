@@ -12,7 +12,6 @@ public class AdvHelper {
     public static Adv createNewAdv() {
         String advId = UUID.randomUUID().toString();
         long timestamp = TimeHelper.getNanoTime();
-        Adv adv = new Adv(advId, timestamp);
-        return adv;
+        return new Adv(advId, timestamp);
     }
 }
