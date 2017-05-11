@@ -2,10 +2,13 @@ package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
+import ro.tucn.generator.entity.Sentence;
+import ro.tucn.generator.helper.SentenceHelper;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractMessageSender;
+import ro.tucn.generator.sender.SentenceSender;
 import ro.tucn.skewedWords.FastZipfGenerator;
 import ro.tucn.util.Topics;
-import ro.tucn.util.Utils;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -14,14 +17,10 @@ public class SkewedWordCount extends Generator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private RandomDataGenerator messageGenerator;
-    private FastZipfGenerator zipfGenerator;
-
+    private SentenceHelper sentenceHelper;
+    private AbstractMessageSender sentenceSender;
+    
     private long SENTENCE_NUM = 10;
-    private int zipfSize;
-    private double zipfExponent;
-    private double mu;
-    private double sigma;
 
     public SkewedWordCount() {
         super();
@@ -37,32 +36,29 @@ public class SkewedWordCount extends Generator {
         producer.close();
     }
 
+    private void submitNewSentence() {
+        Sentence sentence = sentenceHelper.createNewSkewedWordsSentence();
+        sentenceSender.send(sentence);
+    }
+    
     @Override
     protected void generateData(int sleepFrequency) {
-        for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
-            StringBuilder messageData = buildMessageData();
-            send(TOPIC, null, messageData.toString());
+        for (long i = 0; i < SENTENCE_NUM; ++i) {
+            submitNewSentence();            
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, sentSentences);
+            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
     }
 
-    protected StringBuilder buildMessageData() {
-        double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
-        StringBuilder messageData = new StringBuilder();
-        for (int l = 0; l < sentenceLength; ++l) {
-            int value = zipfGenerator.next();
-            messageData.append(Utils.intToString(value));
-            messageData.append(" ");
-        }
-        long timestamp = TimeHelper.getNanoTime();
-        //messageData.append(Constants.TimeSeparator).append(timestamp);
-        return messageData;
+    private void initializeHelper() {
+        sentenceHelper = new SentenceHelper();
     }
 
     @Override
     protected void initialize() {
         initializeTopic();
+        initializeHelper();
+        initializeMessageSender();
         initializeSmallBufferProducer();
         initializeWorkloadData();
         initializeDataGenerators();
@@ -75,29 +71,24 @@ public class SkewedWordCount extends Generator {
 
     @Override
     protected void initializeDataGenerators() {
-        messageGenerator = new RandomDataGenerator();
-        zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
+        int zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
+        double zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));
+        RandomDataGenerator messageGenerator = new RandomDataGenerator();
+        FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
+        sentenceHelper.setMessageGenerator(messageGenerator);
+        sentenceHelper.setZipfGenerator(zipfGenerator);
     }
 
     @Override
     protected void initializeMessageSender() {
-
+        sentenceSender = new SentenceSender();
     }
 
     @Override
     protected void initializeWorkloadData() {
-        zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
-        zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));
-        mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
-        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
+        double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
+        double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
+        sentenceHelper.setMu(mu);
+        sentenceHelper.setSigma(sigma);        
     }
-    /*
-    public static void main(String[] args) throws InterruptedException {
-        int sleepFrequency = -1;
-        if (args.length > 0) {
-            sleepFrequency = Integer.parseInt(args[0]);
-        }
-        new SkewedWordCount().generate(sleepFrequency);
-    }
-    */
 }

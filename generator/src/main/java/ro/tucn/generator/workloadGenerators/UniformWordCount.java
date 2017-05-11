@@ -2,7 +2,11 @@ package ro.tucn.generator.workloadGenerators;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
+import ro.tucn.generator.entity.Sentence;
+import ro.tucn.generator.helper.SentenceHelper;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractMessageSender;
+import ro.tucn.generator.sender.SentenceSender;
 import ro.tucn.util.Topics;
 import ro.tucn.util.Utils;
 
@@ -13,12 +17,10 @@ public class UniformWordCount extends Generator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private RandomDataGenerator messageGenerator;
+    private SentenceHelper sentenceHelper;
+    private AbstractMessageSender sentenceSender;
 
     private long SENTENCE_NUM = 10;
-    private int uniformSize;
-    private double mu;
-    private double sigma;
 
     public UniformWordCount() {
         super();
@@ -34,32 +36,29 @@ public class UniformWordCount extends Generator {
         producer.close();
     }
 
-    @Override
-    protected void generateData(int sleepFrequency) {
-        for (long sentSentences = 0; sentSentences < SENTENCE_NUM; ++sentSentences) {
-            StringBuilder messageData = buildMessageData();
-            send(TOPIC, null, messageData.toString());
-            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, sentSentences);
-        }
+
+    private void submitNewSentence() {
+        Sentence sentence = sentenceHelper.createNewUniformWordsSentence();
+        sentenceSender.send(sentence);
     }
 
-    protected StringBuilder buildMessageData() {
-        double sentenceLength = messageGenerator.nextGaussian(mu, sigma);
-        StringBuilder messageData = new StringBuilder();
-        for (int l = 0; l < sentenceLength; ++l) {
-            int value = messageGenerator.nextInt(1, uniformSize);
-            messageData.append(Utils.intToString(value));
-            messageData.append(" ");
+    private void initializeHelper() {
+        sentenceHelper = new SentenceHelper();
+    }
+
+    @Override
+    protected void generateData(int sleepFrequency) {
+        for (long i = 0; i < SENTENCE_NUM; ++i) {
+            submitNewSentence();
+            performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
+            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
-        long timestamp = TimeHelper.getNanoTime();
-        //messageData.append(Constants.TimeSeparator).append(timestamp);
-        return messageData;
     }
 
     @Override
     protected void initialize() {
         initializeTopic();
+        initializeHelper();
         initializeSmallBufferProducer();
         initializeWorkloadData();
         initializeDataGenerators();
@@ -72,27 +71,22 @@ public class UniformWordCount extends Generator {
 
     @Override
     protected void initializeDataGenerators() {
-        messageGenerator = new RandomDataGenerator();
+        RandomDataGenerator messageGenerator = new RandomDataGenerator();
+        sentenceHelper.setMessageGenerator(messageGenerator);
     }
 
     @Override
     protected void initializeMessageSender() {
-
+        sentenceSender = new SentenceSender();
     }
 
     @Override
     protected void initializeWorkloadData() {
-        uniformSize = Integer.parseInt(this.properties.getProperty("uniform.size"));
-        mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
-        sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
+        int upperBound = Integer.parseInt(this.properties.getProperty("uniform.size"));
+        double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
+        double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
+        sentenceHelper.setMu(mu);
+        sentenceHelper.setSigma(sigma);
+        sentenceHelper.setUpperBound(upperBound);
     }
-    /*
-    public static void main(String[] args) throws InterruptedException {
-        int SLEEP_FREQUENCY = -1;
-        if (args.length > 0) {
-            SLEEP_FREQUENCY = Integer.parseInt(args[0]);
-        }
-        new UniformWordCount().generate(SLEEP_FREQUENCY);
-    }
-    */
 }
