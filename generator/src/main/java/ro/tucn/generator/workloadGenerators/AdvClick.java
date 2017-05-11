@@ -4,6 +4,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.helper.AdvHelper;
+import ro.tucn.generator.helper.ClickHelper;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.AdvSender;
@@ -70,17 +71,17 @@ public class AdvClick extends Generator {
         }
     }
 
-    private Adv submitAdv() {
+    private Adv submitNewAdv() {
         Adv adv = AdvHelper.createNewAdv();
         advSender.send(adv);
         return adv;
     }
 
-    private void submitClick() {
+    private void submitNewClick() {
         for (Adv adv : advList) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
-                Click click = new Click(adv);
+                Click click = ClickHelper.createNewClick(adv);
                 clickSender.send(click);
                 attemptSleep(adv.getTimestamp());
             }
@@ -108,10 +109,10 @@ public class AdvClick extends Generator {
     protected void generateData(int sleepFrequency) {
         advList = new ArrayList();
         for (long i = 0; i < advNum; ++i) {
-            Adv adv = submitAdv();
+            Adv adv = submitNewAdv();
             addToAdvList(adv);
             if (clickSubmissionCondition(i)) {
-                submitClick();
+                submitNewClick();
             }
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
