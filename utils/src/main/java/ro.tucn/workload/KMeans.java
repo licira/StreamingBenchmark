@@ -12,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,23 +33,19 @@ public class KMeans extends Workload {
         initCentroids = loadInitCentroids();
     }
 
-    public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        try {
-            Operator<Point> pointOperator = getPointStreamOperator("source", "topic1");
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
-            pointOperator.iterative();
-            pointOperator.print();
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
-            Operator<Point> centroid = pointOperator
-                    .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
-                    .reduceByKey(UserFunctions.pointAggregator, "aggregator")
-                    .map(UserFunctions.computeCentroid, "centroid", Point.class);
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
-            centroid.print();
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+    public void process() {
+        Operator<Point> pointOperator = getPointStreamOperator("source", "topic1");
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
+        pointOperator.iterative();
+        pointOperator.print();
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
+        Operator<Point> centroid = pointOperator
+                .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
+                .reduceByKey(UserFunctions.pointAggregator, "aggregator")
+                .map(UserFunctions.computeCentroid, "centroid", Point.class);
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
+        centroid.print();
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");
     }
 
     private List<Point> loadInitCentroids() {

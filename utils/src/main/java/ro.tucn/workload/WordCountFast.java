@@ -6,8 +6,6 @@ import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * Created by Liviu on 4/15/2017.
  */
@@ -20,7 +18,7 @@ public class WordCountFast extends Workload {
     }
 
     @Override
-    public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void process() {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT FAST<<<<<<<<<<<<<<<<<");
         Operator<String> wordOperators = getStringStreamOperator("source", "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
