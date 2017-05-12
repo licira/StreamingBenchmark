@@ -89,8 +89,8 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public Operator<String> getStringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<String> lines = pairStream.map(mapFunction);
-        return new SparkOperator(lines, parallelism);
+        JavaDStream<String> stream = pairStream.map(mapFunction);
+        return new SparkOperator(stream, parallelism);
     }
 
     @Override
@@ -102,25 +102,25 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<Point> lines = pairStream.map(mapToPointFunction);
-        return new SparkOperator(lines, parallelism);
+        JavaDStream<Point> stream = pairStream.map(mapToPointFunction);
+        return new SparkOperator(stream, parallelism);
     }
 
     @Override
     public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<WithTime<String>> lines = pairStream.map(mapFunctionWithTime);
-        return new SparkOperator(lines, parallelism);
+        JavaDStream<WithTime<String>> stream = pairStream.map(mapFunctionWithTime);
+        return new SparkOperator(stream, parallelism);
     }
 
     private JavaPairDStream<String,String> getPairStreamFromKafka(Properties properties, String topicPropertyName) {
-        HashSet<String> topicsSet = getTopicSetFromProperites(topicPropertyName);
+        HashSet<String> topicsSet = getTopicSetFromProperites(topicPropertyName, properties);
         HashMap<String, String> kafkaParams = getKafkaParamsFromProperties(properties);
-        JavaPairDStream<String, String> stream = getDirectStreamFromKafka(kafkaParams, topicsSet);
-        return stream;
+        JavaPairDStream<String, String> pairStream = getDirectStreamFromKafka(kafkaParams, topicsSet);
+        return pairStream;
     }
 
-    private HashSet<String> getTopicSetFromProperites(String topicPropertyName) {
+    private HashSet<String> getTopicSetFromProperites(String topicPropertyName, Properties properties) {
         String topics = properties.getProperty(topicPropertyName);
         String[] split = splitTopics(topics);
         return new HashSet(Arrays.asList(split));
