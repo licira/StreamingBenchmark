@@ -2,11 +2,9 @@ package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
-import ro.tucn.util.WithTime;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -23,17 +21,23 @@ public class WordCountFast extends Workload {
 
     @Override
     public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        try {
-            Operator<String> wordOperators = getStringStreamOperator("adv", "topic1");
-            PairOperator<String, WithTime<Integer>> counts =
-                    wordOperators.flatMapToPair(UserFunctions.flatMapToPairAddTime, "splitter")
-                            .reduceByKey(UserFunctions.sumReduceWithTime, "sum")
-                            .updateStateByKey(UserFunctions.sumReduceWithTime, "accumulate");
-            counts.sink();
-            counts.print();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        }
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT FAST<<<<<<<<<<<<<<<<<");
+        Operator<String> wordOperators = getStringStreamOperator("source", "topic1");
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
+        wordOperators.print();
+        PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.flatMapToPair();
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
+        stringIntegerPairOperator.print();
+        /*
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>3<<<<<<<<<<<<<<<<<");
+            PairOperator<String, Integer> sum = stringIntegerPairOperator.reduceByKey(UserFunctions.sumReduce, "sum");
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>4<<<<<<<<<<<<<<<<<");
+            sum.print();
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>5<<<<<<<<<<<<<<<<<");
+            PairOperator<String, Integer> accumulate = sum.updateStateByKey(UserFunctions.sumReduce, "accumulate");
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>6<<<<<<<<<<<<<<<<<");
+            accumulate.print();
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>7<<<<<<<<<<<<<<<<<");
+        */
     }
 }

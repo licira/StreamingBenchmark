@@ -94,12 +94,8 @@ public class SparkOperatorCreator extends OperatorCreator {
         HashSet<String> topicsSet = new HashSet(Arrays.asList(topic.split(",")));
 
         HashMap<String, String> kafkaParams = createKafkaParams(properties);
-        // Create direct kafka stream with brokers and topics
         JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
-        //logger.info(topic);
-        messages.print();
         JavaDStream<String> lines = messages.map(mapFunction);
-        lines.print();
         return new SparkOperator(lines, parallelism);
     }
 

@@ -152,6 +152,11 @@ public class FlinkOperator<T> extends Operator<T> {
     }
 
     @Override
+    public <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun) {
+        return null;
+    }
+
+    @Override
     public WindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
@@ -197,5 +202,10 @@ public class FlinkOperator<T> extends Operator<T> {
                 performanceLog.logThroughputAndLatencyWithTime((WithTime<? extends Object>) value);
             }
         });
+    }
+
+    @Override
+    public PairOperator<String, Integer> flatMapToPair() {
+        return null;
     }
 }

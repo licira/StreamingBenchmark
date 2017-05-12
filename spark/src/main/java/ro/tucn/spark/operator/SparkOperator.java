@@ -18,8 +18,10 @@ import ro.tucn.spark.function.*;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -80,9 +82,24 @@ public class SparkOperator<T> extends Operator<T> {
     @Override
     public <K, V> PairOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
                                                            String componentId) {
-        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair((PairFlatMapFunction<T, K, V>) t ->
-                (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t));
-        return new SparkPairOperator(pairDStream, parallelism);
+        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair(new PairFlatMapFunction<T, K, V>() {
+            @Override
+            public Iterator<Tuple2<K, V>> call(T t) throws Exception {
+                return (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t);
+            }
+        });
+        return new SparkPairOperator<>(pairDStream, parallelism);
+    }
+
+    @Override
+    public <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun) {
+        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair(new PairFlatMapFunction<T, K, V>() {
+            @Override
+            public Iterator<Tuple2<K, V>> call(T t) throws Exception {
+                return (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t);
+            }
+        });
+        return new SparkPairOperator<>(pairDStream, parallelism);
     }
 
     @Override
@@ -103,6 +120,18 @@ public class SparkOperator<T> extends Operator<T> {
     @Override
     public void sink() {
 
+    }
+
+    @Override
+    public PairOperator<String, Integer> flatMapToPair() {
+        Pattern SPACE = Pattern.compile(" ");
+        JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String)x).split(" ")).iterator());
+        stringJavaDStream.print();
+        JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
+        tIntegerJavaPairDStream.print();
+        JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
+        tIntegerJavaPairDStream1.print();
+        return new SparkPairOperator(tIntegerJavaPairDStream1, parallelism);
     }
 
     @Override

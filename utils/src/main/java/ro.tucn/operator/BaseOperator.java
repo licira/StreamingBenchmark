@@ -2,10 +2,12 @@ package ro.tucn.operator;
 
 import ro.tucn.exceptions.UnsupportOperatorException;
 
+import java.io.Serializable;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
-public abstract class BaseOperator {
+public abstract class BaseOperator implements Serializable {
 
     protected int parallelism = -1;
     protected boolean iterativeEnabled = false;
