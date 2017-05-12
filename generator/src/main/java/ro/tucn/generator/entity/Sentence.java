@@ -6,18 +6,18 @@ package ro.tucn.generator.entity;
 public class Sentence {
 
 	private int id;
-	private double[] words;
+	private int[] words;
 
-	public Sentence(int id, double[] words) {
+	public Sentence(int id, int[] words) {
 		this.id = id;
 		this.words = words;
 	}
 
-	public double[] getWords() {
+	public int[] getWords() {
 		return words;
 	}
 
-	public void setWords(double[] words) {
+	public void setWords(int[] words) {
 		this.words = words;
 	}
 

@@ -26,11 +26,11 @@ public class SentenceSender extends AbstractMessageSender {
 
 	@Override
 	protected String getMessageValue() {
-		double[] words = sentence.getWords();
+		int[] words = sentence.getWords();
 		int sentenceSize = words.length;
 		StringBuilder messageData = new StringBuilder();
 		for (int i = 0; i < sentenceSize; i++) {
-			messageData.append(Double.toString(words[i]));
+			messageData.append(Integer.toString(words[i]));
 			messageData.append(" ");
 		}
 		return messageData.toString();

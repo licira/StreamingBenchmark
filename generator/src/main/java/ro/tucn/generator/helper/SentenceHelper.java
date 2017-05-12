@@ -36,12 +36,12 @@ public class SentenceHelper {
 
 	private Sentence getNewSentence(SENTENCE_TYPE sentenceType) {
 		int sentenceLength = (int) randomDataGenerator.nextGaussian(mu, sigma);
-		double[] words = new double[sentenceLength];
+		int[] words = new int[sentenceLength];
 		for (int i = 0; i < sentenceLength; ++i) {
 			if (sentenceType.equals(SKEWED_WORDS_SENTENCE)) {
-				words[i] = zipfGenerator.next();
+				words[i] = randomDataGenerator.nextInt(WORDS_LOWER_BOUND, 10);//zipfGenerator.next();
 			} else if (sentenceType.equals(UNIFORM_WORDS_SENTENCE)) {
-				words[i] = randomDataGenerator.nextInt(WORDS_LOWER_BOUND, upperBound);
+				words[i] = randomDataGenerator.nextInt(WORDS_LOWER_BOUND, 10);
 			}
 		}
 		int sentenceId = randomDataGenerator.nextInt(ID_LOWER_BOUND, 10000);
