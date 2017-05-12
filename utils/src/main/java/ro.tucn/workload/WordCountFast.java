@@ -28,16 +28,5 @@ public class WordCountFast extends Workload {
         PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.flatMapToPair();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
         stringIntegerPairOperator.print();
-        /*
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>3<<<<<<<<<<<<<<<<<");
-            PairOperator<String, Integer> sum = stringIntegerPairOperator.reduceByKey(UserFunctions.sumReduce, "sum");
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>4<<<<<<<<<<<<<<<<<");
-            sum.print();
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>5<<<<<<<<<<<<<<<<<");
-            PairOperator<String, Integer> accumulate = sum.updateStateByKey(UserFunctions.sumReduce, "accumulate");
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>6<<<<<<<<<<<<<<<<<");
-            accumulate.print();
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>7<<<<<<<<<<<<<<<<<");
-        */
     }
 }
