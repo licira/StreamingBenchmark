@@ -12,7 +12,6 @@ import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
-import org.apache.spark.streaming.api.java.JavaPairInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import ro.tucn.kMeans.Point;
@@ -36,6 +35,8 @@ import java.util.Properties;
 public class SparkOperatorCreator extends OperatorCreator {
 
     private static final Logger logger = Logger.getLogger(SparkOperatorCreator.class);
+
+    private static final String TOPIC_SPLITTER = ",";
 
     private static Function<Tuple2<String, String>, String> mapFunction
             = (Function<Tuple2<String, String>, String>) stringStringTuple2 -> stringStringTuple2._2();
@@ -86,59 +87,47 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<String> getStringStreamFromKafka(Properties properties,
-                                                     String topicPropertyName,
-                                                     String componentId,
-                                                     int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic.split(",")));
-
-        HashMap<String, String> kafkaParams = createKafkaParams(properties);
-        JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
-        JavaDStream<String> lines = messages.map(mapFunction);
+    public Operator<String> getStringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+        JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
+        JavaDStream<String> lines = pairStream.map(mapFunction);
         return new SparkOperator(lines, parallelism);
     }
 
     @Override
     public PairOperator<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic.split(",")));
-        HashMap<String, String> kafkaParams = createKafkaParams(properties);
-        JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
-        return new SparkPairOperator(messages, parallelism);
+        JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
+        return new SparkPairOperator(pairStream, parallelism);
     }
 
     @Override
-    public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties,
-                                                                            String topicPropertyName,
-                                                                            String componentId,
-                                                                            int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
-
-        HashMap<String, String> kafkaParams = createKafkaParams(properties);
-        // Create direct kafka stream with brokers and topics
-        JavaPairInputDStream<String, String> messages = (JavaPairInputDStream<String, String>) createDirectStream(kafkaParams, topicsSet);
-        print(messages);
-        JavaDStream<WithTime<String>> lines = messages.map(mapFunctionWithTime);
+    public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+        JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
+        JavaDStream<Point> lines = pairStream.map(mapToPointFunction);
         return new SparkOperator(lines, parallelism);
     }
 
     @Override
-    public Operator<Point> getPointStreamFromKafka(Properties properties,
-                                                   String topicPropertyName,
-                                                   String componentId,
-                                                   int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        HashSet<String> topicsSet = new HashSet(Arrays.asList(topic));
-
-        HashMap<String, String> kafkaParams = createKafkaParams(properties);
-        JavaPairDStream<String, String> messages = createDirectStream(kafkaParams, topicsSet);
-        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + topic);
-        //print(messages);
-        JavaDStream<Point> lines = messages.map(mapToPointFunction);
-        //printPoints(lines);
+    public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+        JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
+        JavaDStream<WithTime<String>> lines = pairStream.map(mapFunctionWithTime);
         return new SparkOperator(lines, parallelism);
+    }
+
+    private JavaPairDStream<String,String> getPairStreamFromKafka(Properties properties, String topicPropertyName) {
+        HashSet<String> topicsSet = getTopicSetFromProperites(topicPropertyName);
+        HashMap<String, String> kafkaParams = getKafkaParamsFromProperties(properties);
+        JavaPairDStream<String, String> stream = getDirectStreamFromKafka(kafkaParams, topicsSet);
+        return stream;
+    }
+
+    private HashSet<String> getTopicSetFromProperites(String topicPropertyName) {
+        String topics = properties.getProperty(topicPropertyName);
+        String[] split = splitTopics(topics);
+        return new HashSet(Arrays.asList(split));
+    }
+
+    private String[] splitTopics(String topics) {
+        return topics.split(TOPIC_SPLITTER);
     }
 
     private void initializeProperties() throws IOException {
@@ -153,7 +142,7 @@ public class SparkOperatorCreator extends OperatorCreator {
         jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
     }
 
-    private HashMap createKafkaParams(Properties properties) {
+    private HashMap getKafkaParamsFromProperties(Properties properties) {
         HashMap<String, String> kafkaParams = new HashMap();
         kafkaParams.put("metadata.broker.list", (String) properties.get("bootstrap.servers"));
         kafkaParams.put("auto.offset.reset", (String) properties.get("auto.offset.reset"));
@@ -162,7 +151,7 @@ public class SparkOperatorCreator extends OperatorCreator {
         return kafkaParams;
     }
 
-    private JavaPairDStream<String, String> createDirectStream(HashMap<String, String> kafkaParams, HashSet<String> topicsSet) {
+    private JavaPairDStream<String, String> getDirectStreamFromKafka(HashMap<String, String> kafkaParams, HashSet<String> topicsSet) {
         return KafkaUtils.createDirectStream(
                 jssc,
                 String.class,
