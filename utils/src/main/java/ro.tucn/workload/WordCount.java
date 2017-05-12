@@ -17,6 +17,7 @@ public class WordCount extends Workload {
         super(creator);
     }
 
+    @Override
     public void process() {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
         Operator<String> wordOperators = getStringStreamOperator("source", "topic1");
