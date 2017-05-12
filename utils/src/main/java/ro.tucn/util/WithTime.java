@@ -1,9 +1,11 @@
 package ro.tucn.util;
 
+import java.io.Serializable;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class WithTime<T> {
+public class WithTime<T> implements Serializable, Comparable<WithTime<T>> {
 
     private T value;
     private long time;
@@ -37,5 +39,10 @@ public class WithTime<T> {
     @Override
     public String toString() {
         return String.format("%s with time %d", value.toString(), time);
+    }
+
+    @Override
+    public int compareTo(WithTime<T> o) {
+        return 0;
     }
 }
