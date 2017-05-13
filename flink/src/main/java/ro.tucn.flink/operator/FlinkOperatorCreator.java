@@ -6,8 +6,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer082;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.Operator;
+import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.WithTime;
@@ -31,10 +31,8 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     @Override
     public Operator<String> getStringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        env.setParallelism(parallelism);
-        DataStream<String> stream = env
-                .addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
+        setEnvParallelism(parallelism);
+        DataStream<String> stream = getStringStreamFromKafka(properties, topicPropertyName);
         return new FlinkOperator<>(stream, parallelism);
     }
 
@@ -45,10 +43,8 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     @Override
     public Operator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        env.setParallelism(parallelism);
-        DataStream<String> stream = env
-                .addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
+        setEnvParallelism(parallelism);
+        DataStream<String> stream = getStringStreamFromKafka(properties, topicPropertyName);
         DataStream<WithTime<String>> withTimeDataStream = stream.map((MapFunction<String, WithTime<String>>) value -> {
             String[] list = value.split(Constants.TimeSeparatorRegex);
             if (list.length == 2) {
@@ -61,10 +57,8 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     @Override
     public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
-        String topic = properties.getProperty(topicPropertyName);
-        env.setParallelism(parallelism);
-        DataStream<String> stream = env
-                .addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
+        setEnvParallelism(parallelism);
+        DataStream<String> stream = getStringStreamFromKafka(properties, topicPropertyName);
         DataStream<Point> pointStream = stream.map((MapFunction<String, Point>) value -> {
             String[] list = value.split(Constants.TimeSeparatorRegex);
             long time = System.currentTimeMillis();
@@ -79,6 +73,19 @@ public class FlinkOperatorCreator extends OperatorCreator {
             return new Point(position, time);
         });
         return new FlinkOperator<>(pointStream, parallelism);
+    }
+
+    private DataStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        return env.addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
+    }
+
+    private String getTopicFromProperties(Properties properties, String topicPropertyName) {
+        return properties.getProperty(topicPropertyName);
+    }
+
+    private void setEnvParallelism(int parallelism) {
+        env.setParallelism(parallelism);
     }
 
     @Override
