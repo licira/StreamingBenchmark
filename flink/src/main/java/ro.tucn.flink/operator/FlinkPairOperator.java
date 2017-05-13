@@ -38,7 +38,7 @@ public class FlinkPairOperator<K, V> extends PairOperator<K, V> {
 
     public FlinkPairOperator(DataStream<Tuple2<K, V>> dataStream, int parallelism) {
         super(parallelism);
-        dataStream = dataStream;
+        this.dataStream = dataStream;
     }
 
     public FlinkGroupedOperator<K, V> groupByKey() {
