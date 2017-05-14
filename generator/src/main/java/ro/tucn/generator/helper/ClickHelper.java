@@ -9,6 +9,6 @@ import ro.tucn.generator.entity.Click;
 public class ClickHelper {
 
 	public static Click createNewClick(Adv adv) {
-		return new Click(adv);
+		return new Click(adv.getId());
 	}
 }

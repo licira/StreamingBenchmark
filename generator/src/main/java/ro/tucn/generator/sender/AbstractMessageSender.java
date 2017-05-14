@@ -1,5 +1,6 @@
 package ro.tucn.generator.sender;
 
+import com.google.gson.Gson;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
@@ -13,14 +14,15 @@ import java.io.Serializable;
  */
 public abstract class AbstractMessageSender implements Serializable {
 
-    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-
     protected static KafkaProducer<String, String> producer;
     protected static ProducerRecord<String, String> newRecord;
+    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private ProducerCreator producerCreator;
+    private Gson gson;
 
     public AbstractMessageSender() {
         producerCreator = new ProducerCreator();
+        gson = new Gson();
     }
 
     public abstract void send(Object o);
@@ -33,17 +35,14 @@ public abstract class AbstractMessageSender implements Serializable {
         producer.close();
     }
 
-    protected abstract String getMessageKey();
+    protected String toJson(Object o) {
+        return gson.toJson(o);
+    }
 
-    protected abstract String getMessageValue();
-
-    protected void send(String topic, Object key, Object value) {
+    public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, null, timestamp, key, value);
         producer.send(newRecord);
-        logger.info("Topic: " + topic
-                + "\tTimestamp: " + newRecord.timestamp()
-                + "\tKey: " + newRecord.key()
-                + "\tValue: " + newRecord.value());
+        logger.info("Topic: " + topic + "\tValue: " + newRecord.value());
     }
 }

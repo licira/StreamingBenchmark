@@ -1,6 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Sentence;
+import ro.tucn.util.Message;
 
 import static ro.tucn.util.Topics.SKEWED_WORDS;
 
@@ -9,30 +10,30 @@ import static ro.tucn.util.Topics.SKEWED_WORDS;
  */
 public class SentenceSender extends AbstractMessageSender {
 
-	private Sentence sentence;
+    @Override
+    public void send(Object o) {
+        Sentence sentence = (Sentence) o;
+        String key = getMessageKey(sentence);
+        String value = getMessageValue(sentence);
+        Message message = new Message(key, value);
+        String json = toJson(message);
+        send(SKEWED_WORDS, null, json);
+    }
 
-	@Override
-	public void send(Object o) {
-		sentence = (Sentence) o;
-		String messageValue = getMessageValue();
-		String messageKey = getMessageKey();
-		send(SKEWED_WORDS, messageKey, messageValue);
-	}
+    private String getMessageKey(Sentence sentence) {
+        return Integer.toString(sentence.getId());
+    }
 
-	@Override
-	protected String getMessageKey() {
-		return Integer.toString(sentence.getId());
-	}
-
-	@Override
-	protected String getMessageValue() {
-		int[] words = sentence.getWords();
-		int sentenceSize = words.length;
-		StringBuilder messageData = new StringBuilder();
-		for (int i = 0; i < sentenceSize; i++) {
-			messageData.append(Integer.toString(words[i]));
-			messageData.append(" ");
-		}
-		return messageData.toString();
-	}
+    private String getMessageValue(Sentence sentence) {
+        int[] words = sentence.getWords();
+        int sentenceSize = words.length;
+        StringBuilder messageData = new StringBuilder();
+        int i;
+        for (i = 0; i < sentenceSize - 1; i++) {
+            messageData.append(Integer.toString(words[i]));
+            messageData.append(" ");
+        }
+        messageData.append(Integer.toString(words[i]));
+        return messageData.toString();
+    }
 }

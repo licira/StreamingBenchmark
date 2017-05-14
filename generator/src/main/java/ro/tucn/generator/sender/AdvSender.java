@@ -1,6 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Adv;
+import ro.tucn.util.Message;
 
 import static ro.tucn.generator.workloadGenerators.AdvClickGenerator.ADV_TOPIC;
 
@@ -9,27 +10,21 @@ import static ro.tucn.generator.workloadGenerators.AdvClickGenerator.ADV_TOPIC;
  */
 public class AdvSender extends AbstractMessageSender {
 
-    private Adv adv;
-
     @Override
     public void send(Object o) {
-        adv = (Adv) o;
-        String messageValue = getMessageValue();
-        String messageKey = getMessageKey();
-        send(ADV_TOPIC, messageKey, messageValue);
+        Adv adv = (Adv) o;
+        String key = getMessageKey(adv);
+        String value = getMessageValue(adv);
+        Message message = new Message(key, value);
+        String json = toJson(message);
+        send(ADV_TOPIC, null, json);
     }
 
-    @Override
-    protected String getMessageValue() {
-        StringBuilder value = new StringBuilder();
-        value.append(adv.getTimestamp());
-        return value.toString();
+    private String getMessageKey(Adv adv) {
+        return adv.getId();
     }
 
-    @Override
-    protected String getMessageKey() {
-        StringBuilder key = new StringBuilder();
-        key.append(adv.getId());
-        return key.toString();
+    private String getMessageValue(Adv adv) {
+        return String.valueOf(adv.getTimestamp());
     }
 }

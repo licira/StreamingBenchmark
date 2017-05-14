@@ -1,6 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.kMeans.Point;
+import ro.tucn.util.Message;
 
 import static ro.tucn.util.Topics.K_MEANS;
 
@@ -9,30 +10,29 @@ import static ro.tucn.util.Topics.K_MEANS;
  */
 public class KMeansSender extends AbstractMessageSender {
 
-    private Point point;
-
     @Override
     public void send(Object o) {
-        point = (Point) o;
-        String messageValue = getMessageValue();
-        String messageKey = getMessageKey();
-        send(K_MEANS, messageKey, messageValue);
+        Point point = (Point) o;
+        String key = getMessageKey(point);
+        String value = getMessageValue(point);
+        Message message = new Message(key, value);
+        String json = toJson(message);
+        send(K_MEANS, null, json);
     }
 
-    @Override
-    protected String getMessageKey() {
+    private String getMessageKey(Point point) {
         return Integer.toString(point.getId());
     }
 
-    @Override
-    protected String getMessageValue() {
+    private String getMessageValue(Point point) {
         double[] location = point.getLocation();
         int locationSize = location.length;
         StringBuilder messageData = new StringBuilder();
-        for(int i = 0; i < locationSize; i++) {
+        int i;
+        for (i = 0; i < locationSize; i++) {
             messageData.append(location[i]);
-            messageData.append(" ");
         }
+        messageData.append(location[i]);
         return messageData.toString();
     }
 }

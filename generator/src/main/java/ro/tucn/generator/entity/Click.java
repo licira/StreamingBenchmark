@@ -5,16 +5,16 @@ package ro.tucn.generator.entity;
  */
 public class Click {
 
-    private Adv adv;
+    private String advId;
     private long timestamp;
 
-    public Click(Adv adv) {
-        this.adv = adv;
+    public Click(String advId) {
+        this.advId = advId;
         timestamp = System.nanoTime();
     }
 
-    public Adv getAdv() {
-        return adv;
+    public String getAdvId() {
+        return this.advId;
     }
 
     public long getTimestamp() {
