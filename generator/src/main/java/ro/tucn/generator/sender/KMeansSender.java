@@ -29,8 +29,9 @@ public class KMeansSender extends AbstractMessageSender {
         int locationSize = location.length;
         StringBuilder messageData = new StringBuilder();
         int i;
-        for (i = 0; i < locationSize; i++) {
+        for (i = 0; i < locationSize - 1; i++) {
             messageData.append(location[i]);
+            messageData.append(" ");
         }
         messageData.append(location[i]);
         return messageData.toString();
