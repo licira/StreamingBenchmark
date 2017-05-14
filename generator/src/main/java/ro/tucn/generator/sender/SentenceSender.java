@@ -3,12 +3,16 @@ package ro.tucn.generator.sender;
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.util.Message;
 
-import static ro.tucn.util.Topics.SKEWED_WORDS;
-
 /**
  * Created by liviu.cira on 11.05.2017.
  */
 public class SentenceSender extends AbstractMessageSender {
+
+    private String topic;
+
+    public SentenceSender(String topic) {
+        this.topic = topic;
+    }
 
     @Override
     public void send(Object o) {
@@ -17,7 +21,7 @@ public class SentenceSender extends AbstractMessageSender {
         String value = getMessageValue(sentence);
         Message message = new Message(key, value);
         String json = toJson(message);
-        send(SKEWED_WORDS, null, json);
+        send(topic, null, json);
     }
 
     private String getMessageKey(Sentence sentence) {

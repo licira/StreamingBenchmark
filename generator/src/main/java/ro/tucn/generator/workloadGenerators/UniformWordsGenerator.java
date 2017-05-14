@@ -8,6 +8,8 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
 
+import static ro.tucn.util.Topics.UNIFORM_WORDS;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
@@ -48,7 +50,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
-        sentenceSender = new SentenceSender();
+        sentenceSender = new SentenceSender(UNIFORM_WORDS);
         sentenceSender.initializeSmallBufferProducer(bootstrapServers);
     }
 

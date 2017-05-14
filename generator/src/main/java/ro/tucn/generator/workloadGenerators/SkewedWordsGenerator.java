@@ -9,6 +9,8 @@ import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
+import static ro.tucn.util.Topics.SKEWED_WORDS;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
@@ -45,7 +47,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
-        sentenceSender = new SentenceSender();
+        sentenceSender = new SentenceSender(SKEWED_WORDS);
         sentenceSender.initializeSmallBufferProducer(bootstrapServers);
     }
 
