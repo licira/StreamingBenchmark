@@ -14,9 +14,10 @@ import java.io.Serializable;
  */
 public abstract class AbstractMessageSender implements Serializable {
 
+    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+
     protected static KafkaProducer<String, String> producer;
     protected static ProducerRecord<String, String> newRecord;
-    protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private ProducerCreator producerCreator;
     private Gson gson;
 
@@ -42,7 +43,7 @@ public abstract class AbstractMessageSender implements Serializable {
     public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, null, timestamp, key, value);
-        producer.send(newRecord);
-        logger.info("Topic: " + topic + "\tValue: " + newRecord.value());
+        //producer.send(newRecord);
+        logger.info("Topic: " + topic + "\tMessage: " + newRecord.value());
     }
 }
