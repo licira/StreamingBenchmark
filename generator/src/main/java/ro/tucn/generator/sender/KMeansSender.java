@@ -15,7 +15,7 @@ public class KMeansSender extends AbstractMessageSender {
         Point point = (Point) o;
         String key = getMessageKey(point);
         String value = getMessageValue(point);
-        Message message = new Message(key, value);
+        Message message = new Message(key, toJson(point));
         String json = toJson(message);
         send(K_MEANS, null, json);
     }
@@ -34,6 +34,7 @@ public class KMeansSender extends AbstractMessageSender {
             messageData.append(" ");
         }
         messageData.append(location[i]);
-        return messageData.toString();
+        //return messageData.toString();
+        return toJson(point);
     }
 }
