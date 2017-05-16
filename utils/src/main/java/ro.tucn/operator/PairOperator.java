@@ -89,5 +89,11 @@ public abstract class PairOperator<K, V> extends BaseOperator {
     public abstract void sink();
 
     public abstract void count();
+
+    protected void checkWindowDurationsCompatibility(TimeDuration duration1, TimeDuration duration2) throws WorkloadException {
+        if (duration1.toMilliSeconds() % duration2.toMilliSeconds() != 0) {
+            throw new WorkloadException("WindowDuration should be multi times of joinWindowDuration");
+        }
+    }
 }
 
