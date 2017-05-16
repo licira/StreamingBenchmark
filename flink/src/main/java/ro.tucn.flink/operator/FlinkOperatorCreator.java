@@ -1,5 +1,6 @@
 package ro.tucn.flink.operator;
 
+import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -10,7 +11,9 @@ import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Constants;
+import ro.tucn.util.Message;
 import ro.tucn.util.WithTime;
+import scala.Tuple2;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -30,6 +33,15 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
+    public void Start() {
+        try {
+            env.execute(appName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public Operator<String> getStringStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         setEnvParallelism(parallelism);
         DataStream<String> stream = getStringStreamFromKafka(properties, topicPropertyName);
@@ -38,7 +50,9 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     @Override
     public PairOperator<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
-        return null;
+        setEnvParallelism(parallelism);
+        DataStream<Tuple2<String, String>> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
+        return new FlinkPairOperator<>(pairStream, parallelism);
     }
 
     @Override
@@ -75,8 +89,32 @@ public class FlinkOperatorCreator extends OperatorCreator {
         return new FlinkOperator<>(pointStream, parallelism);
     }
 
+    private DataStream<Tuple2<String,String>> getPairStreamFromKafka(Properties properties, String topicPropertyName) {
+        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
+        DataStream<Tuple2<String, String>> pairStreamWithJsonAsValue = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
+        return pairStreamWithJsonAsValue;
+    }
+
+    private DataStream<Tuple2<String,String>> getPairStreamFromStreamWithJsonAsValue(DataStream<String> streamWithJsonAsValue) {
+        DataStream<Tuple2<String, String>> pairStream = streamWithJsonAsValue.map(new MapFunction<String, Tuple2<String, String>>() {
+            @Override
+            public Tuple2<String, String> map(String s) throws Exception {
+                Gson gson = new Gson();
+                Message msg = gson.fromJson(s, Message.class);
+                return new Tuple2<String, String>(msg.getKey(), msg.getValue());
+            }
+        });
+        return pairStream;
+    }
+
+    private DataStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topicPropertyName) {
+        DataStream<String> stream = getStringStreamFromKafka(properties, topicPropertyName);
+        return  stream;
+    }
+
     private DataStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
         String topic = getTopicFromProperties(properties, topicPropertyName);
+        properties.put("auto.offset.reset", "earliest");
         return env.addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
     }
 
@@ -86,15 +124,6 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private void setEnvParallelism(int parallelism) {
         env.setParallelism(parallelism);
-    }
-
-    @Override
-    public void Start() {
-        try {
-            env.execute(appName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void initializeProperties() throws IOException {
