@@ -22,7 +22,6 @@ public class WordCount extends Workload {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
         Operator<String> wordOperators = getStringStreamOperator("source", "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
-        wordOperators.print();
         PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.flatMapToPair();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
         stringIntegerPairOperator.print();
