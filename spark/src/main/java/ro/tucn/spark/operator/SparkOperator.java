@@ -21,7 +21,6 @@ import scala.Tuple2;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -124,13 +123,9 @@ public class SparkOperator<T> extends Operator<T> {
 
     @Override
     public PairOperator<String, Integer> flatMapToPair() {
-        Pattern SPACE = Pattern.compile(" ");
         JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String)x).split(" ")).iterator());
-        stringJavaDStream.print();
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
-        tIntegerJavaPairDStream.print();
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
-        tIntegerJavaPairDStream1.print();
         return new SparkPairOperator(tIntegerJavaPairDStream1, parallelism);
     }
 
