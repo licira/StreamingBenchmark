@@ -132,7 +132,6 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topicPropertyName) {
         String topic = getTopicFromProperties(properties, topicPropertyName);
-        properties.put("auto.offset.reset", "latest");
         return env.addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
     }
 
