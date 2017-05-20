@@ -29,32 +29,4 @@
         <module>kafka.starter</module>
     </modules>
 
-    <build>
-        <plugins>
-            <!--<plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>-->
-            <!--<plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerId>eclipse</compilerId>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <optimize>false</optimize>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-compiler-eclipse</artifactId>
-                        <version>2.5</version>
-                    </dependency>
-                </dependencies>
-            </plugin>-->
-        </plugins>
-    </build>
-
 </project>
