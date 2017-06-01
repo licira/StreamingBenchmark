@@ -94,7 +94,7 @@
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <manifestEntries>
                                 <Main-Class>ro.tucn.${project.name}.Application</Main-Class>
-                                <Class-Path>lib/${project.name}.jar</Class-Path>
+                                <Class-Path>lib/${project.name}-SNAPSHOT-1.0</Class-Path>
                             </manifestEntries>
                         </transformer>
                     </transformers>
