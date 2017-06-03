@@ -40,7 +40,7 @@ public class KMeans extends Workload {
         pointOperator.print();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
         Operator<Point> centroid = pointOperator
-                .mapToPair(UserFunctions.pointMapToPair, "mapToPair")
+                .mapToPair(UserFunctions.pointMapToPair, "pointMapToPair")
                 .reduceByKey(UserFunctions.pointAggregator, "aggregator")
                 .map(UserFunctions.computeCentroid, "centroid", Point.class);
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
