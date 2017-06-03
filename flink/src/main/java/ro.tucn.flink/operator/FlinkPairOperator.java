@@ -354,6 +354,7 @@ public class FlinkPairOperator<K, V> extends PairOperator<K, V> {
     @Override
     public void print() {
         dataStream.print();
+        System.out.println("7");
     }
 
     @Override

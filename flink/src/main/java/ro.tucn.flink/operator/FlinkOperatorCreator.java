@@ -28,8 +28,12 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     public FlinkOperatorCreator(String name) throws IOException {
         super(name);
-        env = StreamExecutionEnvironment.getExecutionEnvironment();
+        System.out.println("1");
         initializeProperties();
+        env = StreamExecutionEnvironment.getExecutionEnvironment();
+        //env = StreamExecutionEnvironment.createLocalEnvironment();
+        //env = StreamExecutionEnvironment.createRemoteEnvironment("54.173.165.50", 6123);
+        System.out.println("2");
     }
 
     @Override
@@ -127,7 +131,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private DataStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topicPropertyName) {
         DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
-        return  stream;
+        return stream;
     }
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topicPropertyName) {

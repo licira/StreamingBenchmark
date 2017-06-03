@@ -31,22 +31,27 @@ public class AdvClick extends Workload {
 
     @Override
     public void process() {
+        System.out.println("3");
         PairOperator<String, String> advs = getPairStreamOperator("adv", "topic1");
         PairOperator<String, String> clicks = getPairStreamOperator("click", "topic2");
-        advs.print();
-        clicks.print();
+        System.out.println("4");
+        //advs.print();
+        //clicks.print();
         PairOperator<String, Tuple2<String, String>> advClick = null;
         try {
+            System.out.println("5");
             advClick = advs.join("Join",
                     clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
+            advClick.print();
+            advClick.sink();
+            System.out.println("6");
         } catch (WorkloadException e) {
             logger.error(e.getMessage());
         } catch (DurationException e) {
             logger.error(e.getMessage());
         }
-        advClick.print();
     }
 
     private static class TimeAssigner implements AssignTimeFunction<Long>, Serializable {

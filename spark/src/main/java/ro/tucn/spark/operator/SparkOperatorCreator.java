@@ -217,16 +217,13 @@ public class SparkOperatorCreator extends OperatorCreator {
         SparkConf conf = new SparkConf()
                 .setMaster(getMaster())
                 .setAppName(appName)
-                //.set("spark.driver.memory", "512m")
-                //.set("spark.executor.memory", "512m")
+                .set("spark.driver.memory", "256m")
+                .set("spark.executor.memory", "768m")
                 //.set("num-executors", "1")
                 //.set("executor.instances", "1")
                 //.set("cores.max", "1")
                 //.set("spark.streaming.ui.retainedBatches", "2000")
-                //.set("driver-memory", "768m")
-                //.set("executor.memory", "768m")
-                ;//.setJars(jars);
-        //conf.set("spark.executor.cores", "1");
+                ;
         JavaSparkContext sc = new JavaSparkContext(conf);
         jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
     }
