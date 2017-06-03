@@ -70,16 +70,16 @@ public class KMeansGenerator extends AbstractGenerator {
             }
             Point p = new Point(position);
             if (!centroids.contains(p)) {
-                Point nearestP = null;
+                Point nearest = null;
                 double minDistance = Double.MAX_VALUE;
                 for (Point centroid : centroids) {
                     double localDistance = p.distanceSquaredTo(centroid);
                     if (localDistance < minDistance) {
                         minDistance = localDistance;
-                        nearestP = centroid;
+                        nearest = centroid;
                     }
                 }
-                if (nearestP == null || nearestP.distanceSquaredTo(p) > Math.pow(distance, 2)) {
+                if (nearest == null || nearest.distanceSquaredTo(p) > Math.pow(distance, 2)) {
                     centroids.add(p);
                     i++;
                 }
