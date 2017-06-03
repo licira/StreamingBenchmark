@@ -8,12 +8,6 @@ import ro.tucn.util.Message;
  */
 public class SentenceSender extends AbstractMessageSender {
 
-    private String topic;
-
-    public SentenceSender(String topic) {
-        this.topic = topic;
-    }
-
     @Override
     public void send(Object o) {
         Sentence sentence = (Sentence) o;

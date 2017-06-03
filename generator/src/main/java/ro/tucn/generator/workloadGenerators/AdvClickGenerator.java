@@ -9,28 +9,26 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.AdvSender;
 import ro.tucn.generator.sender.ClickSender;
-import ro.tucn.util.Topics;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static ro.tucn.util.Topics.ADV;
+import static ro.tucn.util.Topics.CLICK;
+
 /**
  * Created by Liviu on 4/4/2017.
  */
 public class AdvClickGenerator extends AbstractGenerator {
 
-    public static String ADV_TOPIC = Topics.ADV;
-    public static String CLICK_TOPIC = Topics.CLICK;
-
+    private static Long advNum;
     private AbstractMessageSender advSender;
     private AbstractMessageSender clickSender;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
-
     private ArrayList<Adv> advs;
-    private static Long advNum;
     private double clickLambda;
     private double clickProbability;
 
@@ -65,8 +63,10 @@ public class AdvClickGenerator extends AbstractGenerator {
 
     private void initializeMessageSendersWithSmallBuffers() {
         advSender = new AdvSender();
+        advSender.setTopic(ADV);
         advSender.initializeSmallBufferProducer(bootstrapServers);
         clickSender = new ClickSender();
+        clickSender.setTopic(CLICK);
         clickSender.initializeSmallBufferProducer(bootstrapServers);
     }
 

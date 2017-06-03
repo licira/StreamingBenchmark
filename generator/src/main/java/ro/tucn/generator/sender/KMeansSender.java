@@ -3,8 +3,6 @@ package ro.tucn.generator.sender;
 import ro.tucn.kMeans.Point;
 import ro.tucn.util.Message;
 
-import static ro.tucn.util.Topics.K_MEANS;
-
 /**
  * Created by Liviu on 5/9/2017.
  */
@@ -17,7 +15,7 @@ public class KMeansSender extends AbstractMessageSender {
         String value = getMessageValue(point);
         Message message = new Message(key, toJson(point));
         String json = toJson(message);
-        send(K_MEANS, null, json);
+        send(topic, null, json);
     }
 
     private String getMessageKey(Point point) {
@@ -34,7 +32,6 @@ public class KMeansSender extends AbstractMessageSender {
             messageData.append(" ");
         }
         messageData.append(location[i]);
-        //return messageData.toString();
         return toJson(point);
     }
 }

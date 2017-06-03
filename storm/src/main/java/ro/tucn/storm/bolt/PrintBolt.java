@@ -2,7 +2,6 @@ package ro.tucn.storm.bolt;
 
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Tuple;
 import org.apache.log4j.Logger;
 
@@ -24,7 +23,9 @@ public class PrintBolt<T> extends BaseBolt {
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        logger.error(input.getValue(0).toString());
+        String key = (String) input.getValue(0);
+        String value = (String) input.getValue(1);
+        logger.info("Key: " + key + " Value: " + value);
     }
 
     @Override

@@ -50,7 +50,8 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
-        sentenceSender = new SentenceSender(UNIFORM_WORDS);
+        sentenceSender = new SentenceSender();
+        sentenceSender.setTopic(UNIFORM_WORDS);
         sentenceSender.initializeSmallBufferProducer(bootstrapServers);
     }
 

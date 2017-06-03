@@ -20,7 +20,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
 
     private SentenceHelper sentenceHelper;
     private AbstractMessageSender sentenceSender;
-    
+
     private long SENTENCE_NUM = 10;
 
     public SkewedWordsGenerator() {
@@ -47,7 +47,8 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
-        sentenceSender = new SentenceSender(SKEWED_WORDS);
+        sentenceSender = new SentenceSender();
+        sentenceSender.setTopic(SKEWED_WORDS);
         sentenceSender.initializeSmallBufferProducer(bootstrapServers);
     }
 
@@ -58,7 +59,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     @Override
     protected void submitData(int sleepFrequency) {
         for (long i = 0; i < SENTENCE_NUM; ++i) {
-            submitNewSentence();            
+            submitNewSentence();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
@@ -87,6 +88,6 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
         sentenceHelper.setMu(mu);
-        sentenceHelper.setSigma(sigma);        
+        sentenceHelper.setSigma(sigma);
     }
 }

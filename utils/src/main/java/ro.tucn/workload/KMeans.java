@@ -3,7 +3,6 @@ package ro.tucn.workload;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.userfunctions.UserFunctions;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
@@ -33,19 +32,26 @@ public class KMeans extends Workload {
         initCentroids = loadInitCentroids();
     }
 
-    public void process() {
-        Operator<Point> pointOperator = getPointStreamOperator("source", "topic1");
+    public void process() {/*PI*/
+        Operator<Point> points = getPointStreamOperator("source", "topic1");
+        Operator<Point> centroids = getPointStreamOperator("source", "topic2");
+        /*Operator<Point> pointOperator = getPointStreamOperator("source", "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1");
         pointOperator.iterative();
         pointOperator.print();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2");
+        PairOperator<Integer, Tuple2<Long, Point>> pointMapToPair = pointOperator.mapToPair(UserFunctions.pointMapToPair, "pointMapToPair");
+        //PairOperator<Integer, Tuple2<Long, Point>> aggregator = pointMapToPair.reduceByKey(UserFunctions.pointAggregator, "aggregator");
+        //Operator<Point> centroid = aggregator.map(UserFunctions.computeCentroid, "centroid", Point.class);
+        /*
         Operator<Point> centroid = pointOperator
                 .mapToPair(UserFunctions.pointMapToPair, "pointMapToPair")
                 .reduceByKey(UserFunctions.pointAggregator, "aggregator")
                 .map(UserFunctions.computeCentroid, "centroid", Point.class);
+        /
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3");
-        centroid.print();
-        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");
+        pointMapToPair.print();
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4");*/
     }
 
     private List<Point> loadInitCentroids() {

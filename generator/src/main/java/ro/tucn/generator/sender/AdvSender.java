@@ -3,8 +3,6 @@ package ro.tucn.generator.sender;
 import ro.tucn.generator.entity.Adv;
 import ro.tucn.util.Message;
 
-import static ro.tucn.generator.workloadGenerators.AdvClickGenerator.ADV_TOPIC;
-
 /**
  * Created by Liviu on 5/9/2017.
  */
@@ -17,7 +15,7 @@ public class AdvSender extends AbstractMessageSender {
         String value = getMessageValue(adv);
         Message message = new Message(key, value);
         String json = toJson(message);
-        send(ADV_TOPIC, null, json);
+        send(topic, null, json);
     }
 
     private String getMessageKey(Adv adv) {

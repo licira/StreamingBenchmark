@@ -92,6 +92,18 @@ public class Point implements Serializable {
         this.location = location;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public double[] getLocation() {
+        return location;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String toString() {
         String str = "";
         for (int i = 0; i < this.location.length - 1; ++i) {
@@ -101,13 +113,5 @@ public class Point implements Serializable {
         if (-1 != this.id)
             return id + ":" + str;
         return str;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public double[] getLocation() {
-        return location;
     }
 }
