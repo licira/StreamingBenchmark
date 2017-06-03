@@ -85,7 +85,7 @@ public class Point implements Serializable {
         for (int i = 0; i < this.location.length; ++i) {
             squareSum += Math.pow(this.location[i] - other.location[i], 2);
         }
-        return squareSum;
+        return Math.sqrt(squareSum);
     }
 
     public void setLocation(double[] location) {
