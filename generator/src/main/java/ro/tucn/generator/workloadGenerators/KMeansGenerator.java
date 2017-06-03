@@ -79,7 +79,7 @@ public class KMeansGenerator extends AbstractGenerator {
                         nearest = centroid;
                     }
                 }
-                if (nearest == null || nearest.distanceSquaredTo(p) > Math.pow(distance, 2)) {
+                if (nearest == null || (nearest.distanceSquaredTo(p) > distance)) {
                     centroids.add(p);
                     i++;
                 }
