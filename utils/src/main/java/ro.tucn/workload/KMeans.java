@@ -4,10 +4,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.MapFunction;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.GroupedOperator;
-import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairOperator;
 import scala.Tuple2;
 import scala.Tuple3;
 
@@ -32,6 +29,7 @@ public class KMeans extends Workload {
     }
 
     public void process() {/*PI*/
+        /*
         Operator<Point> points = getPointStreamOperator("source", "topic1");
         Operator<Point> centroids = getPointStreamOperator("source", "topic2");
         for(int i =0; i < 10; i++) {
@@ -39,7 +37,7 @@ public class KMeans extends Workload {
             GroupedOperator<Integer, Point> pointsGroupedByCentroidId = pointsWithCentroidId.groupByKey();
             Operator<Point> aggregateCentroids = pointsGroupedByCentroidId.aggregateReduceByKey();
             centroids = aggregateCentroids.map(points);
-        }
+        }*/
         /*PairOperator<Integer, Tuple2<Long, Point>> pointMapToPair = pointOperator.mapToPair(UserFunctions.pointMapToPair, "pointMapToPair");
         PairOperator<Integer, Tuple2<Long, Point>> aggregator = pointMapToPair.reduceByKey(UserFunctions.pointAggregator, "aggregator");
         Operator<Point> centroid = aggregator.map(UserFunctions.computePoint, "centroid", Point.class);
