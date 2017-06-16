@@ -54,16 +54,16 @@ public class SparkOperatorCreator extends OperatorCreator {
             = (Function<Tuple2<String, String>, Point>) stringStringTuple2 -> {
         String key = stringStringTuple2._1();
         String value = stringStringTuple2._2();
-        String[] locationsAsString = value.split(" ");
+        String[] coordinatesAsString = value.split(" ");
         //point.setTime(Long.parseLong(stringStringTuple2._1()));
-        double[] location = new double[locationsAsString.length];
+        double[] coordinates = new double[coordinatesAsString.length];
         int idx = 0;
-        for (String locationAsString : locationsAsString) {
-            location[idx] = Double.parseDouble(locationAsString);
+        for (String locationAsString : coordinatesAsString) {
+            coordinates[idx] = Double.parseDouble(locationAsString);
             idx++;
         }
         int id = Integer.parseInt(key);
-        return new Point(id, location);
+        return new Point(id, coordinates);
     };
 
     public JavaStreamingContext jssc;
@@ -97,7 +97,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public PairOperator<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        //pairStream.print();
+        pairStream.print();
         return new SparkPairOperator(pairStream, parallelism);
     }
 
