@@ -43,7 +43,7 @@ public abstract class AbstractMessageSender implements Serializable {
     public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, null, timestamp, key, value);
-        //producer.send(newRecord);
+        producer.send(newRecord);
         logger.info("Topic: " + topic + "\tMessage: " + newRecord.value());
     }
 
