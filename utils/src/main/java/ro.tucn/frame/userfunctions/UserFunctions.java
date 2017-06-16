@@ -212,7 +212,7 @@ public class UserFunctions implements Serializable {
                         minIndex = i;
                     }
                 }
-                return new Point(minIndex, var1.location, var1.getTime());
+                return new Point(minIndex, var1.coordinates, var1.getTime());
             }
         }
     };
@@ -231,7 +231,7 @@ public class UserFunctions implements Serializable {
                 public Tuple2<Long, Point> reduce(Tuple2<Long, Point> var1, Tuple2<Long, Point> var2) throws Exception {
                     double[] location = new double[var1._2.dimension()];
                     for (int i = 0; i < location.length; i++) {
-                        location[i] = var1._2.location[i] + var2._2.location[i];
+                        location[i] = var1._2.coordinates[i] + var2._2.coordinates[i];
                     }
                     long time = Math.max(var1._2.getTime(), var2._2.getTime());
                     return new Tuple2(var1._1 + var2._1, new Point(location, time));
@@ -251,7 +251,7 @@ public class UserFunctions implements Serializable {
 
             double[] location = new double[var1._2._2.dimension()];
             for (int i = 0; i < location.length; i++) {
-                location[i] = var1._2._2.location[i] / counts;
+                location[i] = var1._2._2.coordinates[i] / counts;
             }
 
             //centroidLog.execute(counts, location);
