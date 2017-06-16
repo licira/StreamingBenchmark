@@ -40,8 +40,7 @@ public class AdvClick extends Workload {
         PairOperator<String, Tuple2<String, String>> advClick = null;
         try {
             System.out.println("5");
-            advClick = advs.join("Join",
-                    clicks,
+            advClick = advs.join(clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
             advClick.print();

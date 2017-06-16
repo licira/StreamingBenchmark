@@ -51,7 +51,7 @@ public abstract class PairOperator<K, V> extends BaseOperator {
      * @return
      */
     public abstract PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
-                                                                    TimeDuration windowDuration, TimeDuration slideDuration);
+                                                            TimeDuration windowDuration, TimeDuration slideDuration);
 
     public abstract WindowedPairOperator<K, V> window(TimeDuration windowDuration);
 
@@ -66,9 +66,8 @@ public abstract class PairOperator<K, V> extends BaseOperator {
      * @param <R>                Value type of joinStream
      * @return joined stream
      */
-    public abstract <R> PairOperator<K, Tuple2<V, R>> join(
-            String componentId, PairOperator<K, R> joinStream,
-            TimeDuration windowDuration, TimeDuration joinWindowDuration) throws WorkloadException;
+    public abstract <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
+                                                           TimeDuration windowDuration, TimeDuration joinWindowDuration) throws WorkloadException;
 
     /**
      * Join two pair streams which have the same type of key -- K base on event time

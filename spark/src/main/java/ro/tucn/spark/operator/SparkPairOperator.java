@@ -105,7 +105,6 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
     /**
      * Join two streams base on processing time
      *
-     * @param componentId
      * @param joinStream         the other stream<K,R>
      * @param windowDuration     window length of this stream
      * @param joinWindowDuration window length of joinStream
@@ -113,8 +112,8 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
      * @return
      * @throws WorkloadException
      */
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  PairOperator<K, R> joinStream,
+    @Override
+    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
                                                   TimeDuration windowDuration,
                                                   TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);

@@ -171,8 +171,7 @@ public class FlinkPairOperator<K, V> extends PairOperator<K, V> {
      * @return PairOperator after join
      */
     @Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  PairOperator<K, R> joinOperator,
+    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinOperator,
                                                   TimeDuration windowDuration,
                                                   TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);

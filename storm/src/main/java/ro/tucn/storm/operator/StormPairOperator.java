@@ -122,19 +122,19 @@ public class StormPairOperator<K, V> extends PairOperator<K, V> {
     }
 
     @Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                          PairOperator<K, R> joinStream,
-                                                          TimeDuration windowDuration,
-                                                          TimeDuration joinWindowDuration) throws WorkloadException {
+    public <R> PairOperator<K, Tuple2<V, R>> join(
+            PairOperator<K, R> joinStream,
+            TimeDuration windowDuration,
+            TimeDuration joinWindowDuration) throws WorkloadException {
 
         if (joinStream instanceof StormPairOperator) {
             StormPairOperator<K, R> joinStormStream = (StormPairOperator<K, R>) joinStream;
-            topologyBuilder.setBolt(componentId,
+            topologyBuilder.setBolt("AdvClick-Join",
                     new JoinBolt<>(this.preComponentId, windowDuration, joinStormStream.preComponentId, joinWindowDuration),
                     parallelism)
                     .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField))
                     .fieldsGrouping(joinStormStream.preComponentId, new Fields(BoltConstants.OutputKeyField));
-            return new StormPairOperator<>(topologyBuilder, componentId, parallelism);
+            return new StormPairOperator<>(topologyBuilder, "AdvClick-Join", parallelism);
         }
         throw new WorkloadException("Cast joinStrem to StormPairOperator failed");
     }
@@ -142,8 +142,8 @@ public class StormPairOperator<K, V> extends PairOperator<K, V> {
     // Event time join
     @Override
     public <R> PairOperator<K, Tuple2<V, R>> join(String componentId, PairOperator<K, R> joinStream,
-                                                          TimeDuration windowDuration, TimeDuration joinWindowDuration,
-                                                          AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
+                                                  TimeDuration windowDuration, TimeDuration joinWindowDuration,
+                                                  AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
         if (joinStream instanceof StormPairOperator) {
             StormPairOperator<K, R> joinStormStream = (StormPairOperator<K, R>) joinStream;
             topologyBuilder
