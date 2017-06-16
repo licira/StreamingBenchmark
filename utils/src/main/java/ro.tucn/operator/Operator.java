@@ -1,6 +1,7 @@
 package ro.tucn.operator;
 
 import ro.tucn.exceptions.UnsupportOperatorException;
+import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.util.TimeDuration;
 
@@ -15,8 +16,9 @@ public abstract class Operator<T> extends BaseOperator {
         super(parallelism);
     }
 
-    public abstract PairOperator<String,Integer> wordCount();
+    public abstract PairOperator<String, Integer> wordCount();
 
+    public abstract void kMeansCluster(Operator<T> centroids) throws WorkloadException;
     /**
      * Map T to R for each entity
      */
