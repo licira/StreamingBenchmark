@@ -1,11 +1,8 @@
 package ro.tucn.spark.operator;
 
 import org.apache.log4j.Logger;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
-import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.streaming.Duration;
-import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
@@ -34,6 +31,7 @@ public class SparkOperator<T> extends Operator<T> {
     public SparkOperator(JavaDStream<T> stream, int parallelism) {
         super(parallelism);
         dStream = stream;
+
     }
 
     @Override
@@ -130,18 +128,28 @@ public class SparkOperator<T> extends Operator<T> {
     }
 
     @Override
+    public PairOperator mapToPair(Operator<T> centroids) {
+        return null;
+    }
+
+    @Override
+    public Operator map(Operator<T> points) {
+        return null;
+    }
+
+    @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
         //throw new UnsupportOperatorException("Operator not supported1");
     }
 
     @Override
     public void print() {
-        VoidFunction2<JavaRDD<T>, Time> voidFunction2 = (VoidFunction2<JavaRDD<T>, Time>) (rdd, time) -> {
+        /*VoidFunction2<JavaRDD<T>, Time> voidFunction2 = (VoidFunction2<JavaRDD<T>, Time>) (rdd, time) -> {
             rdd.collect();
             logger.info("===================================");
             logger.info(" Number of records in this batch: " + rdd.count());
             logger.info("===================================");
-        };
+        };*/
         //this.dStream.foreachRDD(voidFunction2);
         this.dStream.print();
     }

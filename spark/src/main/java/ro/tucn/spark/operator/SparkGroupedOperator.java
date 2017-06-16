@@ -5,6 +5,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.GroupedOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.spark.function.GrouperPairFunctionImpl;
 
 /**
@@ -22,6 +23,11 @@ public class SparkGroupedOperator<K, V> extends GroupedOperator<K, V> {
     public SparkPairOperator<K, V> reduce(final ReduceFunction<V> fun, String componentId, int parallelism) {
         JavaPairDStream<K, V> newStream = this.pairDStream.mapToPair(new GrouperPairFunctionImpl<K, V>(fun));
         return new SparkPairOperator<K, V>(newStream, parallelism);
+    }
+
+    @Override
+    public Operator aggregateReduceByKey() {
+        return null;
     }
 
     @Override

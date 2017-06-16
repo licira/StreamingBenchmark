@@ -61,4 +61,8 @@ public abstract class Operator<T> extends BaseOperator {
     public abstract void sink();
 
     public abstract PairOperator<String, Integer> flatMapToPair();
+
+    public abstract PairOperator mapToPair(Operator<T> centroids);
+
+    public abstract Operator map(Operator<T> points);
 }

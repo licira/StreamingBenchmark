@@ -246,6 +246,16 @@ public class FlinkOperator<T> extends Operator<T> {
         return new FlinkPairOperator<>(wordCountsScala, parallelism);
     }
 
+    @Override
+    public PairOperator mapToPair(Operator<T> centroids) {
+        return null;
+    }
+
+    @Override
+    public Operator map(Operator<T> points) {
+        return null;
+    }
+
     /**
      * @apiNote Workaround to be able to perform flink operations
      */

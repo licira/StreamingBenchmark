@@ -6,6 +6,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.GroupedOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.storm.bolt.PairReduceBolt;
 import ro.tucn.storm.bolt.constants.BoltConstants;
@@ -31,6 +32,11 @@ public class StormGroupedOperator<K, V> extends GroupedOperator<K, V> {
                 parallelism)
                 .fieldsGrouping(preComponentId, new Fields(BoltConstants.OutputKeyField));
         return new StormPairOperator<>(topologyBuilder, componentId, parallelism);
+    }
+
+    @Override
+    public Operator aggregateReduceByKey() {
+        return null;
     }
 
     @Override

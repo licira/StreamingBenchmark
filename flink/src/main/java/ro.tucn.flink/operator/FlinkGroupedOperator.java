@@ -6,6 +6,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.GroupedOperator;
+import ro.tucn.operator.Operator;
 import scala.Tuple2;
 
 /**
@@ -25,6 +26,11 @@ public class FlinkGroupedOperator<K, V> extends GroupedOperator<K, V> {
         DataStream<Tuple2<K, V>> newDataSet = groupedDataStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
         return new FlinkPairOperator<>(newDataSet, parallelism);
+    }
+
+    @Override
+    public Operator aggregateReduceByKey() {
+        return null;
     }
 
     @Override

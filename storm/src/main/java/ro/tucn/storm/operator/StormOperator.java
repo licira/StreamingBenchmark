@@ -130,4 +130,14 @@ public class StormOperator<T> extends Operator<T> {
     public PairOperator<String, Integer> flatMapToPair() {
         return null;
     }
+
+    @Override
+    public PairOperator mapToPair(Operator<T> centroids) {
+        return null;
+    }
+
+    @Override
+    public Operator map(Operator<T> points) {
+        return null;
+    }
 }
