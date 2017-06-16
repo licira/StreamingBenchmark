@@ -32,6 +32,34 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
         this.pairDStream = stream;
     }
 
+    /**
+     * Join two streams base on processing time
+     *
+     * @param joinStream         the other stream<K,R>
+     * @param windowDuration     window length of this stream
+     * @param joinWindowDuration window length of joinStream
+     * @param <R>
+     * @return
+     * @throws WorkloadException
+     */
+    @Override
+    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
+                                                  TimeDuration windowDuration,
+                                                  TimeDuration joinWindowDuration) throws WorkloadException {
+        checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
+        checkOperatorType(joinStream);
+
+        Duration duration = toDuration(windowDuration);
+        Duration joinDuration = toDuration(joinWindowDuration);
+
+        SparkPairOperator<K, R> joinSparkStream = ((SparkPairOperator<K, R>) joinStream);
+        JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
+                .window(duration.plus(joinDuration), joinDuration)
+                .join(joinSparkStream.pairDStream.window(joinDuration, duration));
+
+        return new SparkPairOperator(joinedStream, parallelism);
+    }
+
     @Override
     public void count() {
         this.pairDStream.count().print();
@@ -100,34 +128,6 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
         Duration slideDuration = toDuration(slideWindowDuration);
         JavaPairDStream<K, V> windowedStream = pairDStream.window(duration, slideDuration);
         return new SparkWindowedPairOperator(windowedStream, parallelism);
-    }
-
-    /**
-     * Join two streams base on processing time
-     *
-     * @param joinStream         the other stream<K,R>
-     * @param windowDuration     window length of this stream
-     * @param joinWindowDuration window length of joinStream
-     * @param <R>
-     * @return
-     * @throws WorkloadException
-     */
-    @Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration joinWindowDuration) throws WorkloadException {
-        checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
-        checkOperatorType(joinStream);
-
-        Duration duration = toDuration(windowDuration);
-        Duration joinDuration = toDuration(joinWindowDuration);
-
-        SparkPairOperator<K, R> joinSparkStream = ((SparkPairOperator<K, R>) joinStream);
-        JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
-                .window(duration.plus(joinDuration), joinDuration)
-                .join(joinSparkStream.pairDStream.window(joinDuration, duration));
-
-        return new SparkPairOperator(joinedStream, parallelism);
     }
 
     /**
