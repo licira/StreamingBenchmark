@@ -35,9 +35,50 @@ public class FlinkOperator<T> extends Operator<T> {
     protected DataStream<T> dataStream;
     private IterativeStream<T> iterativeStream;
 
+    Logger logger = Logger.getLogger("the logger");
+
     public FlinkOperator(DataStream<T> dataSet, int parallelism) {
         super(parallelism);
         dataStream = dataSet;
+    }
+
+    @Override
+    public PairOperator<String, Integer> wordCount() {
+        logger.info("1");
+        DataStream<String> sentenceStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, String>() {
+            @Override
+            public String map(T t) throws Exception {
+                return (String)t;
+
+            }
+        });
+        logger.info("2");
+        DataStream<Tuple2<String, Integer>> wordsStreamScala = sentenceStream.flatMap(new org.apache.flink.api.common.functions.FlatMapFunction<String, Tuple2<String, Integer>>() {
+            @Override
+            public void flatMap(String sentence, Collector<Tuple2<String, Integer>> collector) throws Exception {
+                for (String word : sentence.split(" ")) {
+                    collector.collect(new Tuple2<String, Integer>(word, 1));
+                }
+            }
+        });
+        DataStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>> wordsStreamFlink = toDataStreamWithFlinkTuple2(wordsStreamScala);
+        logger.info("3");
+        KeyedStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>, String> keyedWordsStream = wordsStreamFlink.keyBy(new KeySelector<org.apache.flink.api.java.tuple.Tuple2<String, Integer>, String>() {
+            @Override
+            public String getKey(org.apache.flink.api.java.tuple.Tuple2<String, Integer> value) throws Exception {
+                return value.f0;
+            }
+        });
+        logger.info("4");
+        DataStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>> wordCountsFlink = keyedWordsStream.reduce(new org.apache.flink.api.common.functions.ReduceFunction<org.apache.flink.api.java.tuple.Tuple2<String, Integer>>() {
+            @Override
+            public org.apache.flink.api.java.tuple.Tuple2<String, Integer> reduce(org.apache.flink.api.java.tuple.Tuple2<String, Integer> value1, org.apache.flink.api.java.tuple.Tuple2<String, Integer> value2) throws Exception {
+                return new org.apache.flink.api.java.tuple.Tuple2<>(value1.f0, value1.f1 + value2.f1);
+            }
+        });
+        logger.info("5");
+        DataStream<Tuple2<String, Integer>> wordCountsScala = toDataStreamWithScalaTuple2(wordCountsFlink);
+        return new FlinkPairOperator<>(wordCountsScala, parallelism);
     }
 
     @Override
@@ -205,45 +246,6 @@ public class FlinkOperator<T> extends Operator<T> {
                 performanceLog.logThroughputAndLatencyWithTime((WithTime<? extends Object>) value);
             }
         });
-    }
-    Logger logger = Logger.getLogger("the logger");
-    @Override
-    public PairOperator<String, Integer> flatMapToPair() {
-        logger.info("1");
-        DataStream<String> sentenceStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, String>() {
-            @Override
-            public String map(T t) throws Exception {
-                return (String)t;
-
-            }
-        });
-        logger.info("2");
-        DataStream<Tuple2<String, Integer>> wordsStreamScala = sentenceStream.flatMap(new org.apache.flink.api.common.functions.FlatMapFunction<String, Tuple2<String, Integer>>() {
-            @Override
-            public void flatMap(String sentence, Collector<Tuple2<String, Integer>> collector) throws Exception {
-                for (String word : sentence.split(" ")) {
-                    collector.collect(new Tuple2<String, Integer>(word, 1));
-                }
-            }
-        });
-        DataStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>> wordsStreamFlink = toDataStreamWithFlinkTuple2(wordsStreamScala);
-        logger.info("3");
-        KeyedStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>, String> keyedWordsStream = wordsStreamFlink.keyBy(new KeySelector<org.apache.flink.api.java.tuple.Tuple2<String, Integer>, String>() {
-            @Override
-            public String getKey(org.apache.flink.api.java.tuple.Tuple2<String, Integer> value) throws Exception {
-                return value.f0;
-            }
-        });
-        logger.info("4");
-        DataStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>> wordCountsFlink = keyedWordsStream.reduce(new org.apache.flink.api.common.functions.ReduceFunction<org.apache.flink.api.java.tuple.Tuple2<String, Integer>>() {
-            @Override
-            public org.apache.flink.api.java.tuple.Tuple2<String, Integer> reduce(org.apache.flink.api.java.tuple.Tuple2<String, Integer> value1, org.apache.flink.api.java.tuple.Tuple2<String, Integer> value2) throws Exception {
-                return new org.apache.flink.api.java.tuple.Tuple2<>(value1.f0, value1.f1 + value2.f1);
-            }
-        });
-        logger.info("5");
-        DataStream<Tuple2<String, Integer>> wordCountsScala = toDataStreamWithScalaTuple2(wordCountsFlink);
-        return new FlinkPairOperator<>(wordCountsScala, parallelism);
     }
 
     @Override

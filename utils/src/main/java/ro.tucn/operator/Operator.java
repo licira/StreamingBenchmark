@@ -15,6 +15,8 @@ public abstract class Operator<T> extends BaseOperator {
         super(parallelism);
     }
 
+    public abstract PairOperator<String,Integer> wordCount();
+
     /**
      * Map T to R for each entity
      */
@@ -59,8 +61,6 @@ public abstract class Operator<T> extends BaseOperator {
     public abstract WindowedOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration);
 
     public abstract void sink();
-
-    public abstract PairOperator<String, Integer> flatMapToPair();
 
     public abstract PairOperator mapToPair(Operator<T> centroids);
 

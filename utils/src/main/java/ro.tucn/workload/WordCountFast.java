@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairOperator;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -23,8 +22,8 @@ public class WordCountFast extends Workload {
         Operator<String> wordOperators = getStringStreamOperator("source", "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
         wordOperators.print();
-        PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.flatMapToPair();
+        //PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.flatMapToPair();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
-        stringIntegerPairOperator.print();
+        //stringIntegerPairOperator.print();
     }
 }

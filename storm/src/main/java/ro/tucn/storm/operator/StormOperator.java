@@ -29,6 +29,11 @@ public class StormOperator<T> extends Operator<T> {
     }
 
     @Override
+    public PairOperator<String, Integer> wordCount() {
+        return null;
+    }
+
+    @Override
     public <R> Operator<R> map(MapFunction<T, R> fun, String componentId) {
         MapBolt<T, R> bolt = new MapBolt<>(fun);
         boltDeclarer = topologyBuilder.setBolt(componentId, bolt, parallelism).localOrShuffleGrouping(previousComponent);
@@ -124,11 +129,6 @@ public class StormOperator<T> extends Operator<T> {
     @Override
     public void sink() {
 
-    }
-
-    @Override
-    public PairOperator<String, Integer> flatMapToPair() {
-        return null;
     }
 
     @Override

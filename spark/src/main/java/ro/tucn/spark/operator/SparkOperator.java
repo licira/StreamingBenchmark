@@ -35,6 +35,14 @@ public class SparkOperator<T> extends Operator<T> {
     }
 
     @Override
+    public PairOperator<String, Integer> wordCount() {
+        JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String)x).split(" ")).iterator());
+        JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
+        JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
+        return new SparkPairOperator(tIntegerJavaPairDStream1, parallelism);
+    }
+
+    @Override
     public <R> Operator<R> map(final MapFunction<T, R> fun,
                                        String componentId) {
         JavaDStream<R> newStream = dStream.map(new FunctionImpl(fun));
@@ -117,14 +125,6 @@ public class SparkOperator<T> extends Operator<T> {
     @Override
     public void sink() {
 
-    }
-
-    @Override
-    public PairOperator<String, Integer> flatMapToPair() {
-        JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String)x).split(" ")).iterator());
-        JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
-        JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
-        return new SparkPairOperator(tIntegerJavaPairDStream1, parallelism);
     }
 
     @Override
