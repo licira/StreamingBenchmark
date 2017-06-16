@@ -23,7 +23,7 @@ public class KMeansSender extends AbstractMessageSender {
     }
 
     private String getMessageValue(Point point) {
-        double[] location = point.getLocation();
+        double[] location = point.getCoordinates();
         int locationSize = location.length;
         StringBuilder messageData = new StringBuilder();
         int i;

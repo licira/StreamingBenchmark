@@ -40,9 +40,9 @@ public class KMeansHelper {
         double[] location = distribution.sample();
         int centroidIndex = centroidRandom.nextInt(centroids.size());
         for (int i = 0; i < dimension - 1; i++) {
-            location[i] += centroids.get(centroidIndex).location[i];
+            location[i] += centroids.get(centroidIndex).coordinates[i];
         }
-        location[dimension - 1] += centroids.get(centroidIndex).location[dimension - 1];
+        location[dimension - 1] += centroids.get(centroidIndex).coordinates[dimension - 1];
         int pointId = generateId();
         return new Point(pointId, location);
     }
