@@ -20,9 +20,9 @@ public class WordCount extends Workload {
     @Override
     public void process() {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
-        Operator<String> wordOperators = getStringStreamOperator("source", "topic1");
+        Operator<String> words = getStringStreamOperator("source", "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
-        PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.flatMapToPair();
+        PairOperator<String, Integer> stringIntegerPairOperator = words.flatMapToPair();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
         stringIntegerPairOperator.print();
     }
