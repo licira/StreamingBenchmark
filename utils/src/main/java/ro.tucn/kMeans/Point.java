@@ -8,14 +8,14 @@ import java.io.Serializable;
 public class Point implements Serializable {
 
     public int id; // Centroid id: 0, 1, 2, ...
-    public double[] location;
+    public double[] coordinates;
     private long time;
 
     public Point() { }
 
-    public Point(int id, double[] location) {
+    public Point(int id, double[] coordinates) {
         this.id = id;
-        this.location = location;
+        this.coordinates = coordinates;
         this.time = System.nanoTime();
     }
 
@@ -34,7 +34,7 @@ public class Point implements Serializable {
     }
 
     public int dimension() {
-        return this.location.length;
+        return this.coordinates.length;
     }
 
     public boolean isCentroid() {
@@ -50,30 +50,30 @@ public class Point implements Serializable {
     }
 
     /*public Point add(Point other) throws Exception {
-        if (this.location.length != other.location.length) {
+        if (this.coordinates.length != other.coordinates.length) {
             throw new Exception("Dimensions of points are not equal");
         }
-        double[] location = new double[this.location.length];
-        for (int i = 0; i < this.location.length; ++i) {
-            location[i] = this.location[i] + other.location[i];
+        double[] coordinates = new double[this.coordinates.length];
+        for (int i = 0; i < this.coordinates.length; ++i) {
+            coordinates[i] = this.coordinates[i] + other.coordinates[i];
         }
-        return new Point(this.id, location, this.time);
+        return new Point(this.id, coordinates, this.time);
     }*/
 
     /*public Point mul(long val) {
-        double[] location = new double[this.location.length];
-        for (int i = 0; i < this.location.length; ++i) {
-            location[i] = this.location[i] * val;
+        double[] coordinates = new double[this.coordinates.length];
+        for (int i = 0; i < this.coordinates.length; ++i) {
+            coordinates[i] = this.coordinates[i] * val;
         }
-        return new Point(this.id, location, this.time);
+        return new Point(this.id, coordinates, this.time);
     }*/
 
     /*public Point div(long val) {
-        double[] location = new double[this.location.length];
-        for (int i = 0; i < this.location.length; ++i) {
-            location[i] = this.location[i] / val;
+        double[] coordinates = new double[this.coordinates.length];
+        for (int i = 0; i < this.coordinates.length; ++i) {
+            coordinates[i] = this.coordinates[i] / val;
         }
-        return new Point(this.id, location, this.time);
+        return new Point(this.id, coordinates, this.time);
     }*/
 
     public double euclideanDistance(Point other) {
@@ -82,22 +82,22 @@ public class Point implements Serializable {
 
     public double distanceSquaredTo(Point other) {
         double squareSum = 0;
-        for (int i = 0; i < this.location.length; ++i) {
-            squareSum += Math.pow(this.location[i] - other.location[i], 2);
+        for (int i = 0; i < this.coordinates.length; ++i) {
+            squareSum += Math.pow(this.coordinates[i] - other.coordinates[i], 2);
         }
         return Math.sqrt(squareSum);
     }
 
-    public void setLocation(double[] location) {
-        this.location = location;
+    public void setCoordinates(double[] coordinates) {
+        this.coordinates = coordinates;
     }
 
     public int getId() {
         return id;
     }
 
-    public double[] getLocation() {
-        return location;
+    public double[] getCoordinates() {
+        return coordinates;
     }
 
     public void setId(int id) {
@@ -106,12 +106,33 @@ public class Point implements Serializable {
 
     public String toString() {
         String str = "";
-        for (int i = 0; i < this.location.length - 1; ++i) {
-            str += this.location[i] + " ";
+        for (int i = 0; i < this.coordinates.length - 1; ++i) {
+            str += this.coordinates[i] + " ";
         }
-        str += this.location[this.location.length - 1];
+        str += this.coordinates[this.coordinates.length - 1];
         if (-1 != this.id)
             return id + ":" + str;
         return str;
+    }
+
+    public Point add(Point point) {
+        double[] additionPointCoordinates = point.getCoordinates();
+        Point result = new Point();
+        double coordinates[] = new double[this.coordinates.length];
+        for (int i = 0; i < this.coordinates.length - 1; ++i) {
+            coordinates[i] = this.coordinates[i] + additionPointCoordinates[i];
+        }
+        result.setCoordinates(coordinates);
+        return result;
+    }
+
+    public Point div(Long divider) {
+        Point result = new Point();
+        double coordinates[] = new double[this.coordinates.length];
+        for (int i = 0; i < this.coordinates.length - 1; ++i) {
+            coordinates[i] = this.coordinates[i] / divider;
+        }
+        result.setCoordinates(coordinates);
+        return result;
     }
 }
