@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import org.apache.log4j.Logger;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
-import ro.tucn.statistics.LatencyLog;
 import ro.tucn.statistics.ThroughputLog;
 import ro.tucn.util.WithTime;
 import scala.Tuple2;
@@ -184,39 +183,6 @@ public class UserFunctions implements Serializable {
         }
     };
 
-    public static MapWithInitListFunction<Point, Point> assign
-            = new MapWithInitListFunction<Point, Point>() {
-
-        LatencyLog latency = new LatencyLog("CentroidAssign");
-//        Logger ro.tucn.logger = LoggerFactory.getLogger("LatestCentroids");
-
-        public Point map(Point var1, List<Point> list) {
-
-            if (var1.isCentroid()) {
-                // log latency
-                latency.execute(var1.getTime());
-                // log list for test
-//                if(Math.random()<0.01) {
-//                    ro.tucn.logger.warn(list.toString());
-//                }
-                list.set(var1.id, var1);
-                return null;
-            } else {
-                int minIndex = -1;
-                double minDistance = Double.MAX_VALUE;
-
-                for (int i = 0; i < list.size(); i++) {
-                    double distance = var1.euclideanDistance(list.get(i));
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        minIndex = i;
-                    }
-                }
-                return new Point(minIndex, var1.coordinates, var1.getTime());
-            }
-        }
-    };
-
     public static MapPairFunction<Point, Integer, Tuple2<Long, Point>> pointMapToPair
             = new MapPairFunction<Point, Integer, Tuple2<Long, Point>>() {
 
@@ -237,35 +203,6 @@ public class UserFunctions implements Serializable {
                     return new Tuple2(var1._1 + var2._1, new Point(location, time));
                 }
             };
-
-    public static MapFunction<Tuple2<Integer, Tuple2<Long, Point>>, Point> computeCentroid
-            = new MapFunction<Tuple2<Integer, Tuple2<Long, Point>>, Point>() {
-
-        //Logger logger = Logger.getLogger("CentroidLogger");
-        //private ThroughputLog throughput = new ThroughputLog("Centroid");
-        //private CentroidLog centroidLog = new CentroidLog();
-
-        public Point map(Tuple2<Integer, Tuple2<Long, Point>> var1) {
-            //throughput.execute();
-            long counts = var1._2()._1();
-
-            double[] location = new double[var1._2._2.dimension()];
-            for (int i = 0; i < location.length; i++) {
-                location[i] = var1._2._2.coordinates[i] / counts;
-            }
-
-            //centroidLog.execute(counts, location);
-            return new Point(var1._1, location, var1._2._2.getTime());
-        }
-    };
-
-    public static MapWithInitListFunction<Point, Double> centroidConverge
-            = new MapWithInitListFunction<Point, Double>() {
-
-        public Double map(Point point, List<Point> list) {
-            return list.get(point.id).euclideanDistance(point);
-        }
-    };
 
     public static Iterable<String> split(String str) {
         // TODO: trim()
