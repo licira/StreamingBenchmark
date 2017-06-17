@@ -122,7 +122,7 @@ public class Point implements Serializable {
             }
             str += this.coordinates[i];
         }
-        str += "], ";
+        str += "] ";
         str += "timestamp: " + timestamp;
         return str;
     }
