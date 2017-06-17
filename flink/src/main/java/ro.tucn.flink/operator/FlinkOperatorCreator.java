@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer082;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
@@ -76,21 +76,21 @@ public class FlinkOperatorCreator extends OperatorCreator {
     @Override
     public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         setEnvParallelism(parallelism);
-        DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
-        DataStream<Point> pointStream = stream.map((MapFunction<String, Point>) value -> {
-            String[] list = value.split(Constants.TimeSeparatorRegex);
-            long time = System.currentTimeMillis();
-            if (list.length == 2) {
-                time = Long.parseLong(list[1]);
-            }
-            String[] strs = list[0].split(" ");
-            double[] position = new double[strs.length];
-            for (int i = 0; i < strs.length; i++) {
-                position[i] = Double.parseDouble(strs[i]);
-            }
-            return new Point(position, time);
-        });
+        DataStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
+        DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new FlinkOperator<>(pointStream, parallelism);
+    }
+
+    private DataStream<Point> getPointStreamFromJsonStream(DataStream<String> jsonStream) {
+        DataStream<Point> pointStream = jsonStream.map(new MapFunction<String, Point>() {
+            @Override
+            public Point map(String s) throws Exception {
+                Gson gson = new Gson();
+                Point point = gson.fromJson(s, Point.class);
+                return point;
+            }
+        });
+        return pointStream;
     }
 
     private DataStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
@@ -136,7 +136,9 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topicPropertyName) {
         String topic = getTopicFromProperties(properties, topicPropertyName);
-        return env.addSource(new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties));
+        properties.setProperty("flink.starting-position", "latest");
+        FlinkKafkaConsumer081<String> kafkaConsumer = new FlinkKafkaConsumer081<>(topic, new SimpleStringSchema(), properties);
+        return env.addSource(kafkaConsumer);
     }
 
     private String getTopicFromProperties(Properties properties, String topicPropertyName) {
