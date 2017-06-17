@@ -23,15 +23,15 @@ public class KMeansSender extends AbstractMessageSender {
     }
 
     private String getMessageValue(Point point) {
-        double[] location = point.getCoordinates();
-        int locationSize = location.length;
+        double[] coordinates = point.getCoordinates();
+        int locationSize = coordinates.length;
         StringBuilder messageData = new StringBuilder();
         int i;
         for (i = 0; i < locationSize - 1; i++) {
-            messageData.append(location[i]);
+            messageData.append(coordinates[i]);
             messageData.append(" ");
         }
-        messageData.append(location[i]);
+        messageData.append(coordinates[i]);
         return toJson(point);
     }
 }
