@@ -37,14 +37,14 @@ public class KMeansHelper {
 
     public Point getNewPoint(List<Point> centroids) {
         MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(randomGenerator, means, covariances);
-        double[] location = distribution.sample();
+        double[] position = distribution.sample();
+        randomDataGenerator.reSeed(10000);
         int centroidIndex = centroidRandom.nextInt(centroids.size());
-        for (int i = 0; i < dimension - 1; i++) {
-            location[i] += centroids.get(centroidIndex).coordinates[i];
+        for (int i = 0; i < dimension; i++) {
+            position[i] = generateCoordinate(randomDataGenerator);
         }
-        location[dimension - 1] += centroids.get(centroidIndex).coordinates[dimension - 1];
         int pointId = generateId();
-        return new Point(pointId, location);
+        return new Point(pointId, position);
     }
 
     public List<Point> loadCentroids() {
@@ -84,12 +84,12 @@ public class KMeansHelper {
 
     // Generate 96 real centroids in [-50, 50] for both x and y dimensions
     public List<Point> generateCentroids() {
-        Random random = new Random(10000L);
+        randomDataGenerator.reSeed(10000);
         List<Point> centroids = new ArrayList<Point>();
         for (int i = 0; i < centroidsNo; ) {
             double[] position = new double[dimension];
             for (int j = 0; j < dimension; j++) {
-                position[j] = random.nextDouble() * 100 - 50;
+                position[j] = generateCoordinate(randomDataGenerator);
             }
             Point point = new Point(position);
             if (!centroids.contains(point)) {
@@ -128,6 +128,18 @@ public class KMeansHelper {
         }
         */
         return centroids;
+    }
+
+    private double generateCoordinate(RandomDataGenerator generator) {
+        double coordinate;
+        coordinate = generator.nextInt(-10000, 10000) / 100.0;
+        coordinate += (coordinate > 0) ? -50 : 50;
+        if(coordinate > 0 && coordinate < 10) {
+            coordinate += 10;
+        } else if (coordinate < 0 && coordinate > -10) {
+            coordinate -= 10;
+        }
+        return coordinate;
     }
 
     public void getCovariancesFromString(String covariancesAsString, double[] means) {
