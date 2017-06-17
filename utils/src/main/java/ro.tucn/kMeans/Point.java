@@ -82,10 +82,11 @@ public class Point implements Serializable {
 
     public double distanceSquaredTo(Point other) {
         double squareSum = 0;
+        double[] otherCoordinates = other.getCoordinates();
         for (int i = 0; i < this.coordinates.length; ++i) {
-            squareSum += Math.pow(this.coordinates[i] - other.coordinates[i], 2);
+            squareSum += Math.pow(this.coordinates[i] - otherCoordinates[i], 2);
         }
-        return Math.sqrt(squareSum);
+        return squareSum;
     }
 
     public Point add(Point point) {
@@ -112,7 +113,7 @@ public class Point implements Serializable {
     public String toString() {
         String str = "";
         str += "id: " + id + " ";
-        str += "coodrdinates: [";
+        str += "coordinates: [";
         if (coordinates != null) {
             int dimensions = this.coordinates.length;
             int i;
