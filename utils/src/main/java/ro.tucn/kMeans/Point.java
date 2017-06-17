@@ -93,7 +93,7 @@ public class Point implements Serializable {
         double[] additionPointCoordinates = point.getCoordinates();
         Point result = new Point();
         double coordinates[] = new double[this.coordinates.length];
-        for (int i = 0; i < this.coordinates.length - 1; i++) {
+        for (int i = 0; i < this.coordinates.length; i++) {
             coordinates[i] = this.coordinates[i] + additionPointCoordinates[i];
         }
         result.setCoordinates(coordinates);
