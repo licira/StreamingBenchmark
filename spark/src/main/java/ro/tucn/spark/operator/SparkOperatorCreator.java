@@ -62,7 +62,7 @@ public class SparkOperatorCreator extends OperatorCreator {
             coordinates[idx] = Double.parseDouble(locationAsString);
             idx++;
         }
-        int id = Integer.parseInt(key);
+        Long id = Long.parseLong(key);
         return new Point(id, coordinates);
     };
 

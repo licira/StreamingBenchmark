@@ -3,6 +3,7 @@ package ro.tucn.storm.operator;
 import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.TopologyBuilder;
 import ro.tucn.exceptions.UnsupportOperatorException;
+import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairOperator;
@@ -31,6 +32,11 @@ public class StormOperator<T> extends Operator<T> {
     @Override
     public PairOperator<String, Integer> wordCount() {
         return null;
+    }
+
+    @Override
+    public void kMeansCluster(Operator<T> centroids) throws WorkloadException {
+
     }
 
     @Override

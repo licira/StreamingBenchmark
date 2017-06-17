@@ -43,7 +43,7 @@ public class KMeansHelper {
         for (int i = 0; i < dimension; i++) {
             position[i] = generateCoordinate(randomDataGenerator);
         }
-        int pointId = generateId();
+        Long pointId = generateId();
         return new Point(pointId, position);
     }
 
@@ -66,7 +66,7 @@ public class KMeansHelper {
                 for (int i = 0; i < dimension; i++) {
                     position[i] = Double.valueOf(strs[i]);
                 }
-                int pointId = generateId();
+                Long pointId = generateId();
                 centroids.add(new Point(pointId, position));
             }
         } catch (IOException e) {
@@ -157,8 +157,8 @@ public class KMeansHelper {
         this.covariances = covariances;
     }
 
-    private int generateId() {
-        return randomDataGenerator.nextInt(ID_LOWER_BOUND, 10000);
+    private Long generateId() {
+        return randomDataGenerator.nextLong(ID_LOWER_BOUND, 10000);
     }
 
     public void setCentroidRandom(Random centroidRandom) {

@@ -27,6 +27,8 @@ public class ProducerCreator {
     private Properties getDefaultKafkaProducerProperties(String bootstrapServers) {
         Properties props = new Properties();
         props.put("bootstrap.servers", bootstrapServers);
+        props.put("enable.auto.commit", "false");
+        props.put("auto.commit.enable", "false");
         //props.put("group.id", "test");
         /*
         props.put("acks", "all");

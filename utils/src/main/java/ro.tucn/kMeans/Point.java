@@ -7,29 +7,29 @@ import java.io.Serializable;
  */
 public class Point implements Serializable {
 
-    public int id; // Centroid id: 0, 1, 2, ...
+    public Long id; // Centroid id: 0, 1, 2, ...
     public double[] coordinates;
     private Long timestamp;
 
     public Point() { }
 
-    public Point(int id, double[] coordinates) {
+    public Point(Long id, double[] coordinates) {
         this.id = id;
         this.coordinates = coordinates;
         this.timestamp = System.nanoTime();
     }
 
-    public Point(int id, double[] l, long timestamp) {
+    public Point(Long id, double[] l, long timestamp) {
         this(id, l);
         this.timestamp = timestamp;
     }
 
     public Point(double[] l) {
-        this(-1, l);
+        this(-1L, l);
     }
 
     public Point(double[] l, long timestamp) {
-        this(-1, l);
+        this(-1L, l);
         this.timestamp = timestamp;
     }
 
@@ -103,7 +103,7 @@ public class Point implements Serializable {
     public Point div(Long divider) {
         Point result = new Point();
         double coordinates[] = new double[this.coordinates.length];
-        for (int i = 0; i < this.coordinates.length - 1; ++i) {
+        for (int i = 0; i < this.coordinates.length; ++i) {
             coordinates[i] = this.coordinates[i] / divider;
         }
         result.setCoordinates(coordinates);
@@ -131,7 +131,7 @@ public class Point implements Serializable {
         this.coordinates = coordinates;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -139,7 +139,7 @@ public class Point implements Serializable {
         return coordinates;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

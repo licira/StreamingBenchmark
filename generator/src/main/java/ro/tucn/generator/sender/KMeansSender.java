@@ -19,7 +19,7 @@ public class KMeansSender extends AbstractMessageSender {
     }
 
     private String getMessageKey(Point point) {
-        return Integer.toString(point.getId());
+        return Long.toString(point.getId());
     }
 
     private String getMessageValue(Point point) {
