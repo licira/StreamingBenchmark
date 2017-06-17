@@ -8,10 +8,12 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.IterativeStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
+import org.apache.flink.streaming.api.functions.co.CoFlatMapFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import ro.tucn.exceptions.UnsupportOperatorException;
+import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.function.MapFunctionWithInitList;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
@@ -19,12 +21,13 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.operator.WindowedOperator;
-import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.TimeDuration;
-import ro.tucn.util.WithTime;
 import scala.Tuple2;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -33,9 +36,8 @@ import java.util.logging.Logger;
 public class FlinkOperator<T> extends Operator<T> {
 
     protected DataStream<T> dataStream;
+    private Logger logger = Logger.getLogger("the logger");
     private IterativeStream<T> iterativeStream;
-
-    Logger logger = Logger.getLogger("the logger");
 
     public FlinkOperator(DataStream<T> dataSet, int parallelism) {
         super(parallelism);
@@ -48,7 +50,7 @@ public class FlinkOperator<T> extends Operator<T> {
         DataStream<String> sentenceStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, String>() {
             @Override
             public String map(T t) throws Exception {
-                return (String)t;
+                return (String) t;
 
             }
         });
@@ -79,6 +81,59 @@ public class FlinkOperator<T> extends Operator<T> {
         logger.info("5");
         DataStream<Tuple2<String, Integer>> wordCountsScala = toDataStreamWithScalaTuple2(wordCountsFlink);
         return new FlinkPairOperator<>(wordCountsScala, parallelism);
+    }
+
+    @Override
+    public void kMeansCluster(Operator<T> centroidsOperator) throws WorkloadException {
+        checkOperatorType(centroidsOperator);
+
+        DataStream<Point> points = (DataStream<Point>) this.dataStream;
+        DataStream<Point> centroids = ((FlinkOperator<Point>) centroidsOperator).dataStream;
+
+        NearestCenterSelector nearestCenterSelector = new NearestCenterSelector();
+        for (int i = 0; i < 1; i++) {
+
+            DataStream<Tuple2<Long, Point>> pointsWithCentroid = centroids.connect(points).flatMap(nearestCenterSelector);
+            pointsWithCentroid.print();
+
+            centroids = pointsWithCentroid.connect(pointsWithCentroid).flatMap(new CoFlatMapFunction<Tuple2<Long, Point>, Tuple2<Long, Point>, Point>() {
+
+                private Map<Long, Tuple2<Point, Long>> centroidsWithCummulatedCoordinates = new HashMap<Long, Tuple2<Point, Long>>();
+
+                @Override
+                public void flatMap1(Tuple2<Long, Point> t, Collector<Point> collector) throws Exception {
+                    if (centroidsWithCummulatedCoordinates.containsKey(t._1)) {
+                        Tuple2<Point, Long> centroidWithCummulatedCoordinatesAndFrequencyTuple = centroidsWithCummulatedCoordinates.get(t._1);
+                        centroidsWithCummulatedCoordinates.remove(t._1);
+                        Point centroidWithCummulatedCoordinates = centroidWithCummulatedCoordinatesAndFrequencyTuple._1;
+                        Long frequency = centroidWithCummulatedCoordinatesAndFrequencyTuple._2;
+                        Point newCentroidWithCummulatedCoordinates = centroidWithCummulatedCoordinates.add(t._2);
+                        frequency += 1;
+                        Tuple2<Point, Long> newCentroidWithCummulatedCoordinatesAndFrequencyTuple = new Tuple2<Point, Long>(newCentroidWithCummulatedCoordinates, frequency);
+                        centroidsWithCummulatedCoordinates.put(t._1, newCentroidWithCummulatedCoordinatesAndFrequencyTuple);
+                    } else {
+                        Point newCentroid = new Point(t._1, t._2.getCoordinates());
+                        Long frequency = 1L;
+                        Tuple2<Point, Long> newCentroidWithCummulatedCoordinatesAndFrequencyTuple = new Tuple2<Point, Long>(newCentroid, frequency);
+                        centroidsWithCummulatedCoordinates.put(t._1, newCentroidWithCummulatedCoordinatesAndFrequencyTuple);
+                    }
+                }
+
+                @Override
+                public void flatMap2(Tuple2<Long, Point> t, Collector<Point> collector) throws Exception {
+                    if (centroidsWithCummulatedCoordinates.containsKey(t._1)) {
+                        Tuple2<Point, Long> centroidWithCummulatedCoordinatesAndFrequencyTuple = centroidsWithCummulatedCoordinates.get(t._1);
+                        centroidsWithCummulatedCoordinates.remove(t._1);
+                        Point centroidWithCummulatedCoordinates = centroidWithCummulatedCoordinatesAndFrequencyTuple._1;
+                        Long frequency = centroidWithCummulatedCoordinatesAndFrequencyTuple._2;
+                        Point centroid = centroidWithCummulatedCoordinates.div(frequency);
+                        centroid.setId(t._1);
+                        collector.collect(centroid);
+                    }
+                }
+            });
+            centroids.print();
+        }
     }
 
     @Override
@@ -238,14 +293,14 @@ public class FlinkOperator<T> extends Operator<T> {
 
     @Override
     public void sink() {
-        dataStream.addSink(new org.apache.flink.streaming.api.functions.sink.SinkFunction<T>() {
+        /*dataStream.addSink(new org.apache.flink.streaming.api.functions.sink.SinkFunction<T>() {
             private PerformanceLog performanceLog = PerformanceLog.getLogger("sink");
 
             @Override
             public void invoke(T value) throws Exception {
                 performanceLog.logThroughputAndLatencyWithTime((WithTime<? extends Object>) value);
             }
-        });
+        });*/
     }
 
     @Override
@@ -261,7 +316,7 @@ public class FlinkOperator<T> extends Operator<T> {
     /**
      * @apiNote Workaround to be able to perform flink operations
      */
-    private  DataStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>> toDataStreamWithFlinkTuple2(DataStream<Tuple2<String, Integer>> dataStreamWithScalaTuple2) {
+    private DataStream<org.apache.flink.api.java.tuple.Tuple2<String, Integer>> toDataStreamWithFlinkTuple2(DataStream<Tuple2<String, Integer>> dataStreamWithScalaTuple2) {
         return dataStreamWithScalaTuple2.map(new org.apache.flink.api.common.functions.MapFunction<Tuple2<String, Integer>, org.apache.flink.api.java.tuple.Tuple2<String, Integer>>() {
             @Override
             public org.apache.flink.api.java.tuple.Tuple2<String, Integer> map(Tuple2<String, Integer> tuple2) throws Exception {
@@ -280,5 +335,35 @@ public class FlinkOperator<T> extends Operator<T> {
                 return new Tuple2<String, Integer>(tuple2.f0, tuple2.f1);
             }
         });
+    }
+
+    private void checkOperatorType(Operator<T> centroids) throws WorkloadException {
+        if (!(centroids instanceof FlinkOperator)) {
+            throw new WorkloadException("Cast joinStream to SparkPairOperator failed");
+        }
+    }
+
+    private class NearestCenterSelector implements CoFlatMapFunction<Point, Point, Tuple2<Long, Point>> {
+
+        List<Point> centroids = new ArrayList<>();
+
+        @Override
+        public void flatMap1(Point point, Collector<Tuple2<Long, Point>> collector) throws Exception {
+            centroids.add(point);
+        }
+
+        @Override
+        public void flatMap2(Point point, Collector<Tuple2<Long, Point>> collector) throws Exception {
+            double minDistance = Double.MAX_VALUE;
+            Long closestCentroidId = -1L;
+            for (Point centroid : centroids) {
+                double distance = point.euclideanDistance(centroid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestCentroidId = centroid.getId();
+                }
+            }
+            collector.collect(new Tuple2<Long, Point>(closestCentroidId, point));
+        }
     }
 }
