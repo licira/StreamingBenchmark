@@ -2,7 +2,7 @@ package ro.tucn.generator.helper;
 
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.exception.DimensionMismatchException;
-import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.workloadGenerators.KMeansGenerator;
@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,25 +27,59 @@ public class KMeansHelper {
     private static final int ID_LOWER_BOUND = 1000;
 
     private Random centroidRandom;
-    private RandomGenerator randomGenerator;
-    private RandomDataGenerator randomDataGenerator = new RandomDataGenerator();
+    private RandomGenerator randomGenerator = new JDKRandomGenerator();
+    private MultivariateNormalDistribution multiderivativeNormalDistribution;
 
     private int dimension;
-    private double[] means; // origin point
-    private double[][] covariances;
+    //private double[] means; // origin point
+    //private double[][] covariances;
     private double distance;
     private int centroidsNo;
 
     public Point getNewPoint(List<Point> centroids) {
-        MultivariateNormalDistribution distribution = new MultivariateNormalDistribution(randomGenerator, means, covariances);
-        double[] position = distribution.sample();
-        randomDataGenerator.reSeed(10000);
+        double[] coordinatesDistribution = multiderivativeNormalDistribution.sample();
+        //randomGenerator.setSeed(10000);
         int centroidIndex = centroidRandom.nextInt(centroids.size());
+        Point centroid = centroids.get(centroidIndex);
+        double[] centroidCoordinates = centroid.getCoordinates();
+        double[] pointCoordinates = new double[centroidCoordinates.length];
         for (int i = 0; i < dimension; i++) {
-            position[i] = generateCoordinate(randomDataGenerator);
+            pointCoordinates[i] = centroidCoordinates[i] + coordinatesDistribution[i];
+            DecimalFormat f = new DecimalFormat("##.##");
+            pointCoordinates[i] = Double.parseDouble(f.format(pointCoordinates[i]));
         }
         Long pointId = generateId();
-        return new Point(pointId, position);
+        return new Point(pointId, pointCoordinates);
+    }
+
+    // Generate 96 real centroids in [-50, 50] for both x and y dimensions
+    public List<Point> generateCentroids() {
+        //randomGenerator.setSeed(10000);
+        List<Point> centroids = new ArrayList<Point>();
+        for (int i = 0; i < centroidsNo; ) {
+            double[] position = new double[dimension];
+            for (int j = 0; j < dimension; j++) {
+                position[j] = generateCoordinate();
+            }
+            Point point = new Point(position);
+            if (!centroids.contains(point)) {
+                Point nearest = null;
+                double minDistance = Double.MAX_VALUE;
+                for (Point centroid : centroids) {
+                    double localDistance = point.distanceSquaredTo(centroid);
+                    if (localDistance < minDistance) {
+                        minDistance = localDistance;
+                        nearest = centroid;
+                    }
+                }
+                if (nearest == null || (nearest.distanceSquaredTo(point) > distance)) {
+                    point.setId(generateId());
+                    centroids.add(point);
+                    i++;
+                }
+            }
+        }
+        return centroids;
     }
 
     public List<Point> loadCentroids() {
@@ -82,67 +117,7 @@ public class KMeansHelper {
         return centroids;
     }
 
-    // Generate 96 real centroids in [-50, 50] for both x and y dimensions
-    public List<Point> generateCentroids() {
-        randomDataGenerator.reSeed(10000);
-        List<Point> centroids = new ArrayList<Point>();
-        for (int i = 0; i < centroidsNo; ) {
-            double[] position = new double[dimension];
-            for (int j = 0; j < dimension; j++) {
-                position[j] = generateCoordinate(randomDataGenerator);
-            }
-            Point point = new Point(position);
-            if (!centroids.contains(point)) {
-                Point nearest = null;
-                double minDistance = Double.MAX_VALUE;
-                for (Point centroid : centroids) {
-                    double localDistance = point.distanceSquaredTo(centroid);
-                    if (localDistance < minDistance) {
-                        minDistance = localDistance;
-                        nearest = centroid;
-                    }
-                }
-                if (nearest == null || (nearest.distanceSquaredTo(point) > distance)) {
-                    point.setId(generateId());
-                    centroids.add(point);
-                    i++;
-                }
-            }
-        }
-        /*
-        KDTree tree = new KDTree();
-        for(int i=0; i<centroidsNo; ){
-            double[] position = new double[dimension];
-            for(int j=0; j<dimension; j++){
-                position[i] = random.nextDouble()*100-50;
-            }
-            Point p = new Point(position);
-            if(!tree.contains(p)) {
-                Point nearestP = tree.nearest(p);
-                if(nearestP == null || nearestP.distanceSquaredTo(p) > Math.pow(distance, 2)) {
-                    tree.insert(p);
-                    System.out.println(p.positonString());
-                    i++;
-                }
-            }
-        }
-        */
-        return centroids;
-    }
-
-    private double generateCoordinate(RandomDataGenerator generator) {
-        double coordinate;
-        coordinate = generator.nextInt(-10000, 10000) / 100.0;
-        coordinate += (coordinate > 0) ? -50 : 50;
-        if(coordinate > 0 && coordinate < 10) {
-            coordinate += 10;
-        } else if (coordinate < 0 && coordinate > -10) {
-            coordinate -= 10;
-        }
-        return coordinate;
-    }
-
-    public void getCovariancesFromString(String covariancesAsString, double[] means) {
+    public double[][] getCovariancesFromString(String covariancesAsString, double[] means) {
         double[][] covariances = new double[dimension][dimension];
         String[] covariancesStrs = covariancesAsString.split(",");
         if (covariancesStrs.length != (dimension * dimension)) {
@@ -154,31 +129,43 @@ public class KMeansHelper {
                 covariances[i][j] = Double.valueOf(covariancesStrs[i * dimension + j]);
             }
         }
-        this.covariances = covariances;
+        return covariances;
+    }
+
+    public void initializeMultiderivativeNormalDistribution(RandomGenerator randomGenerator, double[] means, double[][] covariances) {
+        this.multiderivativeNormalDistribution = new MultivariateNormalDistribution(randomGenerator, means, covariances);
+    }
+
+    private double generateCoordinate() {
+        double coordinate;
+        coordinate = (randomGenerator.nextInt(2000) - 1000) / 100.0;
+        //coordinate = Math.round(coordinate / 100);
+        DecimalFormat f = new DecimalFormat("##.##");
+        //coordinate = Double.parseDouble(f.format(coordinate));
+        coordinate += (coordinate > 0) ? -50 : 50;
+        if(coordinate > 0 && coordinate < 10) {
+            coordinate += 10;
+        } else if (coordinate < 0 && coordinate > -10) {
+            coordinate -= 10;
+        }
+        return coordinate;
     }
 
     private Long generateId() {
-        return randomDataGenerator.nextLong(ID_LOWER_BOUND, 10000);
+        long id = randomGenerator.nextLong() % ID_LOWER_BOUND;
+        if (id < 0) {
+            id = -id;
+        }
+        id += ID_LOWER_BOUND;
+        return id;
     }
 
     public void setCentroidRandom(Random centroidRandom) {
         this.centroidRandom = centroidRandom;
     }
 
-    public void setPointRandom(RandomGenerator pointRandom) {
-        this.randomGenerator = pointRandom;
-    }
-
     public void setDimension(int dimension) {
         this.dimension = dimension;
-    }
-
-    public void setMeans(double[] means) {
-        this.means = means;
-    }
-
-    public void setCovariances(double[][] covariances) {
-        this.covariances = covariances;
     }
 
     public void setDistance(double distance) {
