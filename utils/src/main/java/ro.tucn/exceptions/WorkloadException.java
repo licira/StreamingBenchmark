@@ -8,17 +8,4 @@ public class WorkloadException extends Exception {
     public WorkloadException(String message) {
         super(message);
     }
-
-    public WorkloadException() {
-        super();
-    }
-
-    public WorkloadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public WorkloadException(Throwable cause) {
-        super(cause);
-    }
-
 }
