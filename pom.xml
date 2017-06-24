@@ -24,7 +24,6 @@
         <module>consumer</module>
         <module>utils</module>
         <module>spark</module>
-        <module>storm</module>
         <module>flink</module>
         <module>kafka.starter</module>
     </modules>
