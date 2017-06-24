@@ -13,7 +13,6 @@ public class KMeans extends Workload {
 
     private static final Logger logger = Logger.getLogger(KMeans.class);
 
-    //private List<Point> initPoints;
     private int centroidsNumber;
     private int dimension;
 
@@ -36,41 +35,4 @@ public class KMeans extends Workload {
             e.printStackTrace();
         }
     }
-    
-    /*private List<Point> loadInitPoints() {
-        List<Point> centroids = new ArrayList();
-        BufferedReader br = null;
-        InputStream stream = null;
-        try {
-            String sCurrentLine;
-            stream = this.getClass().getClassLoader().getResourceAsStream("init-centroids.txt");
-
-            br = new BufferedReader(new InputStreamReader(stream));
-            while ((sCurrentLine = br.readLine()) != null) {
-                String[] strs = sCurrentLine.split(",");
-                if (strs.length != dimension) {
-                    throw new DimensionMismatchException(strs.length, dimension);
-                }
-                double[] position = new double[dimension];
-                for (int i = 0; i < dimension; i++) {
-                    position[i] = Double.valueOf(strs[i]);
-                }
-                centroids.add(new Point(position));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return centroids;
-    }*/
 }

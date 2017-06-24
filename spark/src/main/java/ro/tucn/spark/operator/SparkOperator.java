@@ -3,6 +3,7 @@ package ro.tucn.spark.operator;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -19,6 +20,7 @@ import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 import scala.Tuple3;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -51,16 +53,46 @@ public class SparkOperator<T> extends Operator<T> {
         checkOperatorType(centroidsOperator);
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
-        JavaDStream<Point> centroids = ((SparkOperator<Point>) centroidsOperator).dStream;
-        NearestCenterSelector nearestCenterSelector = new NearestCenterSelector();
-        for (int i = 0 ; i < 10; i++) {
-            JavaDStream<Tuple2<Integer, Point>> pointsWithCentroid = points.map(nearestCenterSelector.selectFrom(centroids));
-            JavaPairDStream<Tuple2<Integer, Point>, Long> pointsCountedByCentroid = pointsWithCentroid.countByValue();
-            //pointsCountedByCentroid.groupByKey()
-            //JavaDStream<Tuple3<Integer, Point, Long>> pointsCountedByCentroid = pointsWithCentroid.map(new CountAppender());
+        JavaDStream<Point> centroids = (JavaDStream<Point>) ((SparkOperator<Point>) centroidsOperator).dStream;
 
 
 
+    }
+
+    private class MapFunctionn<T, R> implements Function<T, T>, Serializable {
+
+        JavaDStream<List<T>> glom;
+
+        @Override
+        public T call(T t) throws Exception {
+
+            return t;
+        }
+
+        public void setGlom(JavaDStream<List<T>> glom) {
+            this.glom = glom;
+        }
+    }
+
+    private class NearestCenterSelector<T, K, V> implements PairFunction<T, K, V> {
+        private List<Point> centroidsList;
+        private SerializableJavaDStream<Point> centroids;
+
+        @Override
+        public Tuple2<K, V> call(T t) throws Exception {
+            return null;
+        }
+
+        public void setCentroids(SerializableJavaDStream<Point> centroids) {
+            this.centroids = centroids;
+            centroids.mapToPair(point -> {
+                centroidsList.add(point);
+                return null;
+            });
+        }
+
+        public void setCentroidsList(List<Point> centroidsList) {
+            this.centroidsList = centroidsList;
         }
     }
 
@@ -182,11 +214,7 @@ public class SparkOperator<T> extends Operator<T> {
         }
     }
 
-    private class NearestCenterSelector {
-        public <R> Function<Point,R> selectFrom(JavaDStream<Point> centroids) {
-            return null;
-        }
-    }
+
 
     public static final class CountAppender implements Function<Tuple2<Integer, Point>, Tuple3<Integer, Point, Long>> {
 

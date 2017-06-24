@@ -66,7 +66,8 @@ public class SparkOperatorCreator extends OperatorCreator {
         return new Point(id, coordinates);
     };
 
-    public JavaStreamingContext jssc;
+    public static JavaStreamingContext jssc;
+    public static JavaSparkContext sc;
     private Properties properties;
 
     public SparkOperatorCreator(String appName) throws IOException {
@@ -104,7 +105,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public Operator<Point> getPointStreamFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaDStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
-        jsonStream.print();
+        //jsonStream.print();
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         /*JavaDStream<Point> stream = pairStream.map(s -> {
             String key = "0";
@@ -230,12 +231,13 @@ public class SparkOperatorCreator extends OperatorCreator {
                 .setAppName(appName)
                 .set("spark.driver.memory", "256m")
                 .set("spark.executor.memory", "768m")
+                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
                 //.set("num-executors", "1")
                 //.set("executor.instances", "1")
                 //.set("cores.max", "1")
                 //.set("spark.streaming.ui.retainedBatches", "2000")
                 ;
-        JavaSparkContext sc = new JavaSparkContext(conf);
+        sc = new JavaSparkContext(conf);
         jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
     }
 

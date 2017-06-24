@@ -99,9 +99,9 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
     }
 
     public PairOperator<K, V> updateStateByKey(final ReduceFunction<V> fun, String componentId) {
-        JavaPairDStream<K, V> cumulateStream = pairDStream.updateStateByKey(new UpdateStateFunctionImpl(fun));
-        //cumulateStream.checkpoint(new Duration(60000));
-        return new SparkPairOperator(cumulateStream, parallelism);
+        JavaPairDStream<K, V> cumulargestream = pairDStream.updateStateByKey(new UpdateStateFunctionImpl(fun));
+        //cumulargestream.checkpoint(new Duration(60000));
+        return new SparkPairOperator(cumulargestream, parallelism);
     }
 
     public PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
@@ -115,8 +115,8 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
                                                    TimeDuration slideWindowDuration) {
         Duration duration = toDuration(windowDuration);
         Duration slideDuration = toDuration(slideWindowDuration);
-        JavaPairDStream<K, V> accumulateStream = pairDStream.reduceByKeyAndWindow(new ReduceFunctionImpl<V>(fun), duration, slideDuration);
-        return new SparkPairOperator(accumulateStream, parallelism);
+        JavaPairDStream<K, V> accumulargestream = pairDStream.reduceByKeyAndWindow(new ReduceFunctionImpl<V>(fun), duration, slideDuration);
+        return new SparkPairOperator(accumulargestream, parallelism);
     }
 
     public WindowedPairOperator<K, V> window(TimeDuration windowDuration) {
