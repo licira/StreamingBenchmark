@@ -8,17 +8,4 @@ public class UnsupportOperatorException extends Exception {
     public UnsupportOperatorException(String message) {
         super(message);
     }
-
-    public UnsupportOperatorException() {
-        super();
-    }
-
-    public UnsupportOperatorException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public UnsupportOperatorException(Throwable cause) {
-        super(cause);
-    }
-
 }
