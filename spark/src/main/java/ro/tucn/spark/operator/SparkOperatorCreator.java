@@ -53,7 +53,7 @@ public class SparkOperatorCreator extends OperatorCreator {
         try {
             jssc.awaitTermination();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

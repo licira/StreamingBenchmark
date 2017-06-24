@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
+import org.apache.log4j.Logger;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
@@ -23,6 +24,8 @@ import java.util.Properties;
  */
 public class FlinkOperatorCreator extends OperatorCreator {
 
+    private static final Logger logger = Logger.getLogger(FlinkOperatorCreator.class);
+
     private final StreamExecutionEnvironment env;
     private Properties properties;
 
@@ -39,7 +42,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
         try {
             env.execute(appName);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
