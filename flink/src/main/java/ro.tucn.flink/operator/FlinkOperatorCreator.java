@@ -31,8 +31,6 @@ public class FlinkOperatorCreator extends OperatorCreator {
         System.out.println("1");
         initializeProperties();
         env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //env = StreamExecutionEnvironment.createLocalEnvironment();
-        //env = StreamExecutionEnvironment.createRemoteEnvironment("54.173.165.50", 6123);
         System.out.println("2");
     }
 
