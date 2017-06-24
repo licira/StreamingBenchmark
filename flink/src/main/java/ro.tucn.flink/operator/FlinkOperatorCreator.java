@@ -136,7 +136,7 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topicPropertyName) {
         String topic = getTopicFromProperties(properties, topicPropertyName);
-        properties.setProperty("flink.starting-position", "latest");
+        properties.setProperty("flink.starting-position", "largest");
         FlinkKafkaConsumer081<String> kafkaConsumer = new FlinkKafkaConsumer081<>(topic, new SimpleStringSchema(), properties);
         return env.addSource(kafkaConsumer);
     }
