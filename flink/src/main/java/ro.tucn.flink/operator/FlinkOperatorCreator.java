@@ -7,7 +7,9 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.log4j.Logger;
+import ro.tucn.flink.kafka.FlinkKafkaConsumerCustom;
 import ro.tucn.kMeans.Point;
+import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
@@ -44,6 +46,11 @@ public class FlinkOperatorCreator extends OperatorCreator {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+    }
+
+    @Override
+    public KafkaConsumerCustom getKafkaConsumerCustom() {
+        return new FlinkKafkaConsumerCustom(env);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.DurationException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
+import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
@@ -20,20 +21,25 @@ public class AdvClick extends Workload {
 
     private static final Logger logger = SerializableLogger.getLogger(AdvClick.class);
 
+    private final KafkaConsumerCustom kafkaConsumerCustom;
     private int streamWindowOne;
     private int streamWindowTwo;
 
     public AdvClick(OperatorCreator creator) throws WorkloadException {
         super(creator);
+        kafkaConsumerCustom = creator.getKafkaConsumerCustom();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));
         streamWindowTwo = Integer.parseInt(properties.getProperty("stream2.window"));
     }
 
     @Override
     public void process() {
+        kafkaConsumerCustom.setParallelism(parallelism);
         System.out.println("3");
-        PairOperator<String, String> advs = getPairStreamOperator("adv", "topic1");
-        PairOperator<String, String> clicks = getPairStreamOperator("click", "topic2");
+        //PairOperator<String, String> advs = getPairStreamOperator("adv", "topic1");
+        //PairOperator<String, String> clicks = getPairStreamOperator("click", "topic2");
+        PairOperator<String, String> advs = kafkaConsumerCustom.getPairOperator(properties, "topic1");
+        PairOperator<String, String> clicks = kafkaConsumerCustom.getPairOperator(properties, "topic2");
         System.out.println("4");
         //advs.print();
         //clicks.print();

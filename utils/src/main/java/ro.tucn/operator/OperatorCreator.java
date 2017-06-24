@@ -1,6 +1,7 @@
 package ro.tucn.operator;
 
 import ro.tucn.kMeans.Point;
+import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.util.WithTime;
 
 import java.io.Serializable;
@@ -38,4 +39,6 @@ public abstract class OperatorCreator implements Serializable {
                                                                  int parallelism);
 
     public abstract void Start();
+
+    public abstract KafkaConsumerCustom getKafkaConsumerCustom();
 }

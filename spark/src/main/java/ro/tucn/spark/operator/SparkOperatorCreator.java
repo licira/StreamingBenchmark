@@ -11,9 +11,11 @@ import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import ro.tucn.kMeans.Point;
+import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
+import ro.tucn.spark.kafka.SparkKafkaConsumerCustom;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
@@ -55,6 +57,11 @@ public class SparkOperatorCreator extends OperatorCreator {
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    @Override
+    public KafkaConsumerCustom getKafkaConsumerCustom() {
+        return new SparkKafkaConsumerCustom(jssc);
     }
 
     @Override
