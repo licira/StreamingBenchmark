@@ -27,26 +27,15 @@ public abstract class OperatorCreator implements Serializable {
                                                               String componentId,
                                                               int parallelism);
 
-    /**
-     * zkConStr: zoo1:2181
-     * topics: Topic1,Topic2
-     * offset smallest
-     **/
     public abstract Operator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties,
                                                                                      String topicPropertyName,
                                                                                      String componentId,
                                                                                      int parallelism);
 
-    /**
-     * Consume point stream from kafka for workload 3
-     */
     public abstract Operator<Point> getPointStreamFromKafka(Properties properties,
                                                                  String topicPropertyName,
                                                                  String componentId,
                                                                  int parallelism);
 
-    /**
-     * Start streaming analysis job
-     */
     public abstract void Start();
 }
