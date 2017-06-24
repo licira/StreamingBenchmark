@@ -2,7 +2,6 @@ package ro.tucn.spark.operator;
 
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
@@ -22,7 +21,6 @@ import scala.Tuple3;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -139,29 +137,6 @@ public class SparkOperator<T> extends Operator<T> {
     }
 
     @Override
-    public <K, V> PairOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
-                                                           String componentId) {
-        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair(new PairFlatMapFunction<T, K, V>() {
-            @Override
-            public Iterator<Tuple2<K, V>> call(T t) throws Exception {
-                return (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t);
-            }
-        });
-        return new SparkPairOperator<>(pairDStream, parallelism);
-    }
-
-    @Override
-    public <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun) {
-        JavaPairDStream<K, V> pairDStream = dStream.flatMapToPair(new PairFlatMapFunction<T, K, V>() {
-            @Override
-            public Iterator<Tuple2<K, V>> call(T t) throws Exception {
-                return (Iterator<Tuple2<K, V>>) fun.flatMapToPair(t);
-            }
-        });
-        return new SparkPairOperator<>(pairDStream, parallelism);
-    }
-
-    @Override
     public WindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
@@ -179,11 +154,6 @@ public class SparkOperator<T> extends Operator<T> {
     @Override
     public void sink() {
 
-    }
-
-    @Override
-    public PairOperator mapToPair(Operator<T> centroids) {
-        return null;
     }
 
     @Override
