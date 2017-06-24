@@ -7,7 +7,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.Time;
@@ -39,32 +38,6 @@ public class SparkOperatorCreator extends OperatorCreator {
     private static final Logger logger = Logger.getLogger(SparkOperatorCreator.class);
 
     private static final String TOPIC_SPLITTER = ",";
-
-    private static Function<Tuple2<String, String>, String> mapFunction
-            = (Function<Tuple2<String, String>, String>) stringStringTuple2 -> stringStringTuple2._2();
-    private static Function<Tuple2<String, String>, WithTime<String>> mapFunctionWithTime
-            = (Function<Tuple2<String, String>, WithTime<String>>) stringStringTuple2 -> {
-        String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
-        if (list.length == 2) {
-            return new WithTime<String>(list[0], Long.parseLong(list[1]));
-        }
-        return new WithTime(stringStringTuple2._2(), System.nanoTime());
-    };
-    private static Function<Tuple2<String, String>, Point> mapToPointFunction
-            = (Function<Tuple2<String, String>, Point>) stringStringTuple2 -> {
-        String key = stringStringTuple2._1();
-        String value = stringStringTuple2._2();
-        String[] coordinatesAsString = value.split(" ");
-        //point.setTime(Long.parseLong(stringStringTuple2._1()));
-        double[] coordinates = new double[coordinatesAsString.length];
-        int idx = 0;
-        for (String locationAsString : coordinatesAsString) {
-            coordinates[idx] = Double.parseDouble(locationAsString);
-            idx++;
-        }
-        Long id = Long.parseLong(key);
-        return new Point(id, coordinates);
-    };
 
     public static JavaStreamingContext jssc;
     public static JavaSparkContext sc;
@@ -127,7 +100,13 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<WithTime<String>> stream = pairStream.map(mapFunctionWithTime);
+        JavaDStream<WithTime<String>> stream = pairStream.map(stringStringTuple2 -> {
+            String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
+            if (list.length == 2) {
+                return new WithTime<String>(list[0], Long.parseLong(list[1]));
+            }
+            return new WithTime(stringStringTuple2._2(), System.nanoTime());
+        });
         return new SparkOperator<WithTime<String>>(stream, parallelism);
     }
 
@@ -178,7 +157,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     private JavaDStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topicPropertyName) {
         logger.info("111");
         JavaPairDStream<String, String> pairStreamWithJsonAsValue = getDirectStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<String> streamWithJsonAsValue = pairStreamWithJsonAsValue.map(mapFunction);
+        JavaDStream<String> streamWithJsonAsValue = pairStreamWithJsonAsValue.map(jsonTuple -> jsonTuple._2());
         return streamWithJsonAsValue;
     }
 
