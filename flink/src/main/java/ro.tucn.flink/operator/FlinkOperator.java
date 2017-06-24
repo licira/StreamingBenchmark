@@ -238,24 +238,6 @@ public class FlinkOperator<T> extends Operator<T> {
     }
 
     @Override
-    public <K, V> PairOperator<K, V> flatMapToPair(final FlatMapPairFunction<T, K, V> fun,
-                                                   String componentId) {
-        //TypeInformation returnType = TypeExtractor.createTypeInfo(FlatMapFunction.class, fun.getClass(), 1, null, null);
-        DataStream<Tuple2<K, V>> newDataStream = dataStream.flatMap((org.apache.flink.api.common.functions.FlatMapFunction<T, Tuple2<K, V>>) (t, collector) -> {
-            Iterable<Tuple2<K, V>> flatResults = fun.flatMapToPair(t);
-            for (Tuple2<K, V> tuple2 : flatResults) {
-                collector.collect(tuple2);
-            }
-        });
-        return new FlinkPairOperator<>(newDataStream, parallelism);
-    }
-
-    @Override
-    public <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun) {
-        return null;
-    }
-
-    @Override
     public WindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
@@ -301,11 +283,6 @@ public class FlinkOperator<T> extends Operator<T> {
                 performanceLog.logThroughputAndLatencyWithTime((WithTime<? extends Object>) value);
             }
         });*/
-    }
-
-    @Override
-    public PairOperator mapToPair(Operator<T> centroids) {
-        return null;
     }
 
     @Override
