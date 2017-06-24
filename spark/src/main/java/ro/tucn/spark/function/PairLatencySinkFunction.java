@@ -3,7 +3,7 @@ package ro.tucn.spark.function;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.function.Function;
 import ro.tucn.statistics.LatencyLog;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
 /**
@@ -19,7 +19,7 @@ public class PairLatencySinkFunction<K, V> implements Function<Tuple2<K, V>, Boo
     }
 
     public Boolean call(Tuple2<K, V> tuple2) throws Exception {
-        latency.execute((WithTime) tuple2._2());
+        latency.execute((TimeHolder) tuple2._2());
         return true;
     }
 }

@@ -24,7 +24,7 @@ import ro.tucn.operator.PairOperator;
 import ro.tucn.operator.WindowedPairOperator;
 import ro.tucn.statistics.LatencyLog;
 import ro.tucn.util.TimeDuration;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
 import java.util.concurrent.TimeUnit;
@@ -364,7 +364,7 @@ public class FlinkPairOperator<K, V> extends PairOperator<K, V> {
 
             @Override
             public void invoke(Tuple2<K, V> value) throws Exception {
-                latency.execute((WithTime<? extends Object>) value._2());
+                latency.execute((TimeHolder<? extends Object>) value._2());
             }
         });
     }

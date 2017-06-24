@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.frame.functions.FlatMapFunction;
 import ro.tucn.frame.functions.MapPairFunction;
 import ro.tucn.frame.functions.ReduceFunction;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
 import java.io.Serializable;
@@ -19,26 +19,26 @@ public class UserFunctions implements Serializable {
 
     private static final Logger logger = Logger.getLogger(UserFunctions.class);
 
-    public static FlatMapFunction<WithTime<String>, WithTime<String>> splitFlatMapWithTime
-            = new FlatMapFunction<WithTime<String>, WithTime<String>>() {
-        public Iterator<WithTime<String>> flatMap(WithTime<String> var1) throws Exception {
-            List<WithTime<String>> list = new ArrayList();
+    public static FlatMapFunction<TimeHolder<String>, TimeHolder<String>> splitFlatMapTimeHolder
+            = new FlatMapFunction<TimeHolder<String>, TimeHolder<String>>() {
+        public Iterator<TimeHolder<String>> flatMap(TimeHolder<String> var1) throws Exception {
+            List<TimeHolder<String>> list = new ArrayList();
             for (String str : var1.getValue().toLowerCase().split("\\W+")) {
-                list.add(new WithTime(str, var1.getTime()));
+                list.add(new TimeHolder(str, var1.getTime()));
             }
-            return (Iterator<WithTime<String>>) list;
+            return (Iterator<TimeHolder<String>>) list;
         }
     };
-    public static MapPairFunction<WithTime<String>, String, WithTime<Integer>> mapToStrIntPairWithTime
-            = new MapPairFunction<WithTime<String>, String, WithTime<Integer>>() {
-        public Tuple2<String, WithTime<Integer>> mapToPair(WithTime<String> s) {
-            return new Tuple2(s.getValue(), new WithTime(1, s.getTime()));
+    public static MapPairFunction<TimeHolder<String>, String, TimeHolder<Integer>> mapToStrIntPairTimeHolder
+            = new MapPairFunction<TimeHolder<String>, String, TimeHolder<Integer>>() {
+        public Tuple2<String, TimeHolder<Integer>> mapToPair(TimeHolder<String> s) {
+            return new Tuple2(s.getValue(), new TimeHolder(1, s.getTime()));
         }
     };
 
-    public static ReduceFunction<WithTime<Integer>> sumReduceWithTime2 = new ReduceFunction<WithTime<Integer>>() {
-        public WithTime<Integer> reduce(WithTime<Integer> var1, WithTime<Integer> var2) throws Exception {
-            return new WithTime(var1.getValue() + var2.getValue(), Math.max(var1.getTime(), var2.getTime()));
+    public static ReduceFunction<TimeHolder<Integer>> sumReduceTimeHolder2 = new ReduceFunction<TimeHolder<Integer>>() {
+        public TimeHolder<Integer> reduce(TimeHolder<Integer> var1, TimeHolder<Integer> var2) throws Exception {
+            return new TimeHolder(var1.getValue() + var2.getValue(), Math.max(var1.getTime(), var2.getTime()));
         }
     };
 }

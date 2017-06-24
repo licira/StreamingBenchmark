@@ -15,7 +15,7 @@ import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
 import java.io.IOException;
@@ -68,17 +68,17 @@ public class FlinkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public Operator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public Operator<TimeHolder<String>> getStringStreamTimeHolderFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         setEnvParallelism(parallelism);
         DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
-        DataStream<WithTime<String>> withTimeDataStream = stream.map((MapFunction<String, WithTime<String>>) value -> {
+        DataStream<TimeHolder<String>> TimeHolderDataStream = stream.map((MapFunction<String, TimeHolder<String>>) value -> {
             String[] list = value.split(Constants.TimeSeparatorRegex);
             if (list.length == 2) {
-                return new WithTime<>(list[0], Long.parseLong(list[1]));
+                return new TimeHolder<>(list[0], Long.parseLong(list[1]));
             }
-            return new WithTime<>(value, System.currentTimeMillis());
+            return new TimeHolder<>(value, System.currentTimeMillis());
         });
-        return new FlinkOperator<>(withTimeDataStream, parallelism);
+        return new FlinkOperator<>(TimeHolderDataStream, parallelism);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package ro.tucn.statistics;
 
 import org.apache.log4j.Logger;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -37,8 +37,8 @@ public class PerformanceLog {
         throughputLog.execute();
     }
 
-    public <T> void logLatency(WithTime<T> withTime) {
-        latencyLog.execute(withTime);
+    public <T> void logLatency(TimeHolder<T> TimeHolder) {
+        latencyLog.execute(TimeHolder);
     }
 
     public void logThroughputAndLatency(Long time) {
@@ -46,7 +46,7 @@ public class PerformanceLog {
         latencyLog.execute(time);
     }
 
-    public void logThroughputAndLatencyWithTime(WithTime<?> value) {
+    public void logThroughputAndLatencyTimeHolder(TimeHolder<?> value) {
         throughputLog.execute();
         latencyLog.execute(value);
     }

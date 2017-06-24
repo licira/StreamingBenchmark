@@ -3,7 +3,7 @@ package ro.tucn.statistics;
 import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeDuration;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 
 import java.io.Serializable;
 
@@ -29,8 +29,8 @@ public class LatencyLog implements Serializable {
         prevTime = 0L;
     }
 
-    public void execute(WithTime<? extends Object> withTime) {
-        Long latency = System.nanoTime() - withTime.getTime();
+    public void execute(TimeHolder<? extends Object> TimeHolder) {
+        Long latency = System.nanoTime() - TimeHolder.getTime();
         double frequency = 0.001;
         if (Configuration.latencyFrequency != null
                 && Configuration.latencyFrequency > 0) {

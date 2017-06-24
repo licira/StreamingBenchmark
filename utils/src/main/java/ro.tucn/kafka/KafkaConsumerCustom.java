@@ -3,7 +3,7 @@ package ro.tucn.kafka;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.PairOperator;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 
 import java.util.Properties;
 
@@ -20,7 +20,7 @@ public abstract class KafkaConsumerCustom {
     public abstract PairOperator<String, String> getPairOperator(Properties properties,
                                                                         String topicPropertyName);
 
-    public abstract Operator<WithTime<String>> getStringOperatorWithTime(Properties properties,
+    public abstract Operator<TimeHolder<String>> getStringOperatorTimeHolder(Properties properties,
                                                                                 String topicPropertyName);
 
     public abstract Operator<Point> getPointOperator(Properties properties,

@@ -15,7 +15,7 @@ import ro.tucn.spark.operator.SparkOperator;
 import ro.tucn.spark.operator.SparkPairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
 import java.util.Arrays;
@@ -65,16 +65,16 @@ public class SparkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public SparkOperator<WithTime<String>> getStringOperatorWithTime(Properties properties, String topicPropertyName) {
+    public SparkOperator<TimeHolder<String>> getStringOperatorTimeHolder(Properties properties, String topicPropertyName) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<WithTime<String>> stream = pairStream.map(stringStringTuple2 -> {
+        JavaDStream<TimeHolder<String>> stream = pairStream.map(stringStringTuple2 -> {
             String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
             if (list.length == 2) {
-                return new WithTime<String>(list[0], Long.parseLong(list[1]));
+                return new TimeHolder<String>(list[0], Long.parseLong(list[1]));
             }
-            return new WithTime(stringStringTuple2._2(), System.nanoTime());
+            return new TimeHolder(stringStringTuple2._2(), System.nanoTime());
         });
-        return new SparkOperator<WithTime<String>>(stream, parallelism);
+        return new SparkOperator<TimeHolder<String>>(stream, parallelism);
     }
 
     private JavaDStream<String> getSstringStreamFromKafka(Properties properties, String topicPropertyName) {

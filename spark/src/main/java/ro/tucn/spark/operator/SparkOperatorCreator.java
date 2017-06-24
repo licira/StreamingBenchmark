@@ -19,7 +19,7 @@ import ro.tucn.spark.kafka.SparkKafkaConsumerCustom;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
 import java.io.IOException;
@@ -86,16 +86,16 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     @Override
-    public SparkOperator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
+    public SparkOperator<TimeHolder<String>> getStringStreamTimeHolderFromKafka(Properties properties, String topicPropertyName, String componentId, int parallelism) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<WithTime<String>> stream = pairStream.map(stringStringTuple2 -> {
+        JavaDStream<TimeHolder<String>> stream = pairStream.map(stringStringTuple2 -> {
             String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
             if (list.length == 2) {
-                return new WithTime<String>(list[0], Long.parseLong(list[1]));
+                return new TimeHolder<String>(list[0], Long.parseLong(list[1]));
             }
-            return new WithTime(stringStringTuple2._2(), System.nanoTime());
+            return new TimeHolder(stringStringTuple2._2(), System.nanoTime());
         });
-        return new SparkOperator<WithTime<String>>(stream, parallelism);
+        return new SparkOperator<TimeHolder<String>>(stream, parallelism);
     }
 
     private JavaDStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {

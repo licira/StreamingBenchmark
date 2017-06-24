@@ -7,7 +7,7 @@ import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Configuration;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -72,8 +72,8 @@ public abstract class Workload implements Serializable {
         return operatorCreator.getPairStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
-    protected Operator<WithTime<String>> getStringStreamWithTimeOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.getStringStreamWithTimeFromKafka(properties, topicPropertyName, componentId, parallelism);
+    protected Operator<TimeHolder<String>> getStringStreamTimeHolderOperator(String componentId, String topicPropertyName) {
+        return operatorCreator.getStringStreamTimeHolderFromKafka(properties, topicPropertyName, componentId, parallelism);
     }
 
     protected Operator<Point> getPointStreamOperator(String componentId, String topicPropertyName) {

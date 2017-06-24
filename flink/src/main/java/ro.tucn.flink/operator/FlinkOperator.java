@@ -280,7 +280,7 @@ public class FlinkOperator<T> extends Operator<T> {
 
             @Override
             public void invoke(T value) throws Exception {
-                performanceLog.logThroughputAndLatencyWithTime((WithTime<? extends Object>) value);
+                performanceLog.logThroughputAndLatencyTimeHolder((TimeHolder<? extends Object>) value);
             }
         });*/
     }

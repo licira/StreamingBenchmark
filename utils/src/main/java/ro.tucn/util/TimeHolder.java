@@ -5,17 +5,17 @@ import java.io.Serializable;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class WithTime<T> implements Serializable, Comparable<WithTime<T>> {
+public class TimeHolder<T> implements Serializable, Comparable<TimeHolder<T>> {
 
     private T value;
     private long time;
 
-    public WithTime(T v, long time) {
+    public TimeHolder(T v, long time) {
         this.value = v;
         this.time = time;
     }
 
-    public WithTime(T v) {
+    public TimeHolder(T v) {
         this.value = v;
         this.time = System.nanoTime();
     }
@@ -42,7 +42,7 @@ public class WithTime<T> implements Serializable, Comparable<WithTime<T>> {
     }
 
     @Override
-    public int compareTo(WithTime<T> o) {
+    public int compareTo(TimeHolder<T> o) {
         return 0;
     }
 }

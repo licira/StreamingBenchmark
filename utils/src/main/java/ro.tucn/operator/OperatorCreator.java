@@ -2,7 +2,7 @@ package ro.tucn.operator;
 
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.util.WithTime;
+import ro.tucn.util.TimeHolder;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -28,7 +28,7 @@ public abstract class OperatorCreator implements Serializable {
                                                               String componentId,
                                                               int parallelism);
 
-    public abstract Operator<WithTime<String>> getStringStreamWithTimeFromKafka(Properties properties,
+    public abstract Operator<TimeHolder<String>> getStringStreamTimeHolderFromKafka(Properties properties,
                                                                                      String topicPropertyName,
                                                                                      String componentId,
                                                                                      int parallelism);
