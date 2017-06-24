@@ -51,20 +51,11 @@ public abstract class Operator<T> extends BaseOperator {
      */
     public abstract <R> Operator<R> flatMap(FlatMapFunction<T, R> fun, String componentId);
 
-    /**
-     * Map T to Pair<K,V>, return PairOperator
-     */
-    public abstract <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun, String componentId);
-
-    public abstract <K, V> PairOperator<K, V> flatMapToPair(FlatMapPairFunction<T, K, V> fun);
-
     public abstract WindowedOperator<T> window(TimeDuration windowDuration);
 
     public abstract WindowedOperator<T> window(TimeDuration windowDuration, TimeDuration slideDuration);
 
     public abstract void sink();
-
-    public abstract PairOperator mapToPair(Operator<T> centroids);
 
     public abstract Operator map(Operator<T> points);
 }
