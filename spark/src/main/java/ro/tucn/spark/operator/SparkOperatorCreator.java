@@ -4,12 +4,8 @@ import com.google.gson.Gson;
 import kafka.serializer.StringDecoder;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
@@ -52,7 +48,6 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public void Start() {
         jssc.addStreamingListener(new PerformanceStreamingListener());
-        //jssc.checkpoint("/tmp/log-analyzer-streaming");
         jssc.checkpoint("/tmp/spark/checkpoint");
         jssc.start();
         try {
@@ -80,20 +75,6 @@ public class SparkOperatorCreator extends OperatorCreator {
         JavaDStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
         //jsonStream.print();
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
-        /*JavaDStream<Point> stream = pairStream.map(s -> {
-            String key = "0";
-            String value = s;
-            String[] locationsAsString = value.split(" ");
-            //point.setTime(Long.parseLong(stringStringTuple2._1()));
-            double[] location = new double[locationsAsString.length];
-            int idx = 0;
-            for (String locationAsString : locationsAsString) {
-                location[idx] = Double.parseDouble(locationAsString);
-                idx++;
-            }
-            int id = Integer.parseInt(key);
-            return new Point(id, location);
-        });*/
         return new SparkOperator<Point>(pointStream, parallelism);
     }
 
@@ -162,13 +143,8 @@ public class SparkOperatorCreator extends OperatorCreator {
     }
 
     private JavaPairDStream<String, String> getDirectStreamFromKafka(Properties properties, String topicPropertyName) {
-        logger.info("1111");
         HashSet<String> topicsSet = getTopicSetFromProperites(topicPropertyName, properties);
-        if (topicsSet == null) logger.info("topicSet is null");
-        logger.info("1112");
         HashMap<String, String> kafkaParams = getKafkaParamsFromProperties(properties);
-        if (kafkaParams == null) logger.info("kafkaParams is null");
-        logger.info("1113");
         return KafkaUtils.createDirectStream(
                 jssc,
                 String.class,
@@ -218,43 +194,6 @@ public class SparkOperatorCreator extends OperatorCreator {
                 ;
         sc = new JavaSparkContext(conf);
         jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
-    }
-
-    private void print(JavaPairDStream<String, String> messages) {
-        VoidFunction2<JavaPairRDD<String, String>, Time> function = (VoidFunction2<JavaPairRDD<String, String>, Time>) (rdd, time) -> {
-            logger.info("===================================");
-            logger.info("New Events for " + time + " batch:");
-            for (Tuple2<String, String> tuple : rdd.collect()) {
-                logger.info("Tuples: " + tuple._1 + ": " + tuple._2);
-            }
-            logger.info("===================================");
-        };
-        //messages.foreachRDD(function);
-        messages.print();
-    }
-
-    private void print(JavaDStream<String> lines) {
-        VoidFunction2<JavaRDD<String>, Time> voidFunction = (VoidFunction2<JavaRDD<String>, Time>) (rdd, time) -> {
-            logger.info("===================================");
-            logger.info(" Number of records in this batch: " + rdd.count());
-            for (String value : rdd.collect()) {
-                logger.info("Values: " + value);
-            }
-            logger.info("===================================");
-        };
-        //lines.foreachRDD(voidFunction);
-        lines.print();
-    }
-
-    private void printPoints(JavaDStream<Point> lines) {
-        VoidFunction2<JavaRDD<Point>, Time> voidFunction2 = (VoidFunction2<JavaRDD<Point>, Time>) (rdd, time) -> {
-            rdd.collect();
-            logger.info("===================================");
-            logger.info(" Number of records in this batch: " + rdd.count());
-            logger.info("===================================");
-        };
-        //lines.foreachRDD(voidFunction2);
-        lines.print();
     }
 
     private String getMaster() {
