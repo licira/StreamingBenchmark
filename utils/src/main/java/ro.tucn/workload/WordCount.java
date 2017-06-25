@@ -2,6 +2,7 @@ package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
 import ro.tucn.operator.PairOperator;
@@ -12,19 +13,20 @@ import ro.tucn.operator.PairOperator;
 public class WordCount extends Workload {
 
     private static final Logger logger = Logger.getLogger(WordCount.class);
+    private final KafkaConsumerCustom kafkaConsumerCustom;
 
     public WordCount(OperatorCreator creator) throws WorkloadException {
         super(creator);
+        kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }
 
     @Override
     public void process() {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
-        Operator<String> words = getStringStreamOperator("source", "topic1");
+        Operator<String> words = kafkaConsumerCustom.getStringOperator(properties, "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
-        //PairOperator<String, Integer> stringIntegerPairOperator = words.flatMapToPair();
         PairOperator<String, Integer> stringIntegerPairOperator = words.wordCount();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
-        //stringIntegerPairOperator.print();
+        stringIntegerPairOperator.print();
     }
 }
