@@ -2,15 +2,10 @@ package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.userfunctions.UserFunctions;
+import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairOperator;
-import ro.tucn.operator.Operator;
-import ro.tucn.util.TimeDuration;
-import ro.tucn.util.TimeHolder;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -18,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 public class WordCountWindowed extends Workload {
 
     private static final Logger logger = Logger.getLogger(WordCountWindowed.class);
+    private final KafkaConsumerCustom kafkaConsumerCustom;
 
     public WordCountWindowed(OperatorCreator creator) throws WorkloadException {
         super(creator);
+        kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }
 
     @Override
@@ -29,13 +26,13 @@ public class WordCountWindowed extends Workload {
             // Flink doesn't support shuffle().window()
             // Actually Flink does keyGrouping().window().update()
             // It is the same situation to Spark streaming
-            Operator<TimeHolder<String>> wordOperators = getStringStreamTimeHolderOperator("source", "topic1");
+            /*Operator<TimeHolder<String>> wordOperators = kafkaConsumerCustom.getStringStreamTimeHolderOperator(properties, "topic1");
             PairOperator<String, TimeHolder<Integer>> counts =
                     wordOperators.flatMap(UserFunctions.splitFlatMapTimeHolder, "splitter")
                             .mapToPair(UserFunctions.mapToStrIntPairTimeHolder, "pair")
                             .reduceByKeyAndWindow(UserFunctions.sumReduceTimeHolder2, "counter",
                                     new TimeDuration(TimeUnit.SECONDS, 1), new TimeDuration(TimeUnit.SECONDS, 1));
-            counts.sink();
+            counts.sink();*/
             //cumulate counts
             //PairOperator<String, Integer> cumulateCounts = counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
             //cumulateCounts.print();

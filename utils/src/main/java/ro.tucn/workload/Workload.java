@@ -2,10 +2,8 @@ package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.OperatorCreator;
-import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeHolder;
 
@@ -64,19 +62,8 @@ public abstract class Workload implements Serializable {
         parallelism = Configuration.clusterHosts * Configuration.hostCores;
     }
 
-    protected Operator<String> getStringStreamOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.getStringStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
-    }
-
-    protected PairOperator<String, String> getPairStreamOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.getPairStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
-    }
-
     protected Operator<TimeHolder<String>> getStringStreamTimeHolderOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.getStringStreamTimeHolderFromKafka(properties, topicPropertyName, componentId, parallelism);
-    }
-
-    protected Operator<Point> getPointStreamOperator(String componentId, String topicPropertyName) {
-        return operatorCreator.getPointStreamFromKafka(properties, topicPropertyName, componentId, parallelism);
+        //return operatorCreator.getStringStreamTimeHolderFromKafka(properties, topicPropertyName, componentId, parallelism);
+        return null;
     }
 }

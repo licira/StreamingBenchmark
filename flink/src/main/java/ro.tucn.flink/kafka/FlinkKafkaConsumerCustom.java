@@ -10,6 +10,7 @@ import ro.tucn.flink.operator.FlinkOperator;
 import ro.tucn.flink.operator.FlinkPairOperator;
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
+import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.Constants;
@@ -48,7 +49,7 @@ public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public Operator<TimeHolder<String>> getStringOperatorTimeHolder(Properties properties, String topicPropertyName) {
+    public Operator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
         DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
         DataStream<TimeHolder<String>> TimeHolderDataStream = stream.map((MapFunction<String, TimeHolder<String>>) value -> {
@@ -67,6 +68,11 @@ public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
         DataStream<String> jsonStream = getStringSstreamFromKafka(properties, topicPropertyName);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new FlinkOperator<>(pointStream, parallelism);
+    }
+
+    @Override
+    public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
+        return null;
     }
 
     private DataStream<String> getStringSstreamFromKafka(Properties properties, String topicPropertyName) {
