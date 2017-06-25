@@ -23,7 +23,7 @@ import static ro.tucn.util.Topics.CLICK;
  */
 public class AdvClickGenerator extends AbstractGenerator {
 
-    private static Long advNum;
+    private static Long totalAdvs;
     private AbstractMessageSender advSender;
     private AbstractMessageSender clickSender;
     private RandomDataGenerator generator;
@@ -49,7 +49,7 @@ public class AdvClickGenerator extends AbstractGenerator {
 
     private void addToAdvList(Adv adv) {
         // long deltaT = (long) generator.nextExponential(clickLambda) * 1000;
-        long deltaT = (long) generator.nextGaussian(clickLambda, 1) * advNum;
+        long deltaT = (long) generator.nextGaussian(clickLambda, 1) * totalAdvs;
         adv.setTimestamp(adv.getTimestamp() + deltaT);
         advs.add(adv);
     }
@@ -114,14 +114,14 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     private boolean clickSubmissionCondition(long value) {
-        long submissionThreshold = (long) (clickProbability * advNum);
+        long submissionThreshold = (long) (clickProbability * totalAdvs);
         return (value % submissionThreshold == submissionThreshold - 1);
     }
 
     @Override
     protected void submitData(int sleepFrequency) {
         advs = new ArrayList();
-        for (long i = 0; i < advNum; ++i) {
+        for (long i = 0; i < totalAdvs; ++i) {
             Adv adv = submitNewAdv();
             addToAdvList(adv);
             if (clickSubmissionCondition(i)) {
@@ -150,6 +150,6 @@ public class AdvClickGenerator extends AbstractGenerator {
     protected void initializeWorkloadData() {
         clickProbability = Double.parseDouble(properties.getProperty("click.probability"));
         clickLambda = Double.parseDouble(properties.getProperty("click.lambda"));
-        advNum = Long.parseLong(properties.getProperty("adv.num"));
+        totalAdvs = Long.parseLong(properties.getProperty("adv.number"));
     }
 }

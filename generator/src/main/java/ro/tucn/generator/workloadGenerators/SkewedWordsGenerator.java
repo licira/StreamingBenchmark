@@ -77,10 +77,16 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     protected void initializeDataGenerators() {
         int zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
         double zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));
+        int wordsNumberLowerBound = Integer.parseInt(this.properties.getProperty("words.number.lower.bound"));
+        int wordsNumberUpperBound = Integer.parseInt(this.properties.getProperty("words.number.upper.bound"));
+        int wordIdLowerBound = Integer.parseInt(this.properties.getProperty("word.id.lower.bound"));
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
         FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
         sentenceHelper.setMessageGenerator(messageGenerator);
         sentenceHelper.setZipfGenerator(zipfGenerator);
+        sentenceHelper.setWordsNumberLowerBound(wordsNumberLowerBound);
+        sentenceHelper.setWordsNumberUpperBound(wordsNumberUpperBound);
+        sentenceHelper.setWordIdLowerBound(wordIdLowerBound);
     }
 
     @Override

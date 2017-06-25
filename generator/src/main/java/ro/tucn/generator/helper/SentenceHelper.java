@@ -12,8 +12,9 @@ import static ro.tucn.generator.helper.SentenceHelper.SENTENCE_TYPE.UNIFORM_WORD
  */
 public class SentenceHelper {
 
-    private static final int WORDS_LOWER_BOUND = 1;
-    private static final int ID_LOWER_BOUND = 1000;
+    private static int wordsNumberLowerBound = 1;
+    private static int wordsNumberUpperBound = 10000;
+    private static int wordIdLowerBound = 1000;
 
     private FastZipfGenerator zipfGenerator;
     private RandomDataGenerator randomDataGenerator;
@@ -35,14 +36,14 @@ public class SentenceHelper {
         int[] words = new int[sentenceLength];
         if (sentenceType.equals(SKEWED_WORDS_SENTENCE)) {
             for (int i = 0; i < sentenceLength; ++i) {
-                words[i] = (zipfGenerator.next() + WORDS_LOWER_BOUND) % 10;
+                words[i] = (zipfGenerator.next() + wordsNumberLowerBound) % wordsNumberUpperBound;
             }
         } else if (sentenceType.equals(UNIFORM_WORDS_SENTENCE)) {
             for (int i = 0; i < sentenceLength; ++i) {
-                words[i] = randomDataGenerator.nextInt(WORDS_LOWER_BOUND, 10);
+                words[i] = randomDataGenerator.nextInt(wordsNumberLowerBound, wordsNumberUpperBound);
             }
         }
-        int sentenceId = randomDataGenerator.nextInt(ID_LOWER_BOUND, 10000);
+        int sentenceId = randomDataGenerator.nextInt(wordIdLowerBound, 10000);
         return new Sentence(sentenceId, words);
     }
 
@@ -64,6 +65,18 @@ public class SentenceHelper {
 
     public void setUpperBound(int upperBound) {
         this.upperBound = upperBound;
+    }
+
+    public void setWordIdLowerBound(int wordIdLowerBound) {
+        SentenceHelper.wordIdLowerBound = wordIdLowerBound;
+    }
+
+    public void setWordsNumberUpperBound(int wordsNumberUpperBound) {
+        SentenceHelper.wordsNumberUpperBound = wordsNumberUpperBound;
+    }
+
+    public void setWordsNumberLowerBound(int wordsNumberLowerBound) {
+        SentenceHelper.wordsNumberLowerBound = wordsNumberLowerBound;
     }
 
     public enum SENTENCE_TYPE {

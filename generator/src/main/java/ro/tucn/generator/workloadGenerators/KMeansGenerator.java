@@ -20,12 +20,13 @@ import static ro.tucn.util.Topics.POINT;
  */
 public class KMeansGenerator extends AbstractGenerator {
 
-    private static long POINT_NUM = 10;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+
     private KMeansHelper kMeansHelper;
     private AbstractMessageSender kMeansSender;
 
     private List<Point> centroids;
+    private static long totalPoints;
 
     public KMeansGenerator() {
         super();
@@ -63,7 +64,7 @@ public class KMeansGenerator extends AbstractGenerator {
     @Override
     protected void submitData(int sleepFrequency) {
         kMeansSender.setTopic(POINT);
-        for (int i = 0; i < POINT_NUM; i++) {
+        for (int i = 0; i < totalPoints; i++) {
             Point point = kMeansHelper.getNewPoint(centroids);
             submitPoint(point);
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
@@ -96,15 +97,14 @@ public class KMeansGenerator extends AbstractGenerator {
         int centroidsNo = Integer.parseInt(properties.getProperty("centroids.number"));
         Random centroidRandomGenerator = new Random();
         RandomGenerator pointRandomGenerator = new JDKRandomGenerator();
-        //pointRandomGenerator.setSeed(8624214);
         int dimension = Integer.parseInt(properties.getProperty("point.dimension"));
         double[] means = new double[dimension];
         String covariancesAsString = properties.getProperty("covariances");
-
+        totalPoints = Long.parseLong(properties.getProperty("points.number"));
+        long pointIdLowerBound = Long.parseLong(properties.getProperty("point.id.lower.bound"));
+        kMeansHelper.setPointIdLowerBound(pointIdLowerBound);
         kMeansHelper.setCentroidRandom(centroidRandomGenerator);
-        //kMeansHelper.setPointRandom(pointRandom);
         kMeansHelper.setDimension(dimension);
-        //kMeansHelper.setMeans(means);
         kMeansHelper.setDistance(distance);
         kMeansHelper.setCentroidsNo(centroidsNo);
         double[][] covariances = kMeansHelper.getCovariancesFromString(covariancesAsString, means);

@@ -22,17 +22,13 @@ import java.util.Random;
  */
 public class KMeansHelper {
 
+    private static long pointIdLowerBound;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-
-    private static final int ID_LOWER_BOUND = 1000;
-
     private Random centroidRandom;
     private RandomGenerator randomGenerator = new JDKRandomGenerator();
     private MultivariateNormalDistribution multiderivativeNormalDistribution;
 
     private int dimension;
-    //private double[] means; // origin point
-    //private double[][] covariances;
     private double distance;
     private int centroidsNo;
 
@@ -143,7 +139,7 @@ public class KMeansHelper {
         DecimalFormat f = new DecimalFormat("##.##");
         //coordinate = Double.parseDouble(f.format(coordinate));
         coordinate += (coordinate > 0) ? -50 : 50;
-        if(coordinate > 0 && coordinate < 10) {
+        if (coordinate > 0 && coordinate < 10) {
             coordinate += 10;
         } else if (coordinate < 0 && coordinate > -10) {
             coordinate -= 10;
@@ -152,11 +148,11 @@ public class KMeansHelper {
     }
 
     private Long generateId() {
-        long id = randomGenerator.nextLong() % ID_LOWER_BOUND;
+        long id = randomGenerator.nextLong() % pointIdLowerBound;
         if (id < 0) {
             id = -id;
         }
-        id += ID_LOWER_BOUND;
+        id += pointIdLowerBound;
         return id;
     }
 
@@ -174,5 +170,9 @@ public class KMeansHelper {
 
     public void setCentroidsNo(int centroidsNo) {
         this.centroidsNo = centroidsNo;
+    }
+
+    public void setPointIdLowerBound(long pointIdLowerBound) {
+        this.pointIdLowerBound = pointIdLowerBound;
     }
 }
