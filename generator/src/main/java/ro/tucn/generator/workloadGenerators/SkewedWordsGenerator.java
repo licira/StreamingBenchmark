@@ -21,10 +21,10 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     private SentenceHelper sentenceHelper;
     private AbstractMessageSender sentenceSender;
 
-    private long SENTENCE_NUM = 10;
+    private long totalSentences = 10;
 
-    public SkewedWordsGenerator() {
-        super();
+    public SkewedWordsGenerator(int entitiesNumber) {
+        super(entitiesNumber);
         initialize();
     }
 
@@ -58,7 +58,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
 
     @Override
     protected void submitData(int sleepFrequency) {
-        for (long i = 0; i < SENTENCE_NUM; ++i) {
+        for (long i = 0; i < totalSentences; ++i) {
             submitNewSentence();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
@@ -75,6 +75,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
 
     @Override
     protected void initializeDataGenerators() {
+        totalSentences = ((entitiesNumber == 0) ? Integer.parseInt(this.properties.getProperty("sentences.number")) : entitiesNumber);
         int zipfSize = Integer.parseInt(this.properties.getProperty("zipf.size"));
         double zipfExponent = Double.parseDouble(this.properties.getProperty("zipf.exponent"));
         int wordsNumberLowerBound = Integer.parseInt(this.properties.getProperty("words.number.lower.bound"));

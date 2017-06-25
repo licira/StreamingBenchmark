@@ -19,14 +19,16 @@ public abstract class AbstractGenerator<K, V> {
 
     protected Properties properties;
     protected String bootstrapServers;
+    protected int entitiesNumber;
 
-    public AbstractGenerator() {
+    public AbstractGenerator(int entitiesNumber) {
         try {
             properties = ConfigReader.getPropertiesFromResourcesFile(this.getClass().getSimpleName() + ".properties");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         initialzeBootstrapServersData();
+        this.entitiesNumber = entitiesNumber;
     }
 
     public abstract void generate(int sleepFrequency);
@@ -53,5 +55,9 @@ public abstract class AbstractGenerator<K, V> {
         Long startTime = System.nanoTime();
         performanceLog.setStartTime(startTime);
         performanceLog.setPrevTime(startTime);
+    }
+
+    public void setEntitiesNumber(int entitiesNumber) {
+        this.entitiesNumber = entitiesNumber;
     }
 }

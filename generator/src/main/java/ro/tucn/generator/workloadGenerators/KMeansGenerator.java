@@ -28,8 +28,8 @@ public class KMeansGenerator extends AbstractGenerator {
     private List<Point> centroids;
     private static long totalPoints;
 
-    public KMeansGenerator() {
-        super();
+    public KMeansGenerator(int entitiesNumber) {
+        super(entitiesNumber);
         initialize();
     }
 
@@ -100,7 +100,7 @@ public class KMeansGenerator extends AbstractGenerator {
         int dimension = Integer.parseInt(properties.getProperty("point.dimension"));
         double[] means = new double[dimension];
         String covariancesAsString = properties.getProperty("covariances");
-        totalPoints = Long.parseLong(properties.getProperty("points.number"));
+        totalPoints = ((entitiesNumber == 0) ? Long.parseLong(properties.getProperty("points.number")) : entitiesNumber);
         long pointIdLowerBound = Long.parseLong(properties.getProperty("point.id.lower.bound"));
         kMeansHelper.setPointIdLowerBound(pointIdLowerBound);
         kMeansHelper.setCentroidRandom(centroidRandomGenerator);

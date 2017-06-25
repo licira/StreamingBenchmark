@@ -32,8 +32,8 @@ public class AdvClickGenerator extends AbstractGenerator {
     private double clickLambda;
     private double clickProbability;
 
-    public AdvClickGenerator() {
-        super();
+    public AdvClickGenerator(int entitiesNumber) {
+        super(entitiesNumber);
         initialize();
     }
 
@@ -150,6 +150,6 @@ public class AdvClickGenerator extends AbstractGenerator {
     protected void initializeWorkloadData() {
         clickProbability = Double.parseDouble(properties.getProperty("click.probability"));
         clickLambda = Double.parseDouble(properties.getProperty("click.lambda"));
-        totalAdvs = Long.parseLong(properties.getProperty("adv.number"));
+        totalAdvs = ((entitiesNumber == 0) ? Long.parseLong(properties.getProperty("adv.number")) : entitiesNumber);
     }
 }

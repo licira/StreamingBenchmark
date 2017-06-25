@@ -20,10 +20,10 @@ public class UniformWordsGenerator extends AbstractGenerator {
     private SentenceHelper sentenceHelper;
     private AbstractMessageSender sentenceSender;
 
-    private long SENTENCE_NUM = 10;
+    private long totalSentences = 10;
 
-    public UniformWordsGenerator() {
-        super();
+    public UniformWordsGenerator(int entitiesNumber) {
+        super(entitiesNumber);
         initialize();
     }
 
@@ -57,7 +57,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
 
     @Override
     protected void submitData(int sleepFrequency) {
-        for (long i = 0; i < SENTENCE_NUM; ++i) {
+        for (long i = 0; i < totalSentences; ++i) {
             submitNewSentence();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
@@ -80,6 +80,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
 
     @Override
     protected void initializeWorkloadData() {
+        totalSentences = ((entitiesNumber == 0) ? Integer.parseInt(this.properties.getProperty("sentences.number")) : entitiesNumber);
         int upperBound = Integer.parseInt(this.properties.getProperty("uniform.size"));
         double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
