@@ -25,10 +25,6 @@ public abstract class BaseOperator implements Serializable {
         this.parallelism = parallelism;
     }
 
-    public void iterative() {
-        this.iterativeEnabled = true;
-    }
-
     public abstract void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException;
 
     public abstract void print();
