@@ -42,9 +42,12 @@ public abstract class AbstractMessageSender implements Serializable {
 
     public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
-        newRecord = new ProducerRecord(topic, null, timestamp, key, value);
+        newRecord = new ProducerRecord(topic, 0, timestamp, key, value);
         producer.send(newRecord);
-        logger.info("Topic: " + topic + "\tMessage: " + newRecord.value());
+        logger.info("Topic: " + topic +
+                "\tPartition:" + newRecord.partition() +
+                "\tMessage: " + newRecord.value()
+        );
     }
 
     public String getTopic() {
