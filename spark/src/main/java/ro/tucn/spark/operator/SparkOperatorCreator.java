@@ -35,7 +35,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     @Override
     public void Start() {
         jssc.addStreamingListener(new PerformanceStreamingListener());
-        jssc.checkpoint("/tmp/spark/checkpoint");
+        //jssc.checkpoint("/tmp/spark/checkpoint");
         jssc.start();
         try {
             jssc.awaitTermination();
