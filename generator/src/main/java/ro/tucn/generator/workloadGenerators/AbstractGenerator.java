@@ -14,9 +14,9 @@ public abstract class AbstractGenerator<K, V> {
 
     protected static final Logger logger = Logger.getLogger(AbstractGenerator.class);
 
-    protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
-    protected ConfigReader configReader = new ConfigReader();
+    private static final String BROKER_FILE_PROPERTIES_NAME = "DefaultBroker.properties";
 
+    protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
     protected Properties properties;
     protected String bootstrapServers;
     protected int entitiesNumber;
@@ -44,7 +44,7 @@ public abstract class AbstractGenerator<K, V> {
     private void initialzeBootstrapServersData() {
         Properties properties = null;
         try {
-            properties = configReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
+            properties = ConfigReader.getPropertiesFromResourcesFile(BROKER_FILE_PROPERTIES_NAME);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

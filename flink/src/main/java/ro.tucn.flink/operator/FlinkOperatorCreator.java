@@ -16,6 +16,8 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private static final Logger logger = Logger.getLogger(FlinkOperatorCreator.class);
 
+    private static final String FLINK_PROPERTIES_FILE_NAME = "flink-cluster.properties";
+
     private final StreamExecutionEnvironment env;
     private Properties properties;
 
@@ -43,6 +45,6 @@ public class FlinkOperatorCreator extends OperatorCreator {
 
     private void initializeProperties() throws IOException {
         properties = new Properties();
-        properties.load(this.getClass().getClassLoader().getResourceAsStream("flink-cluster.properties"));
+        properties.load(this.getClass().getClassLoader().getResourceAsStream(FLINK_PROPERTIES_FILE_NAME));
     }
 }

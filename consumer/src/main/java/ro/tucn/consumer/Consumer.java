@@ -19,7 +19,6 @@ public class Consumer {
 
     private static final Logger logger = Logger.getLogger(Consumer.class.getSimpleName());
     private static String topic;
-    private ConfigReader configReader = new ConfigReader();
     private Properties properties;
     private KafkaConsumer<String, String> consumer;
     private String bootstrapServerHost;
@@ -89,7 +88,7 @@ public class Consumer {
     private void initialzeBootstrapServersData() {
         Properties properties = null;
         try {
-            properties = configReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
+            properties = ConfigReader.getPropertiesFromResourcesFile("DefaultBroker.properties");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

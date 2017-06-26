@@ -21,6 +21,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     private static final Logger logger = Logger.getLogger(SparkOperatorCreator.class);
 
     private static final String TOPIC_SPLITTER = ",";
+    private static final String SPARK_PROPERTIES_FILE_NAME = "spark-cluster.properties";
 
     public static JavaStreamingContext jssc;
     public static JavaSparkContext sc;
@@ -51,7 +52,7 @@ public class SparkOperatorCreator extends OperatorCreator {
 
     private void initializeProperties() throws IOException {
         properties = new Properties();
-        properties.load(this.getClass().getClassLoader().getResourceAsStream("spark-cluster.properties"));
+        properties.load(this.getClass().getClassLoader().getResourceAsStream(SPARK_PROPERTIES_FILE_NAME));
     }
 
     private void initializeJavaStreamingContext(String appName) {
