@@ -12,7 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="core" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:kafka_2.10:0.10.1.0" level="project" />

@@ -5,7 +5,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.producer.ProducerCreator;
+import ro.tucn.generator.creator.ProducerCreator;
 
 import java.io.Serializable;
 

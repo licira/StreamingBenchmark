@@ -1,4 +1,4 @@
-package ro.tucn.generator.helper;
+package ro.tucn.generator.creator;
 
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.exception.DimensionMismatchException;

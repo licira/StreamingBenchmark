@@ -1,11 +1,11 @@
-package ro.tucn.generator.helper;
+package ro.tucn.generator.creator;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
-import static ro.tucn.generator.helper.SentenceCreator.SENTENCE_TYPE.SKEWED_WORDS_SENTENCE;
-import static ro.tucn.generator.helper.SentenceCreator.SENTENCE_TYPE.UNIFORM_WORDS_SENTENCE;
+import static ro.tucn.generator.creator.SentenceCreator.SENTENCE_TYPE.SKEWED_WORDS_SENTENCE;
+import static ro.tucn.generator.creator.SentenceCreator.SENTENCE_TYPE.UNIFORM_WORDS_SENTENCE;
 
 /**
  * Created by liviu.cira on 11.05.2017.

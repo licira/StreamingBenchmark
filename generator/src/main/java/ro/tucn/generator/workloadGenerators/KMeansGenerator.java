@@ -3,7 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.helper.KMeansCreator;
+import ro.tucn.generator.creator.KMeansCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.KMeansSender;
