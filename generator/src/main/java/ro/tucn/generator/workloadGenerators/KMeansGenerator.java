@@ -3,7 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.helper.KMeansHelper;
+import ro.tucn.generator.helper.KMeansCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.KMeansSender;
@@ -22,7 +22,7 @@ public class KMeansGenerator extends AbstractGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private KMeansHelper kMeansHelper;
+    private KMeansCreator KMeansCreator;
     private AbstractMessageSender kMeansSender;
 
     private List<Point> centroids;
@@ -35,8 +35,8 @@ public class KMeansGenerator extends AbstractGenerator {
 
     @Override
     public void generate(int sleepFrequency) {
-        centroids = kMeansHelper.generateCentroids();
-        //centroids = kMeansHelper.loadCentroids();
+        centroids = KMeansCreator.generateCentroids();
+        //centroids = KMeansCreator.loadCentroids();
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
         submitData(sleepFrequency);
@@ -45,7 +45,7 @@ public class KMeansGenerator extends AbstractGenerator {
     }
 
     private void initializeHelper() {
-        kMeansHelper = new KMeansHelper();
+        KMeansCreator = new KMeansCreator();
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
@@ -65,7 +65,7 @@ public class KMeansGenerator extends AbstractGenerator {
     protected void submitData(int sleepFrequency) {
         kMeansSender.setTopic(POINT);
         for (int i = 0; i < totalPoints; i++) {
-            Point point = kMeansHelper.getNewPoint(centroids);
+            Point point = KMeansCreator.getNewPoint(centroids);
             submitPoint(point);
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
@@ -102,12 +102,12 @@ public class KMeansGenerator extends AbstractGenerator {
         String covariancesAsString = properties.getProperty("covariances");
         totalPoints = ((entitiesNumber == 0) ? Long.parseLong(properties.getProperty("points.number")) : entitiesNumber);
         long pointIdLowerBound = Long.parseLong(properties.getProperty("point.id.lower.bound"));
-        kMeansHelper.setPointIdLowerBound(pointIdLowerBound);
-        kMeansHelper.setCentroidRandom(centroidRandomGenerator);
-        kMeansHelper.setDimension(dimension);
-        kMeansHelper.setDistance(distance);
-        kMeansHelper.setCentroidsNo(centroidsNo);
-        double[][] covariances = kMeansHelper.getCovariancesFromString(covariancesAsString, means);
-        kMeansHelper.initializeMultiderivativeNormalDistribution(pointRandomGenerator, means, covariances);
+        KMeansCreator.setPointIdLowerBound(pointIdLowerBound);
+        KMeansCreator.setCentroidRandom(centroidRandomGenerator);
+        KMeansCreator.setDimension(dimension);
+        KMeansCreator.setDistance(distance);
+        KMeansCreator.setCentroidsNo(centroidsNo);
+        double[][] covariances = KMeansCreator.getCovariancesFromString(covariancesAsString, means);
+        KMeansCreator.initializeMultiderivativeNormalDistribution(pointRandomGenerator, means, covariances);
     }
 }

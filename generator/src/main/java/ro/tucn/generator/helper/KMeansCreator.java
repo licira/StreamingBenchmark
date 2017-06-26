@@ -20,7 +20,7 @@ import java.util.Random;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public class KMeansHelper {
+public class KMeansCreator {
 
     private static long pointIdLowerBound;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
