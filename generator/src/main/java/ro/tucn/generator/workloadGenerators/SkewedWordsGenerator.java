@@ -3,7 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.entity.Sentence;
-import ro.tucn.generator.helper.SentenceHelper;
+import ro.tucn.generator.helper.SentenceCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
@@ -18,7 +18,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private SentenceHelper sentenceHelper;
+    private SentenceCreator SentenceCreator;
     private AbstractMessageSender sentenceSender;
 
     private long totalSentences = 10;
@@ -38,12 +38,12 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     private void submitNewSentence() {
-        Sentence sentence = sentenceHelper.getNewSkewedWordsSentence();
+        Sentence sentence = SentenceCreator.getNewSkewedWordsSentence();
         sentenceSender.send(sentence);
     }
 
     private void initializeHelper() {
-        sentenceHelper = new SentenceHelper();
+        SentenceCreator = new SentenceCreator();
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
@@ -83,18 +83,18 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         int wordIdLowerBound = Integer.parseInt(this.properties.getProperty("word.id.lower.bound"));
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
         FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
-        sentenceHelper.setMessageGenerator(messageGenerator);
-        sentenceHelper.setZipfGenerator(zipfGenerator);
-        sentenceHelper.setWordsNumberLowerBound(wordsNumberLowerBound);
-        sentenceHelper.setWordsNumberUpperBound(wordsNumberUpperBound);
-        sentenceHelper.setWordIdLowerBound(wordIdLowerBound);
+        SentenceCreator.setMessageGenerator(messageGenerator);
+        SentenceCreator.setZipfGenerator(zipfGenerator);
+        SentenceCreator.setWordsNumberLowerBound(wordsNumberLowerBound);
+        SentenceCreator.setWordsNumberUpperBound(wordsNumberUpperBound);
+        SentenceCreator.setWordIdLowerBound(wordIdLowerBound);
     }
 
     @Override
     protected void initializeWorkloadData() {
         double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
-        sentenceHelper.setMu(mu);
-        sentenceHelper.setSigma(sigma);
+        SentenceCreator.setMu(mu);
+        SentenceCreator.setSigma(sigma);
     }
 }

@@ -3,7 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.entity.Sentence;
-import ro.tucn.generator.helper.SentenceHelper;
+import ro.tucn.generator.helper.SentenceCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
@@ -17,7 +17,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private SentenceHelper sentenceHelper;
+    private SentenceCreator SentenceCreator;
     private AbstractMessageSender sentenceSender;
 
     private long totalSentences = 10;
@@ -37,7 +37,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     private void submitNewSentence() {
-        Sentence sentence = sentenceHelper.getNewUniformWordsSentence();
+        Sentence sentence = SentenceCreator.getNewUniformWordsSentence();
         sentenceSender.send(sentence);
     }
 
@@ -46,7 +46,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     private void initializeHelper() {
-        sentenceHelper = new SentenceHelper();
+        SentenceCreator = new SentenceCreator();
     }
 
     private void initializeMessageSenderWithSmallBuffer() {
@@ -75,7 +75,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
     @Override
     protected void initializeDataGenerators() {
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
-        sentenceHelper.setMessageGenerator(messageGenerator);
+        SentenceCreator.setMessageGenerator(messageGenerator);
     }
 
     @Override
@@ -84,8 +84,8 @@ public class UniformWordsGenerator extends AbstractGenerator {
         int upperBound = Integer.parseInt(this.properties.getProperty("uniform.size"));
         double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
-        sentenceHelper.setMu(mu);
-        sentenceHelper.setSigma(sigma);
-        sentenceHelper.setUpperBound(upperBound);
+        SentenceCreator.setMu(mu);
+        SentenceCreator.setSigma(sigma);
+        SentenceCreator.setUpperBound(upperBound);
     }
 }

@@ -4,13 +4,13 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
-import static ro.tucn.generator.helper.SentenceHelper.SENTENCE_TYPE.SKEWED_WORDS_SENTENCE;
-import static ro.tucn.generator.helper.SentenceHelper.SENTENCE_TYPE.UNIFORM_WORDS_SENTENCE;
+import static ro.tucn.generator.helper.SentenceCreator.SENTENCE_TYPE.SKEWED_WORDS_SENTENCE;
+import static ro.tucn.generator.helper.SentenceCreator.SENTENCE_TYPE.UNIFORM_WORDS_SENTENCE;
 
 /**
  * Created by liviu.cira on 11.05.2017.
  */
-public class SentenceHelper {
+public class SentenceCreator {
 
     private static int wordsNumberLowerBound = 1;
     private static int wordsNumberUpperBound = 10000;
@@ -68,15 +68,15 @@ public class SentenceHelper {
     }
 
     public void setWordIdLowerBound(int wordIdLowerBound) {
-        SentenceHelper.wordIdLowerBound = wordIdLowerBound;
+        SentenceCreator.wordIdLowerBound = wordIdLowerBound;
     }
 
     public void setWordsNumberUpperBound(int wordsNumberUpperBound) {
-        SentenceHelper.wordsNumberUpperBound = wordsNumberUpperBound;
+        SentenceCreator.wordsNumberUpperBound = wordsNumberUpperBound;
     }
 
     public void setWordsNumberLowerBound(int wordsNumberLowerBound) {
-        SentenceHelper.wordsNumberLowerBound = wordsNumberLowerBound;
+        SentenceCreator.wordsNumberLowerBound = wordsNumberLowerBound;
     }
 
     public enum SENTENCE_TYPE {

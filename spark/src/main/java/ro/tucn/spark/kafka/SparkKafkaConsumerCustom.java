@@ -45,8 +45,6 @@ public class SparkKafkaConsumerCustom extends KafkaConsumerCustom {
         this.sc = sc;
     }
 
-    JavaRDD<String> stringJavaRDDd;
-
     @Override
     public Operator<String> getStringOperator(Properties properties, String topicPropertyName) {
         logger.info("11");
