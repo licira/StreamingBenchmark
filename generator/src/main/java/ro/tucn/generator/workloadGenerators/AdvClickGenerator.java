@@ -4,7 +4,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.helper.AdvHelper;
-import ro.tucn.generator.helper.ClickHelper;
+import ro.tucn.generator.helper.ClickCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.AdvSender;
@@ -94,7 +94,7 @@ public class AdvClickGenerator extends AbstractGenerator {
         for (Adv adv : advs) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
-                Click click = ClickHelper.createNewClick(adv);
+                Click click = ClickCreator.createNewClick(adv);
                 clickSender.send(click);
                 attemptSleep(adv.getTimestamp());
             }
