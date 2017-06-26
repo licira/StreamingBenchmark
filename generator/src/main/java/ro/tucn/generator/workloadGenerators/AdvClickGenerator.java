@@ -3,7 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.entity.Click;
-import ro.tucn.generator.helper.AdvHelper;
+import ro.tucn.generator.helper.AdvCreator;
 import ro.tucn.generator.helper.ClickCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
@@ -85,7 +85,7 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     private Adv submitNewAdv() {
-        Adv adv = AdvHelper.getNewAdv();
+        Adv adv = AdvCreator.getNewAdv();
         advSender.send(adv);
         return adv;
     }

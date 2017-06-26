@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Created by Liviu on 5/7/2017.
  */
-public class AdvHelper {
+public class AdvCreator {
 
     public static Adv getNewAdv() {
         String advId = UUID.randomUUID().toString();
