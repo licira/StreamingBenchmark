@@ -59,10 +59,12 @@ public class PerformanceStreamingListener implements StreamingListener {
                 + batchInfo.numRecords());
     }
 
+    @Override
     public void onOutputOperationStarted(StreamingListenerOutputOperationStarted streamingListenerOutputOperationStarted) {
 
     }
 
+    @Override
     public void onOutputOperationCompleted(StreamingListenerOutputOperationCompleted streamingListenerOutputOperationCompleted) {
 
     }
