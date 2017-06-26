@@ -1,8 +1,9 @@
 package ro.tucn.spark.operator;
 
 import org.apache.log4j.Logger;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.mllib.clustering.StreamingKMeans;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -17,9 +18,6 @@ import ro.tucn.operator.WindowedOperator;
 import ro.tucn.spark.function.*;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
-import scala.Tuple3;
-
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +29,8 @@ public class SparkOperator<T> extends Operator<T> {
     private static final Logger logger = Logger.getLogger(SparkOperator.class);
 
     JavaDStream<T> dStream;
+    private boolean firstKMeanClustering = true;
+    private StreamingKMeans model;
 
     public SparkOperator(JavaDStream<T> stream, int parallelism) {
         super(parallelism);
@@ -40,7 +40,7 @@ public class SparkOperator<T> extends Operator<T> {
 
     @Override
     public PairOperator<String, Integer> wordCount() {
-        JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String)x).split(" ")).iterator());
+        JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
         return new SparkPairOperator(tIntegerJavaPairDStream1, parallelism);
@@ -53,50 +53,62 @@ public class SparkOperator<T> extends Operator<T> {
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
         JavaDStream<Point> centroids = (JavaDStream<Point>) ((SparkOperator<Point>) centroidsOperator).dStream;
 
+        JavaDStream<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
+        pointsVector.print();
+        JavaDStream<Vector> centroidsVector = centroids.map(c -> Vectors.dense(c.getCoordinates()));
+        centroidsVector.print();
 
+        double[] weights = getEqualWeights(2);
+        Vector[] initCentroids = initCentroids(2);
 
+        if (firstKMeanClustering) {
+            model = new StreamingKMeans()
+                    .setK(2)
+                    .setDecayFactor(1)
+                    .setInitialCenters(initCentroids, weights);
+            firstKMeanClustering = false;
+            model.trainOn(pointsVector.dstream());
+        }
+
+        JavaPairDStream<Point, Vector> pointVectorJavaPairDStream = points.mapToPair(point -> {
+            Vector coordinatesVector = Vectors.dense(point.getCoordinates());
+            return new Tuple2<Point, Vector>(point, coordinatesVector);
+        });
+
+        JavaPairDStream<Point, Integer> pointIntegerJavaPairDStream = model.predictOnValues(pointVectorJavaPairDStream);
+        pointIntegerJavaPairDStream.print();
+
+        Vector[] vectors = model.latestModel().clusterCenters();
+        for (int i = 0; i < vectors.length; i++) {
+            logger.info("out: " + vectors[i]);
+        }
     }
 
-    private class MapFunctionn<T, R> implements Function<T, T>, Serializable {
-
-        JavaDStream<List<T>> glom;
-
-        @Override
-        public T call(T t) throws Exception {
-
-            return t;
-        }
-
-        public void setGlom(JavaDStream<List<T>> glom) {
-            this.glom = glom;
-        }
+    private Vector[] initCentroids(int n) {
+        Vector[] initCentroids = new Vector[2];
+        double[] coordinates = new double[2];
+        coordinates[0] = 40.5;
+        coordinates[1] = -40.5;
+        initCentroids[0] = Vectors.dense(coordinates);
+        coordinates = new double[2];
+        coordinates[0] = -10.5;
+        coordinates[1] = 10.5;
+        initCentroids[1] = Vectors.dense(coordinates);
+        return initCentroids;
     }
 
-    private class NearestCenterSelector<T, K, V> implements PairFunction<T, K, V> {
-        private List<Point> centroidsList;
-        private SerializableJavaDStream<Point> centroids;
-
-        @Override
-        public Tuple2<K, V> call(T t) throws Exception {
-            return null;
+    private double[] getEqualWeights(int n) {
+        double[] weights = new double[n];
+        double weightValue = 1.0 / n;
+        for (int i = 0; i < n; i++) {
+            weights[i] = weightValue;
         }
-
-        public void setCentroids(SerializableJavaDStream<Point> centroids) {
-            this.centroids = centroids;
-            centroids.mapToPair(point -> {
-                centroidsList.add(point);
-                return null;
-            });
-        }
-
-        public void setCentroidsList(List<Point> centroidsList) {
-            this.centroidsList = centroidsList;
-        }
+        return weights;
     }
 
     @Override
     public <R> Operator<R> map(final MapFunction<T, R> fun,
-                                       String componentId) {
+                               String componentId) {
         JavaDStream<R> newStream = dStream.map(new FunctionImpl(fun));
         return new SparkOperator<R>(newStream, parallelism);
     }
@@ -131,7 +143,7 @@ public class SparkOperator<T> extends Operator<T> {
 
     @Override
     public <R> Operator<R> flatMap(final FlatMapFunction<T, R> fun,
-                                           String componentId) {
+                                   String componentId) {
         JavaDStream<R> newStream = dStream.flatMap(new FlatMapFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
@@ -143,7 +155,7 @@ public class SparkOperator<T> extends Operator<T> {
 
     @Override
     public WindowedOperator<T> window(TimeDuration windowDuration,
-                                              TimeDuration slideDuration) {
+                                      TimeDuration slideDuration) {
         Duration windowDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(windowDuration);
         Duration slideDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(slideDuration);
 
@@ -181,16 +193,6 @@ public class SparkOperator<T> extends Operator<T> {
     private void checkOperatorType(Operator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof SparkOperator)) {
             throw new WorkloadException("Cast joinStream to SparkPairOperator failed");
-        }
-    }
-
-
-
-    public static final class CountAppender implements Function<Tuple2<Integer, Point>, Tuple3<Integer, Point, Long>> {
-
-        @Override
-        public Tuple3<Integer, Point, Long> call(Tuple2<Integer, Point> t) throws Exception {
-            return new Tuple3<>(t._1, t._2, 1L);
         }
     }
 }
