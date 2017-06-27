@@ -18,10 +18,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.datastream.NoWindowJoinedStreams;
 import ro.tucn.frame.functions.*;
-import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.StreamOperator;
-import ro.tucn.operator.StreamPairOperator;
-import ro.tucn.operator.StreamWindowedPairOperator;
+import ro.tucn.operator.*;
 import ro.tucn.statistics.LatencyLog;
 import ro.tucn.util.TimeDuration;
 import ro.tucn.util.TimeHolder;
@@ -49,9 +46,9 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
      * @return StreamPairOperator after join
      */
     @Override
-    public <R> StreamPairOperator<K, Tuple2<V, R>> join(StreamPairOperator<K, R> joinOperator,
-                                                        TimeDuration windowDuration,
-                                                        TimeDuration joinWindowDuration) throws WorkloadException {
+    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinOperator,
+                                                  TimeDuration windowDuration,
+                                                  TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
         checkOperatorType(joinOperator);
 
@@ -97,6 +94,124 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
                         });
 
         return new FlinkStreamPairOperator<>(joinedStream, parallelism);
+    }
+
+    /**
+     * Event time join
+     *
+     * @param componentId        current compute component id
+     * @param joinStream         the other stream<K,R>
+     * @param windowDuration     window1 length of this stream
+     * @param joinWindowDuration window1 length of joinStream
+     * @param eventTimeAssigner1 event time assignment for this stream
+     * @param eventTimeAssigner2 event time assignment for joinStream
+     * @param <R>                Value type of the other stream
+     * @return StreamPairOperator
+     * @throws WorkloadException
+     */
+    @Override
+    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
+                                                  PairOperator<K, R> joinStream,
+                                                  TimeDuration windowDuration,
+                                                  TimeDuration joinWindowDuration,
+                                                  final AssignTimeFunction<V> eventTimeAssigner1,
+                                                  final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
+        StreamExecutionEnvironment env = dataStream.getExecutionEnvironment();
+        if (null != eventTimeAssigner1 && null != eventTimeAssigner2)
+            env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        else
+            env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+
+        if (joinStream instanceof FlinkStreamPairOperator) {
+            FlinkStreamPairOperator<K, R> joinFlinkStream = ((FlinkStreamPairOperator<K, R>) joinStream);
+
+            final KeySelector<Tuple2<K, V>, K> keySelector1 = (KeySelector<Tuple2<K, V>, K>) kvTuple2 -> kvTuple2._1();
+            final KeySelector<Tuple2<K, R>, K> keySelector2 = (KeySelector<Tuple2<K, R>, K>) krTuple2 -> krTuple2._1();
+
+            // tmpKeySelector for get keyTypeInfo InvalidTypesException
+            // TODO: find a better solution to solve
+            KeySelector<K, K> tmpKeySelector = (KeySelector<K, K>) value -> value;
+            TypeInformation<K> keyTypeInfo = TypeExtractor.getUnaryOperatorReturnType(tmpKeySelector, KeySelector.class, false, false, dataStream.getType(), null, false);
+
+            DataStream<Tuple2<K, V>> dataStream1 = new KeyedStream<>(dataStream, keySelector1, keyTypeInfo);
+            if (null != eventTimeAssigner1) {
+                /*final AscendingTimestampExtractor<Tuple2<K, V>> timestampExtractor1 = new AscendingTimestampExtractor<Tuple2<K, V>>() {
+                    @Override
+                    public long extractAscendingTimestamp(Tuple2<K, V> element, long currentTimestamp) {
+                        return eventTimeAssigner1.assign(element._2());
+                    }
+                };*/
+                TimestampExtractor<Tuple2<K, V>> timestampExtractor1 = new TimestampExtractor<Tuple2<K, V>>() {
+                    long currentTimestamp = 0L;
+
+                    @Override
+                    public long extractTimestamp(Tuple2<K, V> kvTuple2, long l) {
+                        long timestamp = eventTimeAssigner1.assign(kvTuple2._2());
+                        if (timestamp > currentTimestamp) {
+                            currentTimestamp = timestamp;
+                        }
+                        return timestamp;
+                    }
+
+                    @Override
+                    public long extractWatermark(Tuple2<K, V> kvTuple2, long l) {
+                        return -9223372036854775808L;
+                    }
+
+                    @Override
+                    public long getCurrentWatermark() {
+                        return currentTimestamp - 500;
+                    }
+                };
+                dataStream1 = dataStream1.assignTimestamps(timestampExtractor1);
+            }
+
+            DataStream<Tuple2<K, R>> dataStream2 = new KeyedStream<>(joinFlinkStream.dataStream, keySelector2, keyTypeInfo);
+            if (null != eventTimeAssigner2) {
+                /*final AscendingTimestampExtractor<Tuple2<K, R>> timestampExtractor2 = new AscendingTimestampExtractor<Tuple2<K, R>>() {
+
+                    @Override
+                    public long extractAscendingTimestamp(Tuple2<K, R> element, long currentTimestamp) {
+                        return eventTimeAssigner2.assign(element._2());
+                    }
+                };*/
+                TimestampExtractor<Tuple2<K, R>> timestampExtractor2 = new TimestampExtractor<Tuple2<K, R>>() {
+                    long currentTimestamp = 0L;
+
+                    @Override
+                    public long extractTimestamp(Tuple2<K, R> kvTuple2, long l) {
+                        long timestamp = eventTimeAssigner2.assign(kvTuple2._2());
+                        if (timestamp > currentTimestamp) {
+                            currentTimestamp = timestamp;
+                        }
+                        return timestamp;
+                    }
+
+                    @Override
+                    public long extractWatermark(Tuple2<K, R> kvTuple2, long l) {
+                        return -9223372036854775808L;
+                    }
+
+                    @Override
+                    public long getCurrentWatermark() {
+                        return currentTimestamp - 500;
+                    }
+                };
+                dataStream2 = dataStream2.assignTimestamps(timestampExtractor2);
+            }
+
+            DataStream<Tuple2<K, Tuple2<V, R>>> joineStream =
+                    new NoWindowJoinedStreams<>(dataStream1, dataStream2)
+                            .where(keySelector1, keyTypeInfo)
+                            .buffer(Time.of(windowDuration.toMilliSeconds(), TimeUnit.MILLISECONDS))
+                            .equalTo(keySelector2, keyTypeInfo)
+                            .buffer(Time.of(joinWindowDuration.toMilliSeconds(), TimeUnit.MILLISECONDS))
+                            .apply((JoinFunction<Tuple2<K, V>, Tuple2<K, R>, Tuple2<K, Tuple2<V, R>>>) (first, second) -> new Tuple2<>(first._1(), new Tuple2<>(first._2(), second._2())));
+
+            return new FlinkStreamPairOperator<>(joineStream, parallelism);
+        } else {
+            throw new WorkloadException("Cast joinStrem to FlinkStreamPairOperator failed");
+        }
     }
 
     public FlinkGroupedOperator<K, V> groupByKey() {
@@ -221,127 +336,9 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
         return new FlinkStreamWindowedPairOperator<>(windowedDataStream, parallelism);
     }
 
-    private <R> void checkOperatorType(StreamPairOperator<K, R> joinStream) throws WorkloadException {
+    private <R> void checkOperatorType(PairOperator<K, R> joinStream) throws WorkloadException {
         if (!(joinStream instanceof FlinkStreamPairOperator)) {
             throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
-        }
-    }
-
-    /**
-     * Event time join
-     *
-     * @param componentId        current compute component id
-     * @param joinStream         the other stream<K,R>
-     * @param windowDuration     window1 length of this stream
-     * @param joinWindowDuration window1 length of joinStream
-     * @param eventTimeAssigner1 event time assignment for this stream
-     * @param eventTimeAssigner2 event time assignment for joinStream
-     * @param <R>                Value type of the other stream
-     * @return StreamPairOperator
-     * @throws WorkloadException
-     */
-    @Override
-    public <R> StreamPairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                        StreamPairOperator<K, R> joinStream,
-                                                        TimeDuration windowDuration,
-                                                        TimeDuration joinWindowDuration,
-                                                        final AssignTimeFunction<V> eventTimeAssigner1,
-                                                        final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
-        StreamExecutionEnvironment env = dataStream.getExecutionEnvironment();
-        if (null != eventTimeAssigner1 && null != eventTimeAssigner2)
-            env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        else
-            env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-
-        if (joinStream instanceof FlinkStreamPairOperator) {
-            FlinkStreamPairOperator<K, R> joinFlinkStream = ((FlinkStreamPairOperator<K, R>) joinStream);
-
-            final KeySelector<Tuple2<K, V>, K> keySelector1 = (KeySelector<Tuple2<K, V>, K>) kvTuple2 -> kvTuple2._1();
-            final KeySelector<Tuple2<K, R>, K> keySelector2 = (KeySelector<Tuple2<K, R>, K>) krTuple2 -> krTuple2._1();
-
-            // tmpKeySelector for get keyTypeInfo InvalidTypesException
-            // TODO: find a better solution to solve
-            KeySelector<K, K> tmpKeySelector = (KeySelector<K, K>) value -> value;
-            TypeInformation<K> keyTypeInfo = TypeExtractor.getUnaryOperatorReturnType(tmpKeySelector, KeySelector.class, false, false, dataStream.getType(), null, false);
-
-            DataStream<Tuple2<K, V>> dataStream1 = new KeyedStream<>(dataStream, keySelector1, keyTypeInfo);
-            if (null != eventTimeAssigner1) {
-                /*final AscendingTimestampExtractor<Tuple2<K, V>> timestampExtractor1 = new AscendingTimestampExtractor<Tuple2<K, V>>() {
-                    @Override
-                    public long extractAscendingTimestamp(Tuple2<K, V> element, long currentTimestamp) {
-                        return eventTimeAssigner1.assign(element._2());
-                    }
-                };*/
-                TimestampExtractor<Tuple2<K, V>> timestampExtractor1 = new TimestampExtractor<Tuple2<K, V>>() {
-                    long currentTimestamp = 0L;
-
-                    @Override
-                    public long extractTimestamp(Tuple2<K, V> kvTuple2, long l) {
-                        long timestamp = eventTimeAssigner1.assign(kvTuple2._2());
-                        if (timestamp > currentTimestamp) {
-                            currentTimestamp = timestamp;
-                        }
-                        return timestamp;
-                    }
-
-                    @Override
-                    public long extractWatermark(Tuple2<K, V> kvTuple2, long l) {
-                        return -9223372036854775808L;
-                    }
-
-                    @Override
-                    public long getCurrentWatermark() {
-                        return currentTimestamp - 500;
-                    }
-                };
-                dataStream1 = dataStream1.assignTimestamps(timestampExtractor1);
-            }
-
-            DataStream<Tuple2<K, R>> dataStream2 = new KeyedStream<>(joinFlinkStream.dataStream, keySelector2, keyTypeInfo);
-            if (null != eventTimeAssigner2) {
-                /*final AscendingTimestampExtractor<Tuple2<K, R>> timestampExtractor2 = new AscendingTimestampExtractor<Tuple2<K, R>>() {
-
-                    @Override
-                    public long extractAscendingTimestamp(Tuple2<K, R> element, long currentTimestamp) {
-                        return eventTimeAssigner2.assign(element._2());
-                    }
-                };*/
-                TimestampExtractor<Tuple2<K, R>> timestampExtractor2 = new TimestampExtractor<Tuple2<K, R>>() {
-                    long currentTimestamp = 0L;
-
-                    @Override
-                    public long extractTimestamp(Tuple2<K, R> kvTuple2, long l) {
-                        long timestamp = eventTimeAssigner2.assign(kvTuple2._2());
-                        if (timestamp > currentTimestamp) {
-                            currentTimestamp = timestamp;
-                        }
-                        return timestamp;
-                    }
-
-                    @Override
-                    public long extractWatermark(Tuple2<K, R> kvTuple2, long l) {
-                        return -9223372036854775808L;
-                    }
-
-                    @Override
-                    public long getCurrentWatermark() {
-                        return currentTimestamp - 500;
-                    }
-                };
-                dataStream2 = dataStream2.assignTimestamps(timestampExtractor2);
-            }
-
-            DataStream<Tuple2<K, Tuple2<V, R>>> joineStream =
-                    new NoWindowJoinedStreams<>(dataStream1, dataStream2)
-                            .where(keySelector1, keyTypeInfo)
-                            .buffer(Time.of(windowDuration.toMilliSeconds(), TimeUnit.MILLISECONDS))
-                            .equalTo(keySelector2, keyTypeInfo)
-                            .buffer(Time.of(joinWindowDuration.toMilliSeconds(), TimeUnit.MILLISECONDS))
-                            .apply((JoinFunction<Tuple2<K, V>, Tuple2<K, R>, Tuple2<K, Tuple2<V, R>>>) (first, second) -> new Tuple2<>(first._1(), new Tuple2<>(first._2(), second._2())));
-
-            return new FlinkStreamPairOperator<>(joineStream, parallelism);
-        } else {
-            throw new WorkloadException("Cast joinStrem to FlinkStreamPairOperator failed");
         }
     }
 
