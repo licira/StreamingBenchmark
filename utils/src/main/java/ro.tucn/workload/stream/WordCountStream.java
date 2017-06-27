@@ -11,12 +11,12 @@ import ro.tucn.workload.Workload;
 /**
  * Created by Liviu on 4/15/2017.
  */
-public class WordCountFast extends Workload {
+public class WordCountStream extends Workload {
 
-    private static final Logger logger = Logger.getLogger(WordCount.class);
+    private static final Logger logger = Logger.getLogger(WordCountStream.class);
     private final KafkaConsumerCustom kafkaConsumerCustom;
 
-    public WordCountFast(ContextCreator creator) throws WorkloadException {
+    public WordCountStream(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }
@@ -24,11 +24,10 @@ public class WordCountFast extends Workload {
     @Override
     public void process() {
         kafkaConsumerCustom.setParallelism(parallelism);
-        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT FAST<<<<<<<<<<<<<<<<<");
-        StreamOperator<String> wordOperators = kafkaConsumerCustom.getStringOperator(properties, "topic1");
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
+        StreamOperator<String> words = kafkaConsumerCustom.getStringOperator(properties, "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
-        wordOperators.print();
-        StreamPairOperator<String, Integer> stringIntegerStreamPairOperator = wordOperators.wordCount();
+        StreamPairOperator<String, Integer> stringIntegerStreamPairOperator = words.wordCount();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
         stringIntegerStreamPairOperator.print();
     }

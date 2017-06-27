@@ -7,8 +7,8 @@ import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
 import ro.tucn.workload.stream.AdvClickStream;
 import ro.tucn.workload.stream.KMeansStream;
-import ro.tucn.workload.stream.WordCount;
-import ro.tucn.workload.stream.WordCountFast;
+import ro.tucn.workload.stream.WordCountStream;
+import ro.tucn.workload.stream.WordCountFastStream;
 
 import java.io.IOException;
 
@@ -31,10 +31,10 @@ public class Application {
                 workload = new KMeansStream(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
                 contextCreator = new SparkContextCreator(Topics.UNIFORM_WORDS);
-                workload = new WordCount(contextCreator);
+                workload = new WordCountStream(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
                 contextCreator = new SparkContextCreator(Topics.SKEWED_WORDS);
-                workload = new WordCountFast(contextCreator);
+                workload = new WordCountFastStream(contextCreator);
             } else {
                 return;
             }
