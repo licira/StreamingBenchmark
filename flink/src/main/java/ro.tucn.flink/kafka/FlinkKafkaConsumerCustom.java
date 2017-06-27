@@ -7,12 +7,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.flink.operator.FlinkOperator;
-import ro.tucn.flink.operator.FlinkPairOperator;
+import ro.tucn.flink.operator.FlinkStreamPairOperator;
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.BatchOperator;
-import ro.tucn.operator.Operator;
-import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.StreamOperator;
+import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
 import ro.tucn.util.TimeHolder;
@@ -33,7 +33,7 @@ public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public Operator<String> getStringOperator(Properties properties, String topicPropertyName) {
+    public StreamOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
@@ -41,15 +41,15 @@ public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public PairOperator<String, String> getPairOperator(Properties properties, String topicPropertyName) {
+    public StreamPairOperator<String, String> getStreamPairOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         DataStream<Tuple2<String, String>> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        return new FlinkPairOperator<>(pairStream, parallelism);
+        return new FlinkStreamPairOperator<>(pairStream, parallelism);
     }
 
     @Override
-    public Operator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
+    public StreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
         DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
         DataStream<TimeHolder<String>> TimeHolderDataStream = stream.map((MapFunction<String, TimeHolder<String>>) value -> {
@@ -63,7 +63,7 @@ public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public Operator<Point> getPointOperator(Properties properties, String topicPropertyName) {
+    public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
         DataStream<String> jsonStream = getStringSstreamFromKafka(properties, topicPropertyName);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);

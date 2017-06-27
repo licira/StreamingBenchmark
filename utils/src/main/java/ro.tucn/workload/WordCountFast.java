@@ -3,9 +3,9 @@ package ro.tucn.workload;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.Operator;
+import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.ContextCreator;
-import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.StreamPairOperator;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -24,11 +24,11 @@ public class WordCountFast extends Workload {
     public void process() {
         kafkaConsumerCustom.setParallelism(parallelism);
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT FAST<<<<<<<<<<<<<<<<<");
-        Operator<String> wordOperators = kafkaConsumerCustom.getStringOperator(properties, "topic1");
+        StreamOperator<String> wordOperators = kafkaConsumerCustom.getStringOperator(properties, "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
         wordOperators.print();
-        PairOperator<String, Integer> stringIntegerPairOperator = wordOperators.wordCount();
+        StreamPairOperator<String, Integer> stringIntegerStreamPairOperator = wordOperators.wordCount();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
-        stringIntegerPairOperator.print();
+        stringIntegerStreamPairOperator.print();
     }
 }

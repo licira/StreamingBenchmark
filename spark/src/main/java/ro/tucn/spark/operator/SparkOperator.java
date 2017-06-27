@@ -11,20 +11,18 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.Operator;
-import ro.tucn.operator.PairOperator;
-import ro.tucn.operator.WindowedOperator;
+import ro.tucn.operator.*;
 import ro.tucn.spark.function.*;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
+
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class SparkOperator<T> extends Operator<T> {
+public class SparkOperator<T> extends StreamOperator<T> {
 
     private static final Logger logger = Logger.getLogger(SparkOperator.class);
 
@@ -39,15 +37,15 @@ public class SparkOperator<T> extends Operator<T> {
     }
 
     @Override
-    public PairOperator<String, Integer> wordCount() {
+    public StreamPairOperator<String, Integer> wordCount() {
         JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
-        return new SparkPairOperator(tIntegerJavaPairDStream1, parallelism);
+        return new SparkStreamPairOperator(tIntegerJavaPairDStream1, parallelism);
     }
 
     @Override
-    public void kMeansCluster(Operator<T> centroidsOperator) throws WorkloadException {
+    public void kMeansCluster(StreamOperator<T> centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
@@ -107,60 +105,60 @@ public class SparkOperator<T> extends Operator<T> {
     }
 
     @Override
-    public <R> Operator<R> map(final MapFunction<T, R> fun,
+    public <R> StreamOperator<R> map(final MapFunction<T, R> fun,
                                String componentId) {
         JavaDStream<R> newStream = dStream.map(new FunctionImpl(fun));
         return new SparkOperator<R>(newStream, parallelism);
     }
 
     @Override
-    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
+    public <R> StreamOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
         throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override
-    public <R> Operator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
+    public <R> StreamOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
         throw new UnsupportOperatorException("Operator not supported");
     }
 
     @Override
-    public <K, V> PairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
+    public <K, V> StreamPairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
         JavaPairDStream<K, V> pairDStream = dStream.mapToPair(new PairFunctionImpl(fun));
-        return new SparkPairOperator(pairDStream, parallelism);
+        return new SparkStreamPairOperator(pairDStream, parallelism);
     }
 
     @Override
-    public Operator<T> reduce(final ReduceFunction<T> fun, String componentId) {
+    public StreamOperator<T> reduce(final ReduceFunction<T> fun, String componentId) {
         JavaDStream<T> newStream = dStream.reduce(new ReduceFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public Operator<T> filter(final FilterFunction<T> fun, String componentId) {
+    public StreamOperator<T> filter(final FilterFunction<T> fun, String componentId) {
         JavaDStream<T> newStream = dStream.filter(new FilterFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public <R> Operator<R> flatMap(final FlatMapFunction<T, R> fun,
+    public <R> StreamOperator<R> flatMap(final FlatMapFunction<T, R> fun,
                                    String componentId) {
         JavaDStream<R> newStream = dStream.flatMap(new FlatMapFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public WindowedOperator<T> window(TimeDuration windowDuration) {
+    public StreamWindowedOperator<T> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
 
     @Override
-    public WindowedOperator<T> window(TimeDuration windowDuration,
+    public StreamWindowedOperator<T> window(TimeDuration windowDuration,
                                       TimeDuration slideDuration) {
         Duration windowDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(windowDuration);
         Duration slideDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(slideDuration);
 
         JavaDStream<T> windowedStream = dStream.window(windowDurations, slideDurations);
-        return new SparkWindowedOperator(windowedStream, parallelism);
+        return new SparkStreamWindowedOperator(windowedStream, parallelism);
     }
 
     @Override
@@ -169,7 +167,7 @@ public class SparkOperator<T> extends Operator<T> {
     }
 
     @Override
-    public Operator map(Operator<T> points) {
+    public StreamOperator map(StreamOperator<T> points) {
         return null;
     }
 
@@ -190,9 +188,9 @@ public class SparkOperator<T> extends Operator<T> {
         this.dStream.print();
     }
 
-    private void checkOperatorType(Operator<T> centroids) throws WorkloadException {
+    private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof SparkOperator)) {
-            throw new WorkloadException("Cast joinStream to SparkPairOperator failed");
+            throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
         }
     }
 }

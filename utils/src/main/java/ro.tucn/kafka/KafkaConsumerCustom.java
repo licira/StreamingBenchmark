@@ -2,8 +2,8 @@ package ro.tucn.kafka;
 
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BatchOperator;
-import ro.tucn.operator.Operator;
-import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.StreamOperator;
+import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.TimeHolder;
 
 import java.util.Properties;
@@ -15,22 +15,22 @@ public abstract class KafkaConsumerCustom {
 
     protected int parallelism;
 
-    public abstract Operator<String> getStringOperator(Properties properties,
+    public abstract StreamOperator<String> getStringOperator(Properties properties,
                                                               String topicPropertyName);
 
-    public abstract PairOperator<String, String> getPairOperator(Properties properties,
+    public abstract StreamPairOperator<String, String> getStreamPairOperator(Properties properties,
                                                                         String topicPropertyName);
 
-    public abstract Operator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
+    public abstract StreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
                                                                                 String topicPropertyName);
 
-    public abstract Operator<Point> getPointOperator(Properties properties,
+    public abstract StreamOperator<Point> getPointOperator(Properties properties,
                                                             String topicPropertyName);
 
     public abstract BatchOperator<String> getBatchStringOperator(Properties properties,
                                                                  String topicPropertyName);
 
-    /*public abstract BatchPairOperator<String, String> getBatchPairOperator(Properties properties,
+    /*public abstract BatchStreamPairOperator<String, String> getBatchStreamPairOperator(Properties properties,
                                                                            String topicPropertyName);
 
     public abstract BatchOperator<TimeHolder<String>> getBatchStringOperatorWithTimeHolder(Properties properties,

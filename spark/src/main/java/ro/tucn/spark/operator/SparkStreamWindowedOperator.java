@@ -5,56 +5,56 @@ import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairOperator;
-import ro.tucn.operator.WindowedOperator;
-import ro.tucn.operator.Operator;
+import ro.tucn.operator.StreamPairOperator;
+import ro.tucn.operator.StreamWindowedOperator;
+import ro.tucn.operator.StreamOperator;
 import ro.tucn.spark.function.*;
 
 /**
  * Created by Liviu on 4/5/2017.
  */
-public class SparkWindowedOperator<T> extends WindowedOperator<T> {
+public class SparkStreamWindowedOperator<T> extends StreamWindowedOperator<T> {
 
     private JavaDStream<T> dStream;
 
-    public SparkWindowedOperator(JavaDStream<T> stream, int parallelism) {
+    public SparkStreamWindowedOperator(JavaDStream<T> stream, int parallelism) {
         super(parallelism);
         dStream = stream;
     }
 
     @Override
-    public <R> Operator<R> mapPartition(MapPartitionFunction<T, R> fun,
+    public <R> StreamOperator<R> mapPartition(MapPartitionFunction<T, R> fun,
                                                 String componentId) {
         JavaDStream<R> newStream = dStream.mapPartitions(new MapPartitionFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public <R> Operator<R> map(MapFunction<T, R> fun,
+    public <R> StreamOperator<R> map(MapFunction<T, R> fun,
                                        String componentId) {
         JavaDStream<R> newStream = dStream.map(new FunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public Operator<T> filter(FilterFunction<T> fun,
+    public StreamOperator<T> filter(FilterFunction<T> fun,
                                       String componentId) {
         JavaDStream<T> newStream = dStream.filter(new FilterFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public Operator<T> reduce(ReduceFunction<T> fun,
+    public StreamOperator<T> reduce(ReduceFunction<T> fun,
                                       String componentId) {
         JavaDStream<T> newStream = dStream.reduce(new ReduceFunctionImpl(fun));
         return new SparkOperator(newStream, parallelism);
     }
 
     @Override
-    public <K, V> PairOperator<K, V> mapToPair(MapPairFunction<T, K, V> fun,
+    public <K, V> StreamPairOperator<K, V> mapToPair(MapPairFunction<T, K, V> fun,
                                                        String componentId) {
         JavaPairDStream<K, V> pairDStream = dStream.mapToPair(new PairFunctionImpl(fun));
-        return new SparkPairOperator(pairDStream, parallelism);
+        return new SparkStreamPairOperator(pairDStream, parallelism);
     }
 
     @Override

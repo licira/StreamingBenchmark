@@ -11,7 +11,7 @@ public abstract class GroupedOperator<K, V> extends BaseOperator {
         super(parallelism);
     }
 
-    public abstract PairOperator<K, V> reduce(ReduceFunction<V> fun, String componentId, int parallelism);
+    public abstract StreamPairOperator<K, V> reduce(ReduceFunction<V> fun, String componentId, int parallelism);
 
-    public abstract Operator aggregateReduceByKey();
+    public abstract StreamOperator aggregateReduceByKey();
 }

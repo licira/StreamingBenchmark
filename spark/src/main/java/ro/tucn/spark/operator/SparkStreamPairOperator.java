@@ -7,9 +7,9 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.Operator;
-import ro.tucn.operator.PairOperator;
-import ro.tucn.operator.WindowedPairOperator;
+import ro.tucn.operator.StreamOperator;
+import ro.tucn.operator.StreamPairOperator;
+import ro.tucn.operator.StreamWindowedPairOperator;
 import ro.tucn.spark.function.*;
 import ro.tucn.spark.util.Utils;
 import ro.tucn.util.TimeDuration;
@@ -18,13 +18,13 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class SparkPairOperator<K, V> extends PairOperator<K, V> {
+public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
 
-    private static final Logger logger = Logger.getLogger(SparkPairOperator.class);
+    private static final Logger logger = Logger.getLogger(SparkStreamPairOperator.class);
 
     public JavaPairDStream<K, V> pairDStream;
 
-    public SparkPairOperator(JavaPairDStream<K, V> stream, int parallelism) {
+    public SparkStreamPairOperator(JavaPairDStream<K, V> stream, int parallelism) {
         super(parallelism);
         this.pairDStream = stream;
     }
@@ -40,7 +40,7 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
      * @throws WorkloadException
      */
     @Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
+    public <R> StreamPairOperator<K, Tuple2<V, R>> join(StreamPairOperator<K, R> joinStream,
                                                   TimeDuration windowDuration,
                                                   TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
@@ -49,12 +49,12 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
         Duration duration = toDuration(windowDuration);
         Duration joinDuration = toDuration(joinWindowDuration);
 
-        SparkPairOperator<K, R> joinSparkStream = ((SparkPairOperator<K, R>) joinStream);
+        SparkStreamPairOperator<K, R> joinSparkStream = ((SparkStreamPairOperator<K, R>) joinStream);
         JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
                 .window(duration.plus(joinDuration), joinDuration)
                 .join(joinSparkStream.pairDStream.window(joinDuration, duration));
 
-        return new SparkPairOperator(joinedStream, parallelism);
+        return new SparkStreamPairOperator(joinedStream, parallelism);
     }
 
     @Override
@@ -67,64 +67,64 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
         return new SparkGroupedOperator(newStream, parallelism);
     }
 
-    public PairOperator<K, V> reduceByKey(final ReduceFunction<V> fun, String componentId) {
+    public StreamPairOperator<K, V> reduceByKey(final ReduceFunction<V> fun, String componentId) {
         JavaPairDStream<K, V> newStream = pairDStream.reduceByKey(new ReduceFunctionImpl(fun));
-        return new SparkPairOperator(newStream, parallelism);
+        return new SparkStreamPairOperator(newStream, parallelism);
     }
 
-    public <R> PairOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId) {
+    public <R> StreamPairOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId) {
         JavaPairDStream<K, R> newStream = pairDStream.mapValues(new FunctionImpl(fun));
-        return new SparkPairOperator(newStream, parallelism);
+        return new SparkStreamPairOperator(newStream, parallelism);
     }
 
-    public <R> Operator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId) {
+    public <R> StreamOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId) {
         return null;
     }
 
-    public <R> Operator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId, Class<R> outputClass) {
+    public <R> StreamOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId, Class<R> outputClass) {
         return null;
     }
 
-    public <R> PairOperator<K, R> flatMapValue(FlatMapFunction<V, R> fun, String componentId) {
+    public <R> StreamPairOperator<K, R> flatMapValue(FlatMapFunction<V, R> fun, String componentId) {
         JavaPairDStream<K, R> newStream = pairDStream.flatMapValues(new FlatMapValuesFunctionImpl(fun));
-        return new SparkPairOperator(newStream, parallelism);
+        return new SparkStreamPairOperator(newStream, parallelism);
     }
 
-    public PairOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId) {
+    public StreamPairOperator<K, V> filter(FilterFunction<Tuple2<K, V>> fun, String componentId) {
         JavaPairDStream<K, V> newStream = pairDStream.filter(new FilterFunctionImpl(fun));
-        return new SparkPairOperator(newStream, parallelism);
+        return new SparkStreamPairOperator(newStream, parallelism);
     }
 
-    public PairOperator<K, V> updateStateByKey(final ReduceFunction<V> fun, String componentId) {
+    public StreamPairOperator<K, V> updateStateByKey(final ReduceFunction<V> fun, String componentId) {
         JavaPairDStream<K, V> cumulargestream = pairDStream.updateStateByKey(new UpdateStateFunctionImpl(fun));
         //cumulargestream.checkpoint(new Duration(60000));
-        return new SparkPairOperator(cumulargestream, parallelism);
+        return new SparkStreamPairOperator(cumulargestream, parallelism);
     }
 
-    public PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
+    public StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
                                                    TimeDuration windowDuration) {
         return reduceByKeyAndWindow(fun, componentId, windowDuration, windowDuration);
     }
 
-    public PairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun,
+    public StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun,
                                                    String componentId,
                                                    TimeDuration windowDuration,
                                                    TimeDuration slideWindowDuration) {
         Duration duration = toDuration(windowDuration);
         Duration slideDuration = toDuration(slideWindowDuration);
         JavaPairDStream<K, V> accumulargestream = pairDStream.reduceByKeyAndWindow(new ReduceFunctionImpl<V>(fun), duration, slideDuration);
-        return new SparkPairOperator(accumulargestream, parallelism);
+        return new SparkStreamPairOperator(accumulargestream, parallelism);
     }
 
-    public WindowedPairOperator<K, V> window(TimeDuration windowDuration) {
+    public StreamWindowedPairOperator<K, V> window(TimeDuration windowDuration) {
         return window(windowDuration, windowDuration);
     }
 
-    public WindowedPairOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideWindowDuration) {
+    public StreamWindowedPairOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideWindowDuration) {
         Duration duration = toDuration(windowDuration);
         Duration slideDuration = toDuration(slideWindowDuration);
         JavaPairDStream<K, V> windowedStream = pairDStream.window(duration, slideDuration);
-        return new SparkWindowedPairOperator(windowedStream, parallelism);
+        return new SparkStreamWindowedPairOperator(windowedStream, parallelism);
     }
 
     /**
@@ -140,8 +140,8 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
      * @return
      * @throws WorkloadException
      */
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  PairOperator<K, R> joinStream,
+    public <R> StreamPairOperator<K, Tuple2<V, R>> join(String componentId,
+                                                  StreamPairOperator<K, R> joinStream,
                                                   TimeDuration windowDuration,
                                                   TimeDuration slideWindowDuration,
                                                   final AssignTimeFunction<V> eventTimeAssigner1,
@@ -152,14 +152,14 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
         Duration duration = toDuration(windowDuration);
         Duration slideDuration = toDuration(slideWindowDuration);
 
-        SparkPairOperator<K, R> joinSparkStream = ((SparkPairOperator<K, R>) joinStream);
+        SparkStreamPairOperator<K, R> joinSparkStream = ((SparkStreamPairOperator<K, R>) joinStream);
         JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
                 .window(duration.plus(slideDuration), slideDuration)
                 .join(joinSparkStream.pairDStream.window(slideDuration, slideDuration));
         //filter illegal joined data
         //joinedStream.filter(filterFun);
 
-        return new SparkPairOperator(joinedStream, parallelism);
+        return new SparkStreamPairOperator(joinedStream, parallelism);
     }
 
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
@@ -180,9 +180,9 @@ public class SparkPairOperator<K, V> extends PairOperator<K, V> {
         return Utils.timeDurationsToSparkDuration(windowDuration);
     }
 
-    private void checkOperatorType(PairOperator joinStream) throws WorkloadException {
-        if (!(joinStream instanceof SparkPairOperator)) {
-            throw new WorkloadException("Cast joinStream to SparkPairOperator failed");
+    private void checkOperatorType(StreamPairOperator joinStream) throws WorkloadException {
+        if (!(joinStream instanceof SparkStreamPairOperator)) {
+            throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
         }
     }
 }

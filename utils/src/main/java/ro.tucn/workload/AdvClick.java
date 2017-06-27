@@ -7,7 +7,7 @@ import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.ContextCreator;
-import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
@@ -38,12 +38,12 @@ public class AdvClick extends Workload {
         //System.out.println("3");
         //BatchOperator<String> advs = kafkaConsumerCustom.getBatchStringOperator(properties, "topic1");
         //BatchOperator<String> clicks = kafkaConsumerCustom.getBatchStringOperator(properties, "topic2");
-        PairOperator<String, String> advs = kafkaConsumerCustom.getPairOperator(properties, "topic1");
-        PairOperator<String, String> clicks = kafkaConsumerCustom.getPairOperator(properties, "topic2");
+        StreamPairOperator<String, String> advs = kafkaConsumerCustom.getStreamPairOperator(properties, "topic1");
+        StreamPairOperator<String, String> clicks = kafkaConsumerCustom.getStreamPairOperator(properties, "topic2");
         System.out.println("4");
         advs.print();
         clicks.print();
-        PairOperator<String, Tuple2<String, String>> advClick = null;
+        StreamPairOperator<String, Tuple2<String, String>> advClick = null;
         try {
             System.out.println("5");
             advClick = advs.join(clicks,

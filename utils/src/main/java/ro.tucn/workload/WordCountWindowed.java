@@ -27,14 +27,14 @@ public class WordCountWindowed extends Workload {
             // Actually Flink does keyGrouping().window().update()
             // It is the same situation to Spark streaming
             /*Operator<TimeHolder<String>> wordOperators = kafkaConsumerCustom.getStringStreamTimeHolderOperator(properties, "topic1");
-            PairOperator<String, TimeHolder<Integer>> counts =
+            StreamPairOperator<String, TimeHolder<Integer>> counts =
                     wordOperators.flatMap(UserFunctions.splitFlatMapTimeHolder, "splitter")
                             .mapToPair(UserFunctions.mapToStrIntPairTimeHolder, "pair")
                             .reduceByKeyAndWindow(UserFunctions.sumReduceTimeHolder2, "counter",
                                     new TimeDuration(TimeUnit.SECONDS, 1), new TimeDuration(TimeUnit.SECONDS, 1));
             counts.sink();*/
             //cumulate counts
-            //PairOperator<String, Integer> cumulateCounts = counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
+            //StreamPairOperator<String, Integer> cumulateCounts = counts.updateStateByKey(UserFunctions.sumReduce, "cumulate");
             //cumulateCounts.print();
         } catch (Exception e) {
             logger.error(e.getMessage());

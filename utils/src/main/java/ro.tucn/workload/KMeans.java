@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.Operator;
 import ro.tucn.operator.ContextCreator;
+import ro.tucn.operator.StreamOperator;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -22,8 +22,8 @@ public class KMeans extends Workload {
 
     public void process() {/*PI*/
         kafkaConsumerCustom.setParallelism(parallelism);
-        Operator<Point> points = kafkaConsumerCustom.getPointOperator(properties, "topic1");
-        Operator<Point> centroids = kafkaConsumerCustom.getPointOperator(properties, "topic2");
+        StreamOperator<Point> points = kafkaConsumerCustom.getPointOperator(properties, "topic1");
+        StreamOperator<Point> centroids = kafkaConsumerCustom.getPointOperator(properties, "topic2");
         //points.print();
         //centroids.print();
         try {

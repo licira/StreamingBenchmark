@@ -11,25 +11,25 @@ import ro.tucn.frame.functions.MapFunction;
 import ro.tucn.frame.functions.MapPairFunction;
 import ro.tucn.frame.functions.MapPartitionFunction;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.PairOperator;
-import ro.tucn.operator.WindowedOperator;
-import ro.tucn.operator.Operator;
+import ro.tucn.operator.StreamPairOperator;
+import ro.tucn.operator.StreamWindowedOperator;
+import ro.tucn.operator.StreamOperator;
 import scala.Tuple2;
 
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkWindowedOperator<T, W extends Window> extends WindowedOperator<T> {
+public class FlinkStreamWindowedOperator<T, W extends Window> extends StreamWindowedOperator<T> {
 
     private WindowedStream<T, T, W> windowStream;
 
-    public FlinkWindowedOperator(WindowedStream<T, T, W> stream, int parallelism) {
+    public FlinkStreamWindowedOperator(WindowedStream<T, T, W> stream, int parallelism) {
         super(parallelism);
         windowStream = stream;
     }
 
     @Override
-    public <R> Operator<R> mapPartition(final MapPartitionFunction<T, R> fun, String componentId) {
+    public <R> StreamOperator<R> mapPartition(final MapPartitionFunction<T, R> fun, String componentId) {
         DataStream<R> newDataStream = windowStream.apply((WindowFunction<T, R, T, W>) (t, window, values, collector) -> {
             Iterable<R> results = fun.mapPartition(values);
             for (R r : results) {
@@ -40,7 +40,7 @@ public class FlinkWindowedOperator<T, W extends Window> extends WindowedOperator
     }
 
     @Override
-    public <R> Operator<R> map(final MapFunction<T, R> fun, String componentId) {
+    public <R> StreamOperator<R> map(final MapFunction<T, R> fun, String componentId) {
         DataStream<R> newDataStream = windowStream.apply((WindowFunction<T, R, T, W>) (t, window, values, collector) -> {
             for (T value : values) {
                 R result = fun.map(value);
@@ -51,7 +51,7 @@ public class FlinkWindowedOperator<T, W extends Window> extends WindowedOperator
     }
 
     @Override
-    public Operator<T> filter(final FilterFunction<T> fun, String componentId) {
+    public StreamOperator<T> filter(final FilterFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = windowStream.apply((WindowFunction<T, T, T, W>) (t, window, values, collector) -> {
             for (T value : values) {
                 if (fun.filter(value))
@@ -62,21 +62,21 @@ public class FlinkWindowedOperator<T, W extends Window> extends WindowedOperator
     }
 
     @Override
-    public Operator<T> reduce(ro.tucn.frame.functions.ReduceFunction<T> fun, String componentId) {
+    public StreamOperator<T> reduce(ro.tucn.frame.functions.ReduceFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = windowStream.reduce((ReduceFunction<T>) (t, t1) ->
                 fun.reduce(t, t1));
         return new FlinkOperator<>(newDataStream, parallelism);
     }
 
     @Override
-    public <K, V> PairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
+    public <K, V> StreamPairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = windowStream.apply((WindowFunction<T, Tuple2<K, V>, T, W>) (t, window, values, collector) -> {
             for (T value : values) {
                 Tuple2<K, V> result = fun.mapToPair(value);
                 collector.collect(result);
             }
         });
-        return new FlinkPairOperator<>(newDataStream, parallelism);
+        return new FlinkStreamPairOperator<>(newDataStream, parallelism);
     }
 
     @Override

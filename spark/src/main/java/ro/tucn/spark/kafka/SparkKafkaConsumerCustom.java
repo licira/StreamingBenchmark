@@ -14,11 +14,11 @@ import org.apache.spark.streaming.kafka.OffsetRange;
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.BatchOperator;
-import ro.tucn.operator.Operator;
-import ro.tucn.operator.PairOperator;
+import ro.tucn.operator.StreamPairOperator;
+import ro.tucn.operator.StreamOperator;
 import ro.tucn.spark.operator.SparkBatchOperator;
 import ro.tucn.spark.operator.SparkOperator;
-import ro.tucn.spark.operator.SparkPairOperator;
+import ro.tucn.spark.operator.SparkStreamPairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
 import ro.tucn.util.TimeHolder;
@@ -46,7 +46,7 @@ public class SparkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public Operator<String> getStringOperator(Properties properties, String topicPropertyName) {
+    public StreamOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
         logger.info("11");
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         //streamWithJsonAsValue.print();
@@ -56,16 +56,16 @@ public class SparkKafkaConsumerCustom extends KafkaConsumerCustom {
     }
 
     @Override
-    public PairOperator<String, String> getPairOperator(Properties properties, String topicPropertyName) {
+    public StreamPairOperator<String, String> getStreamPairOperator(Properties properties, String topicPropertyName) {
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         //streamWithJsonAsValue.print();
         JavaPairDStream<String, String> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         //stream.print();
-        return new SparkPairOperator(pairStream, parallelism);
+        return new SparkStreamPairOperator(pairStream, parallelism);
     }
 
     @Override
-    public Operator<Point> getPointOperator(Properties properties, String topicPropertyName) {
+    public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
         JavaDStream<String> jsonStream = getSstringStreamFromKafka(properties, topicPropertyName);
         //jsonStream.print();
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
