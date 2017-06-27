@@ -1,7 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Adv;
-import ro.tucn.generator.helper.AdvJSONHelper;
+import ro.tucn.generator.helper.entity.AdvJSONHelper;
 import ro.tucn.util.Message;
 
 /**

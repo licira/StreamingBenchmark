@@ -1,8 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Click;
-import ro.tucn.generator.helper.ClickJSONHelper;
-import ro.tucn.generator.helper.SentenceJSONHelper;
+import ro.tucn.generator.helper.entity.ClickJSONHelper;
 import ro.tucn.util.Message;
 
 /**

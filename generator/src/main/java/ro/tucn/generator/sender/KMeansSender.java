@@ -1,7 +1,6 @@
 package ro.tucn.generator.sender;
 
-import ro.tucn.generator.helper.KMeansJSONHelper;
-import ro.tucn.generator.helper.SentenceJSONHelper;
+import ro.tucn.generator.helper.entity.KMeansJSONHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.util.Message;
 

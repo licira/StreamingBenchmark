@@ -1,8 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Sentence;
-import ro.tucn.generator.helper.JSONHelper;
-import ro.tucn.generator.helper.SentenceJSONHelper;
+import ro.tucn.generator.helper.entity.SentenceJSONHelper;
 import ro.tucn.util.Message;
 
 /**

@@ -1,4 +1,4 @@
-package ro.tucn.generator.helper;
+package ro.tucn.generator.helper.entity;
 
 import com.google.gson.Gson;
 
