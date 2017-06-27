@@ -1,4 +1,4 @@
-package ro.tucn.operator;
+package ro.tucn.context;
 
 import ro.tucn.kafka.KafkaConsumerCustom;
 

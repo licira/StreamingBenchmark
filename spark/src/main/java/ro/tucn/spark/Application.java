@@ -1,15 +1,11 @@
 package ro.tucn.spark;
 
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.operator.ContextCreator;
+import ro.tucn.context.ContextCreator;
 import ro.tucn.spark.context.SparkContextCreator;
-import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.util.ArgsParser;
 import ro.tucn.workload.Workload;
-import ro.tucn.workload.stream.AdvClickStream;
-import ro.tucn.workload.stream.KMeansStream;
-import ro.tucn.workload.stream.WordCountFastStream;
-import ro.tucn.workload.stream.WordCountStream;
+import ro.tucn.workload.WorkloadCreator;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,23 +20,9 @@ public class Application {
         {
             HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
             String topic = ArgsParser.getTopic(parsedArgs);
-            ContextCreator contextCreator;
-            Workload workload = null;
-            if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.ADV))) {
-                contextCreator = new SparkContextCreator(String.valueOf(ApplicationTopics.ADV));
-                workload = new AdvClickStream(contextCreator);
-            } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.K_MEANS))) {
-                contextCreator = new SparkContextCreator(String.valueOf(ApplicationTopics.K_MEANS));
-                workload = new KMeansStream(contextCreator);
-            } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.UNIFORM_WORDS))) {
-                contextCreator = new SparkContextCreator(String.valueOf(ApplicationTopics.UNIFORM_WORDS));
-                workload = new WordCountStream(contextCreator);
-            } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.SKEWED_WORDS))) {
-                contextCreator = new SparkContextCreator(String.valueOf(ApplicationTopics.SKEWED_WORDS));
-                workload = new WordCountFastStream(contextCreator);
-            } else {
-                return;
-            }
+            ContextCreator contextCreator = new SparkContextCreator(topic);
+            WorkloadCreator workloadCreator = new WorkloadCreator();
+            Workload workload = workloadCreator.getNewWorkload(contextCreator, topic);
             workload.Start();
         }
     }

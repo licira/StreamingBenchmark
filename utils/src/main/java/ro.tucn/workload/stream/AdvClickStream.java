@@ -6,7 +6,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.logger.SerializableLogger;
-import ro.tucn.operator.ContextCreator;
+import ro.tucn.context.ContextCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
 import ro.tucn.workload.Workload;

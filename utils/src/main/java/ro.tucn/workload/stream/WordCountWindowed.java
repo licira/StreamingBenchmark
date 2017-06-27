@@ -3,7 +3,7 @@ package ro.tucn.workload.stream;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.ContextCreator;
+import ro.tucn.context.ContextCreator;
 import ro.tucn.workload.Workload;
 
 import java.lang.reflect.InvocationTargetException;

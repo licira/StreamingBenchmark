@@ -3,7 +3,7 @@ package ro.tucn.workload;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.operator.ContextCreator;
+import ro.tucn.context.ContextCreator;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeHolder;
 
