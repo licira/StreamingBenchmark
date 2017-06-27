@@ -1,7 +1,7 @@
 package ro.tucn.flink;
 
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.flink.operator.FlinkContextCreator;
+import ro.tucn.flink.context.FlinkContextCreator;
 import ro.tucn.operator.ContextCreator;
 import ro.tucn.util.ArgsParser;
 import ro.tucn.util.Topics;

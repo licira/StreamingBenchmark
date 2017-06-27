@@ -1,4 +1,4 @@
-package ro.tucn.flink.operator;
+package ro.tucn.flink.context;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.log4j.Logger;

@@ -2,7 +2,7 @@ package ro.tucn.spark;
 
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.ContextCreator;
-import ro.tucn.spark.operator.SparkContextCreator;
+import ro.tucn.spark.context.SparkContextCreator;
 import ro.tucn.util.ArgsParser;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
