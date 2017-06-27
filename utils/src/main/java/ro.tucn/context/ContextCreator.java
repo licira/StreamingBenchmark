@@ -1,6 +1,6 @@
 package ro.tucn.context;
 
-import ro.tucn.consumer.GeneratorConsumer;
+import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.consumer.KafkaConsumerCustom;
 
 import java.io.Serializable;
@@ -20,5 +20,5 @@ public abstract class ContextCreator implements Serializable {
 
     public abstract KafkaConsumerCustom getKafkaConsumerCustom();
 
-    public abstract GeneratorConsumer getGeneratorConsumer();
+    public abstract AbstractGeneratorConsumer getGeneratorConsumer();
 }
