@@ -21,10 +21,10 @@ public abstract class Workload implements Serializable {
 
     protected Properties properties;
     protected int parallelism;
-    private ContextCreator ContextCreator;
+    private ContextCreator contextCreator;
 
     public Workload(ContextCreator ContextCreator) throws WorkloadException {
-        this.ContextCreator = ContextCreator;
+        this.contextCreator = ContextCreator;
         initializeParallelism();
         initializeProperties();
     }
@@ -35,7 +35,7 @@ public abstract class Workload implements Serializable {
         logger.info("Start workload: " + this.getClass().getSimpleName());
         try {
             process();
-            ContextCreator.Start();
+            contextCreator.Start();
         } catch (Exception e) {
             logger.error("WorkloadException caught when trying to run workload " + this.getClass().getSimpleName()
                     + ": " + e.getClass() + " " + e.getMessage());
