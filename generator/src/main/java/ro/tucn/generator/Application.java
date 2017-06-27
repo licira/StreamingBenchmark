@@ -1,7 +1,7 @@
 package ro.tucn.generator;
 
 import org.apache.log4j.Logger;
-import ro.tucn.generator.workloadGenerators.*;
+import ro.tucn.generator.generator.*;
 import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.util.ArgsParser;
 
