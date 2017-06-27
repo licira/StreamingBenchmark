@@ -5,7 +5,7 @@ import ro.tucn.flink.operator.FlinkContextCreator;
 import ro.tucn.operator.ContextCreator;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
-import ro.tucn.workload.stream.AdvClick;
+import ro.tucn.workload.stream.AdvClickStream;
 import ro.tucn.workload.stream.KMeans;
 import ro.tucn.workload.stream.WordCount;
 import ro.tucn.workload.stream.WordCountFast;
@@ -23,7 +23,7 @@ public class Application {
             Workload workload = null;
             if (args[0].equalsIgnoreCase(Topics.ADV)) {
                 contextCreator = new FlinkContextCreator(Topics.ADV);
-                workload = new AdvClick(contextCreator);
+                workload = new AdvClickStream(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
                 contextCreator = new FlinkContextCreator(Topics.K_MEANS);
                 workload = new KMeans(contextCreator);

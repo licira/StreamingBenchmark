@@ -18,15 +18,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Liviu on 4/9/2017.
  */
-public class AdvClick extends Workload {
+public class AdvClickStream extends Workload {
 
-    private static final Logger logger = SerializableLogger.getLogger(AdvClick.class);
+    private static final Logger logger = SerializableLogger.getLogger(AdvClickStream.class);
 
     private final KafkaConsumerCustom kafkaConsumerCustom;
     private int streamWindowOne;
     private int streamWindowTwo;
 
-    public AdvClick(ContextCreator creator) throws WorkloadException {
+    public AdvClickStream(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));
