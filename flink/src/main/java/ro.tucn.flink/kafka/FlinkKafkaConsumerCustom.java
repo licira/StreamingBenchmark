@@ -9,8 +9,7 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.flink.operator.FlinkOperator;
 import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.kMeans.Point;
-import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.BatchOperator;
+import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.Constants;
@@ -68,11 +67,6 @@ public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
         DataStream<String> jsonStream = getStringSstreamFromKafka(properties, topicPropertyName);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new FlinkOperator<>(pointStream, parallelism);
-    }
-
-    @Override
-    public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
-        return null;
     }
 
     private DataStream<String> getStringSstreamFromKafka(Properties properties, String topicPropertyName) {

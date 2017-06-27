@@ -1,6 +1,6 @@
 package ro.tucn.context;
 
-import ro.tucn.kafka.KafkaConsumerCustom;
+import ro.tucn.consumer.KafkaConsumerCustom;
 
 import java.io.Serializable;
 

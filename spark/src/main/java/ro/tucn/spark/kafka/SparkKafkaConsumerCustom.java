@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import kafka.serializer.StringDecoder;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -12,11 +11,9 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import org.apache.spark.streaming.kafka.OffsetRange;
 import ro.tucn.kMeans.Point;
-import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.BatchOperator;
+import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.spark.operator.batch.SparkBatchOperator;
 import ro.tucn.spark.operator.SparkOperator;
 import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
 import ro.tucn.util.Constants;
@@ -72,12 +69,11 @@ public class SparkKafkaConsumerCustom extends KafkaConsumerCustom {
         return new SparkOperator<Point>(pointStream, parallelism);
     }
 
-    @Override
-    public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
+    /*public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
         JavaPairRDD<String, String> pairRddWithJsonAsValue = getRDDFromKafka(properties, topicPropertyName);
         JavaRDD<String> rddWithJsonAsValue = pairRddWithJsonAsValue.map(jsonTuple -> jsonTuple._2());
         return new SparkBatchOperator<String>(rddWithJsonAsValue, parallelism);
-    }
+    }*/
 
     @Override
     public SparkOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {

@@ -3,7 +3,7 @@ package ro.tucn.flink.context;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.log4j.Logger;
 import ro.tucn.flink.kafka.FlinkKafkaConsumerCustom;
-import ro.tucn.kafka.KafkaConsumerCustom;
+import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
 
 import java.io.IOException;

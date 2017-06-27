@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.DurationException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
-import ro.tucn.kafka.KafkaConsumerCustom;
+import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.operator.PairOperator;
