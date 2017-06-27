@@ -5,7 +5,7 @@ import ro.tucn.exceptions.WorkloadException;
 /**
  * Created by Liviu on 6/25/2017.
  */
-public abstract class BatchOperator<T> extends BaseOperator {
+public abstract class BatchOperator<T> extends Operator {
 
     public BatchOperator(int parallelism) {
         super(parallelism);

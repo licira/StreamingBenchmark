@@ -8,7 +8,7 @@ import scala.Tuple2;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public abstract class StreamPairOperator<K, V> extends BaseOperator {
+public abstract class StreamPairOperator<K, V> extends PairOperator {
 
     public StreamPairOperator(int parallelism) {
         super(parallelism);
