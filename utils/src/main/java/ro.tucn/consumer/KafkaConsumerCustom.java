@@ -1,7 +1,6 @@
-package ro.tucn.kafka;
+package ro.tucn.consumer;
 
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.TimeHolder;
@@ -27,18 +26,6 @@ public abstract class KafkaConsumerCustom {
     public abstract StreamOperator<Point> getPointOperator(Properties properties,
                                                             String topicPropertyName);
 
-    public abstract BatchOperator<String> getBatchStringOperator(Properties properties,
-                                                                 String topicPropertyName);
-
-    /*public abstract BatchStreamPairOperator<String, String> getBatchStreamPairOperator(Properties properties,
-                                                                           String topicPropertyName);
-
-    public abstract BatchOperator<TimeHolder<String>> getBatchStringOperatorWithTimeHolder(Properties properties,
-                                                                                 String topicPropertyName);
-
-    public abstract BatchOperator<Point> getBatchPointOperator(Properties properties,
-                                                     String topicPropertyName);
-    */
     public void setParallelism(int parallelism) {
         this.parallelism = parallelism;
     }
