@@ -94,7 +94,7 @@ public class AdvClickGenerator extends AbstractGenerator {
         for (Adv adv : advs) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
-                Click click = ClickCreator.createNewClick(adv);
+                Click click = ClickCreator.getNewClick(adv);
                 clickSender.send(click);
                 attemptSleep(adv.getTimestamp());
             }

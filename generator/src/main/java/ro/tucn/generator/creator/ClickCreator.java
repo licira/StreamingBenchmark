@@ -11,14 +11,14 @@ import java.util.List;
  */
 public class ClickCreator {
 
-	public static Click createNewClick(Adv adv) {
+	public static Click getNewClick(Adv adv) {
 		return new Click(adv.getId());
 	}
 
 	public static List<Click> getNewClicks(List<Adv> advs) {
 		List<Click> clicks = new ArrayList<>();
 		for (Adv adv : advs) {
-			clicks.add(createNewClick(adv));
+			clicks.add(getNewClick(adv));
 		}
 		return clicks;
 	}
