@@ -1,8 +1,12 @@
 package ro.tucn.workload;
 
-import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.context.ContextCreator;
+import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.topic.ApplicationTopics;
+import ro.tucn.workload.batch.AdvClickBatch;
+import ro.tucn.workload.batch.KMeansBatch;
+import ro.tucn.workload.batch.WordCountBatch;
+import ro.tucn.workload.batch.WordCountFastBatch;
 import ro.tucn.workload.stream.AdvClickStream;
 import ro.tucn.workload.stream.KMeansStream;
 import ro.tucn.workload.stream.WordCountFastStream;
@@ -28,7 +32,7 @@ public class WorkloadCreator {
         return workload;
     }
 
-    private Workload getNewBatchWorkload(ContextCreator contextCreator, String topic) {
+    private Workload getNewBatchWorkload(ContextCreator contextCreator, String topic) throws WorkloadException {
         Workload workload;
         if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.ADV))) {
             workload = new AdvClickBatch(contextCreator);
