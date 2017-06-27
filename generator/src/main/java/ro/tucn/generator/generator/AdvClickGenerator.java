@@ -1,4 +1,4 @@
-package ro.tucn.generator.workloadGenerators;
+package ro.tucn.generator.generator;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Adv;

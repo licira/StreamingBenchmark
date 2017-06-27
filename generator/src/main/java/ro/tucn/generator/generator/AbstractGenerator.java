@@ -1,4 +1,4 @@
-package ro.tucn.generator.workloadGenerators;
+package ro.tucn.generator.generator;
 
 import org.apache.log4j.Logger;
 import ro.tucn.statistics.PerformanceLog;

@@ -5,7 +5,7 @@ import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.workloadGenerators.KMeansGenerator;
+import ro.tucn.generator.generator.KMeansGenerator;
 import ro.tucn.kMeans.Point;
 
 import java.io.BufferedReader;
