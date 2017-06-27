@@ -1,4 +1,4 @@
-package ro.tucn.flink.kafka;
+package ro.tucn.flink.consumer;
 
 import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.MapFunction;

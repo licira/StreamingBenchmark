@@ -1,4 +1,4 @@
-package ro.tucn.spark.kafka;
+package ro.tucn.spark.consumer;
 
 import com.google.gson.Gson;
 import kafka.serializer.StringDecoder;
