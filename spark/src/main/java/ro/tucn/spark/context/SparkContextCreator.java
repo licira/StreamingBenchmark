@@ -5,7 +5,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import ro.tucn.consumer.GeneratorConsumer;
+import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.spark.consumer.SparkKafkaConsumerCustom;
@@ -52,7 +52,7 @@ public class SparkContextCreator extends ContextCreator {
     }
 
     @Override
-    public GeneratorConsumer getGeneratorConsumer() {
+    public AbstractGeneratorConsumer getGeneratorConsumer() {
         return null;
     }
 
