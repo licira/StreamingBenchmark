@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.flink.operator.FlinkOperator;
-import ro.tucn.flink.operator.FlinkStreamPairOperator;
+import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.BatchOperator;

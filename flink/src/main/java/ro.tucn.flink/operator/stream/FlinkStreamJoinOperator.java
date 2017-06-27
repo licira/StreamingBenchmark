@@ -1,4 +1,4 @@
-package ro.tucn.flink.operator;
+package ro.tucn.flink.operator.stream;
 
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.typeutils.TypeSerializer;

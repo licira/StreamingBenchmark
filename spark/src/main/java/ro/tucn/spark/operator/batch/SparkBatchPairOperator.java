@@ -1,4 +1,4 @@
-package ro.tucn.spark.operator;
+package ro.tucn.spark.operator.batch;
 
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaPairRDD;

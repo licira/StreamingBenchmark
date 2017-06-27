@@ -1,4 +1,4 @@
-package ro.tucn.spark.operator;
+package ro.tucn.spark.operator.stream;
 
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;

@@ -1,4 +1,4 @@
-package ro.tucn.flink.operator;
+package ro.tucn.flink.operator.stream;
 
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;

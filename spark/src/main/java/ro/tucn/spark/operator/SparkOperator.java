@@ -13,6 +13,8 @@ import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.*;
 import ro.tucn.spark.function.*;
+import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
+import ro.tucn.spark.operator.stream.SparkStreamWindowedOperator;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 

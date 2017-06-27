@@ -1,4 +1,4 @@
-package ro.tucn.spark.operator;
+package ro.tucn.spark.operator.stream;
 
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -9,6 +9,7 @@ import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamWindowedOperator;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.spark.function.*;
+import ro.tucn.spark.operator.SparkOperator;
 
 /**
  * Created by Liviu on 4/5/2017.

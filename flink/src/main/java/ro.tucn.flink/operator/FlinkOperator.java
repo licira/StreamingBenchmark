@@ -15,6 +15,8 @@ import org.apache.flink.util.Collector;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.function.MapFunctionWithInitList;
+import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
+import ro.tucn.flink.operator.stream.FlinkStreamWindowedOperator;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.*;

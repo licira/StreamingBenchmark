@@ -3,6 +3,7 @@ package ro.tucn.flink.operator;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
+import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.GroupedOperator;

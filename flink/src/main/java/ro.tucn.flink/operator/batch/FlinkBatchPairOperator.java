@@ -1,4 +1,4 @@
-package ro.tucn.flink.operator;
+package ro.tucn.flink.operator.batch;
 
 import org.apache.flink.api.java.DataSet;
 import org.apache.log4j.Logger;

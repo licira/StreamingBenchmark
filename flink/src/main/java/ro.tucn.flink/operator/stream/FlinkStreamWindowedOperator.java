@@ -1,4 +1,4 @@
-package ro.tucn.flink.operator;
+package ro.tucn.flink.operator.stream;
 
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import ro.tucn.exceptions.UnsupportOperatorException;
+import ro.tucn.flink.operator.FlinkOperator;
 import ro.tucn.frame.functions.FilterFunction;
 import ro.tucn.frame.functions.MapFunction;
 import ro.tucn.frame.functions.MapPairFunction;

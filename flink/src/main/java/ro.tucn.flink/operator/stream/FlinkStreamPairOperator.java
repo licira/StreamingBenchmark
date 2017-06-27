@@ -1,4 +1,4 @@
-package ro.tucn.flink.operator;
+package ro.tucn.flink.operator.stream;
 
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -17,6 +17,8 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.datastream.NoWindowJoinedStreams;
+import ro.tucn.flink.operator.FlinkGroupedOperator;
+import ro.tucn.flink.operator.FlinkOperator;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.*;
 import ro.tucn.statistics.LatencyLog;

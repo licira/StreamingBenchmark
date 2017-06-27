@@ -7,6 +7,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.GroupedOperator;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.spark.function.GrouperPairFunctionImpl;
+import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
 
 /**
  * Created by Liviu on 4/5/2017.

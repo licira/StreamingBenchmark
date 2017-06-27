@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.transformations.TwoInputTransformation;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import ro.tucn.flink.operator.FlinkStreamJoinOperator;
+import ro.tucn.flink.operator.stream.FlinkStreamJoinOperator;
 
 import static java.util.Objects.requireNonNull;
 
