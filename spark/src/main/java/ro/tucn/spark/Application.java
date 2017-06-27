@@ -16,21 +16,21 @@ public class Application {
     public static void main(String[] args) throws IOException, WorkloadException {
         if (args.length > 0)
         {
-            ContextCreator ContextCreator;
+            ContextCreator contextCreator;
             Workload workload = null;
             if (args[0].equalsIgnoreCase(Topics.ADV))
             {
-                ContextCreator = new SparkContextCreator(Topics.ADV);
-                workload = new AdvClick(ContextCreator);
+                contextCreator = new SparkContextCreator(Topics.ADV);
+                workload = new AdvClick(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-                ContextCreator = new SparkContextCreator(Topics.K_MEANS);
-                workload = new KMeans(ContextCreator);
+                contextCreator = new SparkContextCreator(Topics.K_MEANS);
+                workload = new KMeans(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
-                ContextCreator = new SparkContextCreator(Topics.UNIFORM_WORDS);
-                workload = new WordCount(ContextCreator);
+                contextCreator = new SparkContextCreator(Topics.UNIFORM_WORDS);
+                workload = new WordCount(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
-                ContextCreator = new SparkContextCreator(Topics.SKEWED_WORDS);
-                workload = new WordCountFast(ContextCreator);
+                contextCreator = new SparkContextCreator(Topics.SKEWED_WORDS);
+                workload = new WordCountFast(contextCreator);
             } else {
                 return;
             }
