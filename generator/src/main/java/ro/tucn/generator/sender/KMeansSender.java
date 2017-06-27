@@ -1,5 +1,7 @@
 package ro.tucn.generator.sender;
 
+import ro.tucn.generator.helper.KMeansJSONHelper;
+import ro.tucn.generator.helper.SentenceJSONHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.util.Message;
 
@@ -8,30 +10,20 @@ import ro.tucn.util.Message;
  */
 public class KMeansSender extends AbstractMessageSender {
 
+    private KMeansJSONHelper jsonHelper;
+
+    public KMeansSender() {
+        super();
+        jsonHelper = new KMeansJSONHelper();
+    }
+
     @Override
     public void send(Object o) {
         Point point = (Point) o;
-        String key = getMessageKey(point);
-        String value = getMessageValue(point);
-        Message message = new Message(key, toJson(point));
-        String json = toJson(message);
+        String key = jsonHelper.getMessageKey(point);
+        String value = jsonHelper.getMessageValue(point);
+        Message message = new Message(key, jsonHelper.toJson(point));
+        String json = jsonHelper.toJson(message);
         send(topic, null, json);
-    }
-
-    private String getMessageKey(Point point) {
-        return Long.toString(point.getId());
-    }
-
-    private String getMessageValue(Point point) {
-        double[] coordinates = point.getCoordinates();
-        int locationSize = coordinates.length;
-        StringBuilder messageData = new StringBuilder();
-        int i;
-        for (i = 0; i < locationSize - 1; i++) {
-            messageData.append(coordinates[i]);
-            messageData.append(" ");
-        }
-        messageData.append(coordinates[i]);
-        return toJson(point);
     }
 }

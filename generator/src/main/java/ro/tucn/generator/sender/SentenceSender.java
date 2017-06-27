@@ -1,6 +1,8 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Sentence;
+import ro.tucn.generator.helper.JSONHelper;
+import ro.tucn.generator.helper.SentenceJSONHelper;
 import ro.tucn.util.Message;
 
 /**
@@ -8,30 +10,20 @@ import ro.tucn.util.Message;
  */
 public class SentenceSender extends AbstractMessageSender {
 
+    private SentenceJSONHelper jsonHelper;
+
+    public SentenceSender() {
+        super();
+        jsonHelper = new SentenceJSONHelper();
+    }
+
     @Override
     public void send(Object o) {
         Sentence sentence = (Sentence) o;
-        String key = getMessageKey(sentence);
-        String value = getMessageValue(sentence);
+        String key = jsonHelper.getMessageKey(sentence);
+        String value = jsonHelper.getMessageValue(sentence);
         Message message = new Message(key, value);
-        String json = toJson(message);
+        String json = jsonHelper.toJson(message);
         send(topic, null, json);
-    }
-
-    private String getMessageKey(Sentence sentence) {
-        return Integer.toString(sentence.getId());
-    }
-
-    private String getMessageValue(Sentence sentence) {
-        int[] words = sentence.getWords();
-        int sentenceSize = words.length;
-        StringBuilder messageData = new StringBuilder();
-        int i;
-        for (i = 0; i < sentenceSize - 1; i++) {
-            messageData.append(Integer.toString(words[i]));
-            messageData.append(" ");
-        }
-        messageData.append(Integer.toString(words[i]));
-        return messageData.toString();
     }
 }

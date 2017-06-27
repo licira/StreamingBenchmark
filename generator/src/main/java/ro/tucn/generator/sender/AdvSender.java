@@ -1,6 +1,7 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Adv;
+import ro.tucn.generator.helper.AdvJSONHelper;
 import ro.tucn.util.Message;
 
 /**
@@ -8,21 +9,20 @@ import ro.tucn.util.Message;
  */
 public class AdvSender extends AbstractMessageSender {
 
+    private AdvJSONHelper jsonHelper;
+
+    public AdvSender() {
+        super();
+        jsonHelper = new AdvJSONHelper();
+    }
+
     @Override
     public void send(Object o) {
         Adv adv = (Adv) o;
-        String key = getMessageKey(adv);
-        String value = getMessageValue(adv);
+        String key = jsonHelper.getMessageKey(adv);
+        String value = jsonHelper.getMessageValue(adv);
         Message message = new Message(key, value);
-        String json = toJson(message);
+        String json = jsonHelper.toJson(message);
         send(topic, null, json);
-    }
-
-    private String getMessageKey(Adv adv) {
-        return adv.getId();
-    }
-
-    private String getMessageValue(Adv adv) {
-        return String.valueOf(adv.getTimestamp());
     }
 }

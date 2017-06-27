@@ -1,11 +1,10 @@
 package ro.tucn.generator.sender;
 
-import com.google.gson.Gson;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.creator.ProducerCreator;
+import ro.tucn.generator.helper.TimeHelper;
 
 import java.io.Serializable;
 
@@ -19,11 +18,9 @@ public abstract class AbstractMessageSender implements Serializable {
     protected static ProducerRecord<String, String> newRecord;
     protected String topic;
     private ProducerCreator producerCreator;
-    private Gson gson;
 
     public AbstractMessageSender() {
         producerCreator = new ProducerCreator();
-        gson = new Gson();
     }
 
     public abstract void send(Object o);
@@ -34,10 +31,6 @@ public abstract class AbstractMessageSender implements Serializable {
 
     public void close() {
         producer.close();
-    }
-
-    protected String toJson(Object o) {
-        return gson.toJson(o);
     }
 
     public void send(String topic, Object key, Object value) {

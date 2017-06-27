@@ -1,6 +1,8 @@
 package ro.tucn.generator.sender;
 
 import ro.tucn.generator.entity.Click;
+import ro.tucn.generator.helper.ClickJSONHelper;
+import ro.tucn.generator.helper.SentenceJSONHelper;
 import ro.tucn.util.Message;
 
 /**
@@ -8,21 +10,20 @@ import ro.tucn.util.Message;
  */
 public class ClickSender extends AbstractMessageSender {
 
+    private ClickJSONHelper jsonHelper;
+
+    public ClickSender() {
+        super();
+        jsonHelper = new ClickJSONHelper();
+    }
+
     @Override
     public void send(Object o) {
         Click click = (Click) o;
-        String key = getMessageKey(click);
-        String value = getMessageValue(click);
+        String key = jsonHelper.getMessageKey(click);
+        String value = jsonHelper.getMessageValue(click);
         Message message = new Message(key, value);
-        String json = toJson(message);
+        String json = jsonHelper.toJson(message);
         send(topic, null, json);
-    }
-
-    private String getMessageKey(Click click) {
-        return click.getAdvId();
-    }
-
-    private String getMessageValue(Click click) {
-        return String.valueOf(click.getTimestamp());
     }
 }
