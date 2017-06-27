@@ -41,8 +41,8 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
      */
     @Override
     public <R> StreamPairOperator<K, Tuple2<V, R>> join(StreamPairOperator<K, R> joinStream,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration joinWindowDuration) throws WorkloadException {
+                                                        TimeDuration windowDuration,
+                                                        TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
         checkOperatorType(joinStream);
 
@@ -102,14 +102,14 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
     }
 
     public StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
-                                                   TimeDuration windowDuration) {
+                                                         TimeDuration windowDuration) {
         return reduceByKeyAndWindow(fun, componentId, windowDuration, windowDuration);
     }
 
     public StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun,
-                                                   String componentId,
-                                                   TimeDuration windowDuration,
-                                                   TimeDuration slideWindowDuration) {
+                                                         String componentId,
+                                                         TimeDuration windowDuration,
+                                                         TimeDuration slideWindowDuration) {
         Duration duration = toDuration(windowDuration);
         Duration slideDuration = toDuration(slideWindowDuration);
         JavaPairDStream<K, V> accumulargestream = pairDStream.reduceByKeyAndWindow(new ReduceFunctionImpl<V>(fun), duration, slideDuration);
@@ -141,11 +141,11 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
      * @throws WorkloadException
      */
     public <R> StreamPairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  StreamPairOperator<K, R> joinStream,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration slideWindowDuration,
-                                                  final AssignTimeFunction<V> eventTimeAssigner1,
-                                                  final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
+                                                        StreamPairOperator<K, R> joinStream,
+                                                        TimeDuration windowDuration,
+                                                        TimeDuration slideWindowDuration,
+                                                        final AssignTimeFunction<V> eventTimeAssigner1,
+                                                        final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, slideWindowDuration);
         checkOperatorType(joinStream);
 

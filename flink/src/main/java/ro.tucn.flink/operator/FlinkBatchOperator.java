@@ -1,25 +1,23 @@
-package ro.tucn.spark.operator;
+package ro.tucn.flink.operator;
 
+import org.apache.flink.api.java.DataSet;
 import org.apache.log4j.Logger;
-import org.apache.spark.api.java.JavaRDD;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
 
-import java.util.function.Consumer;
-
 /**
- * Created by Liviu on 6/25/2017.
+ * Created by Liviu on 6/27/2017.
  */
-public class SparkBatchOperator<T> extends BatchOperator<T> {
+public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
-    private static final Logger logger = Logger.getLogger(SparkBatchOperator.class);
+    private static final Logger logger = Logger.getLogger(FlinkBatchOperator.class);
 
-    JavaRDD<T> rdd;
+    DataSet<T> dataSet;
 
-    public SparkBatchOperator(int parallelism) {
+    public FlinkBatchOperator(int parallelism) {
         super(parallelism);
     }
 
@@ -33,12 +31,6 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     }
 
-    public SparkBatchOperator(JavaRDD<T> rdd, int parallelism) {
-        super(parallelism);
-        this.rdd = rdd;
-    }
-
-
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
 
@@ -46,11 +38,6 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public void print() {
-        rdd.collect().forEach(new Consumer<T>() {
-            @Override
-            public void accept(T t) {
-                logger.info(t.toString());
-            }
-        });
+
     }
 }

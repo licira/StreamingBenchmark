@@ -50,8 +50,8 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
      */
     @Override
     public <R> StreamPairOperator<K, Tuple2<V, R>> join(StreamPairOperator<K, R> joinOperator,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration joinWindowDuration) throws WorkloadException {
+                                                        TimeDuration windowDuration,
+                                                        TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
         checkOperatorType(joinOperator);
 
@@ -242,11 +242,11 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
      */
     @Override
     public <R> StreamPairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  StreamPairOperator<K, R> joinStream,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration joinWindowDuration,
-                                                  final AssignTimeFunction<V> eventTimeAssigner1,
-                                                  final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
+                                                        StreamPairOperator<K, R> joinStream,
+                                                        TimeDuration windowDuration,
+                                                        TimeDuration joinWindowDuration,
+                                                        final AssignTimeFunction<V> eventTimeAssigner1,
+                                                        final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
         StreamExecutionEnvironment env = dataStream.getExecutionEnvironment();
         if (null != eventTimeAssigner1 && null != eventTimeAssigner2)
             env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
