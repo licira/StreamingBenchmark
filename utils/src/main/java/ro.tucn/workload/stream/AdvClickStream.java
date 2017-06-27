@@ -1,12 +1,12 @@
 package ro.tucn.workload.stream;
 
 import org.apache.log4j.Logger;
+import ro.tucn.consumer.AbstractKafkaConsumerCustom;
+import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.DurationException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
-import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.logger.SerializableLogger;
-import ro.tucn.context.ContextCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
 import ro.tucn.workload.Workload;
@@ -22,7 +22,7 @@ public class AdvClickStream extends Workload {
 
     private static final Logger logger = SerializableLogger.getLogger(AdvClickStream.class);
 
-    private final KafkaConsumerCustom kafkaConsumerCustom;
+    private final AbstractKafkaConsumerCustom kafkaConsumerCustom;
     private int streamWindowOne;
     private int streamWindowTwo;
 

@@ -10,7 +10,7 @@ import java.util.Properties;
 /**
  * Created by Liviu on 6/24/2017.
  */
-public abstract class KafkaConsumerCustom extends AbstractConsumer {
+public abstract class AbstractKafkaConsumerCustom extends AbstractConsumer {
 
     public abstract StreamOperator<String> getStringOperator(Properties properties,
                                                               String topicPropertyName);

@@ -11,7 +11,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import org.apache.spark.streaming.kafka.OffsetRange;
 import ro.tucn.kMeans.Point;
-import ro.tucn.consumer.KafkaConsumerCustom;
+import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.spark.operator.SparkOperator;
@@ -29,7 +29,7 @@ import java.util.Properties;
 /**
  * Created by Liviu on 6/24/2017.
  */
-public class SparkKafkaConsumerCustom extends KafkaConsumerCustom {
+public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     private static final Logger logger = Logger.getLogger(SparkKafkaConsumerCustom.class);
 

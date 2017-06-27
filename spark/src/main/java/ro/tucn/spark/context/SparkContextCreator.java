@@ -6,7 +6,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
-import ro.tucn.consumer.KafkaConsumerCustom;
+import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.spark.consumer.SparkKafkaConsumerCustom;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
@@ -47,7 +47,7 @@ public class SparkContextCreator extends ContextCreator {
     }
 
     @Override
-    public KafkaConsumerCustom getKafkaConsumerCustom() {
+    public AbstractKafkaConsumerCustom getKafkaConsumerCustom() {
         return new SparkKafkaConsumerCustom(jssc, sc);
     }
 

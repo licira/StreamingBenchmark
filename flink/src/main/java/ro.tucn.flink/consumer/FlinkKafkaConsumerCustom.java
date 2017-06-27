@@ -9,7 +9,7 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.flink.operator.FlinkOperator;
 import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.kMeans.Point;
-import ro.tucn.consumer.KafkaConsumerCustom;
+import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.Constants;
@@ -22,7 +22,7 @@ import java.util.Properties;
 /**
  * Created by Liviu on 6/24/2017.
  */
-public class FlinkKafkaConsumerCustom extends KafkaConsumerCustom {
+public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     private StreamExecutionEnvironment env;
 

@@ -4,7 +4,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.log4j.Logger;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.flink.consumer.FlinkKafkaConsumerCustom;
-import ro.tucn.consumer.KafkaConsumerCustom;
+import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class FlinkContextCreator extends ContextCreator {
     }
 
     @Override
-    public KafkaConsumerCustom getKafkaConsumerCustom() {
+    public AbstractKafkaConsumerCustom getKafkaConsumerCustom() {
         return new FlinkKafkaConsumerCustom(env);
     }
 
