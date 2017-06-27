@@ -5,6 +5,10 @@ import ro.tucn.flink.operator.FlinkContextCreator;
 import ro.tucn.operator.ContextCreator;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
+import ro.tucn.workload.stream.AdvClick;
+import ro.tucn.workload.stream.KMeans;
+import ro.tucn.workload.stream.WordCount;
+import ro.tucn.workload.stream.WordCountFast;
 
 import java.io.IOException;
 

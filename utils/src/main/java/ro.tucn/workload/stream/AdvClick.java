@@ -1,4 +1,4 @@
-package ro.tucn.workload;
+package ro.tucn.workload.stream;
 
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.DurationException;
@@ -9,6 +9,7 @@ import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.ContextCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
+import ro.tucn.workload.Workload;
 import scala.Tuple2;
 
 import java.io.Serializable;

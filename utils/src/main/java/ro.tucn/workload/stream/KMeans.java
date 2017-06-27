@@ -1,4 +1,4 @@
-package ro.tucn.workload;
+package ro.tucn.workload.stream;
 
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
@@ -6,6 +6,7 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.ContextCreator;
 import ro.tucn.operator.StreamOperator;
+import ro.tucn.workload.Workload;
 
 /**
  * Created by Liviu on 4/15/2017.
