@@ -4,8 +4,6 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.workload.Workload;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * Created by Liviu on 6/27/2017.
  */
@@ -16,7 +14,7 @@ public class KMeansBatch extends Workload {
     }
 
     @Override
-    public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void process() {
 
     }
 }
