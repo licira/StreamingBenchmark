@@ -11,12 +11,12 @@ import ro.tucn.workload.Workload;
 /**
  * Created by Liviu on 4/15/2017.
  */
-public class KMeans extends Workload {
+public class KMeansStream extends Workload {
 
-    private static final Logger logger = Logger.getLogger(KMeans.class);
+    private static final Logger logger = Logger.getLogger(KMeansStream.class);
     private final KafkaConsumerCustom kafkaConsumerCustom;
 
-    public KMeans(ContextCreator creator) throws WorkloadException {
+    public KMeansStream(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }

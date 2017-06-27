@@ -6,7 +6,7 @@ import ro.tucn.spark.operator.SparkContextCreator;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
 import ro.tucn.workload.stream.AdvClickStream;
-import ro.tucn.workload.stream.KMeans;
+import ro.tucn.workload.stream.KMeansStream;
 import ro.tucn.workload.stream.WordCount;
 import ro.tucn.workload.stream.WordCountFast;
 
@@ -28,7 +28,7 @@ public class Application {
                 workload = new AdvClickStream(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
                 contextCreator = new SparkContextCreator(Topics.K_MEANS);
-                workload = new KMeans(contextCreator);
+                workload = new KMeansStream(contextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
                 contextCreator = new SparkContextCreator(Topics.UNIFORM_WORDS);
                 workload = new WordCount(contextCreator);
