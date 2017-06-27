@@ -3,7 +3,7 @@ package ro.tucn.workload;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.ContextCreator;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -15,7 +15,7 @@ public class WordCountWindowed extends Workload {
     private static final Logger logger = Logger.getLogger(WordCountWindowed.class);
     private final KafkaConsumerCustom kafkaConsumerCustom;
 
-    public WordCountWindowed(OperatorCreator creator) throws WorkloadException {
+    public WordCountWindowed(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }

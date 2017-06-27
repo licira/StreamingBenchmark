@@ -3,7 +3,7 @@ package ro.tucn.workload;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.Operator;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.ContextCreator;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeHolder;
 
@@ -21,10 +21,10 @@ public abstract class Workload implements Serializable {
 
     protected Properties properties;
     protected int parallelism;
-    private OperatorCreator operatorCreator;
+    private ContextCreator ContextCreator;
 
-    public Workload(OperatorCreator operatorCreator) throws WorkloadException {
-        this.operatorCreator = operatorCreator;
+    public Workload(ContextCreator ContextCreator) throws WorkloadException {
+        this.ContextCreator = ContextCreator;
         initializeParallelism();
         initializeProperties();
     }
@@ -35,7 +35,7 @@ public abstract class Workload implements Serializable {
         logger.info("Start workload: " + this.getClass().getSimpleName());
         try {
             process();
-            operatorCreator.Start();
+            ContextCreator.Start();
         } catch (Exception e) {
             logger.error("WorkloadException caught when trying to run workload " + this.getClass().getSimpleName()
                     + ": " + e.getClass() + " " + e.getMessage());
@@ -63,7 +63,7 @@ public abstract class Workload implements Serializable {
     }
 
     protected Operator<TimeHolder<String>> getStringStreamTimeHolderOperator(String componentId, String topicPropertyName) {
-        //return operatorCreator.getStringStreamTimeHolderFromKafka(properties, topicPropertyName, componentId, parallelism);
+        //return ContextCreator.getStringStreamTimeHolderFromKafka(properties, topicPropertyName, componentId, parallelism);
         return null;
     }
 }

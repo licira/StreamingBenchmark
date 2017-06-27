@@ -6,7 +6,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.logger.SerializableLogger;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.ContextCreator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
@@ -25,7 +25,7 @@ public class AdvClick extends Workload {
     private int streamWindowOne;
     private int streamWindowTwo;
 
-    public AdvClick(OperatorCreator creator) throws WorkloadException {
+    public AdvClick(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));

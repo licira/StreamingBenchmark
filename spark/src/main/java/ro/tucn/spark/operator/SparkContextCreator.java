@@ -6,7 +6,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import ro.tucn.kafka.KafkaConsumerCustom;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.ContextCreator;
 import ro.tucn.spark.kafka.SparkKafkaConsumerCustom;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
 
@@ -16,9 +16,9 @@ import java.util.Properties;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class SparkOperatorCreator extends OperatorCreator {
+public class SparkContextCreator extends ContextCreator {
 
-    private static final Logger logger = Logger.getLogger(SparkOperatorCreator.class);
+    private static final Logger logger = Logger.getLogger(SparkContextCreator.class);
 
     private static final String TOPIC_SPLITTER = ",";
     private static final String SPARK_PROPERTIES_FILE_NAME = "spark-cluster.properties";
@@ -27,7 +27,7 @@ public class SparkOperatorCreator extends OperatorCreator {
     public static JavaSparkContext sc;
     private Properties properties;
 
-    public SparkOperatorCreator(String appName) throws IOException {
+    public SparkContextCreator(String appName) throws IOException {
         super(appName);
         initializeProperties();
         initializeJavaStreamingContext(appName);

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.Operator;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.ContextCreator;
 import ro.tucn.operator.PairOperator;
 
 /**
@@ -15,7 +15,7 @@ public class WordCount extends Workload {
     private static final Logger logger = Logger.getLogger(WordCount.class);
     private final KafkaConsumerCustom kafkaConsumerCustom;
 
-    public WordCount(OperatorCreator creator) throws WorkloadException {
+    public WordCount(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }

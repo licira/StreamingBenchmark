@@ -14,7 +14,7 @@ public class Configuration {
     public  static final String COMMON_CONFIGURE = "config.properties";
 
     public static Properties config;
-    public static String operatorCreator;
+    public static String ContextCreator;
     public static Integer throughputFrequency; // milliseconds
     public static Double latencyFrequency; // probability
     public static Double kmeansCentroidsFrequency; // probability
@@ -37,13 +37,13 @@ public class Configuration {
             try {
                 config.load(Configuration.class.getClassLoader().getResourceAsStream(Configuration.COMMON_CONFIGURE));
                 // whether necessary configurations loaded
-                operatorCreator = config.getProperty(OPERATOR_CREATOR);
+                ContextCreator = config.getProperty(OPERATOR_CREATOR);
                 throughputFrequency = Integer.valueOf(config.getProperty(THROUGHPUT_FREQUENCY));
                 latencyFrequency = Double.valueOf(config.getProperty(LATENCY_FREQUENCY));
                 kmeansCentroidsFrequency = Double.valueOf(config.getProperty(KMEANS_CENTROIDS_FREQUENCY));
                 clusterHosts = Integer.valueOf(config.getProperty(CLUSTER_HOSTS));
                 hostCores = Integer.valueOf(config.getProperty(HOST_CORES));
-                if (null == operatorCreator || null == throughputFrequency) {
+                if (null == ContextCreator || null == throughputFrequency) {
                     throw new WorkloadException("Configuration missing");
                 }
             } catch (IOException e) {

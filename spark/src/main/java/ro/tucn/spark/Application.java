@@ -1,8 +1,8 @@
 package ro.tucn.spark;
 
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.operator.OperatorCreator;
-import ro.tucn.spark.operator.SparkOperatorCreator;
+import ro.tucn.operator.ContextCreator;
+import ro.tucn.spark.operator.SparkContextCreator;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
 
@@ -16,21 +16,21 @@ public class Application {
     public static void main(String[] args) throws IOException, WorkloadException {
         if (args.length > 0)
         {
-            OperatorCreator operatorCreator;
+            ContextCreator ContextCreator;
             Workload workload = null;
             if (args[0].equalsIgnoreCase(Topics.ADV))
             {
-                operatorCreator = new SparkOperatorCreator(Topics.ADV);
-                workload = new AdvClick(operatorCreator);
+                ContextCreator = new SparkContextCreator(Topics.ADV);
+                workload = new AdvClick(ContextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-                operatorCreator = new SparkOperatorCreator(Topics.K_MEANS);
-                workload = new KMeans(operatorCreator);
+                ContextCreator = new SparkContextCreator(Topics.K_MEANS);
+                workload = new KMeans(ContextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
-                operatorCreator = new SparkOperatorCreator(Topics.UNIFORM_WORDS);
-                workload = new WordCount(operatorCreator);
+                ContextCreator = new SparkContextCreator(Topics.UNIFORM_WORDS);
+                workload = new WordCount(ContextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
-                operatorCreator = new SparkOperatorCreator(Topics.SKEWED_WORDS);
-                workload = new WordCountFast(operatorCreator);
+                ContextCreator = new SparkContextCreator(Topics.SKEWED_WORDS);
+                workload = new WordCountFast(ContextCreator);
             } else {
                 return;
             }

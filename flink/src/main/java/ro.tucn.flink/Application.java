@@ -1,8 +1,8 @@
 package ro.tucn.flink;
 
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.flink.operator.FlinkOperatorCreator;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.flink.operator.FlinkContextCreator;
+import ro.tucn.operator.ContextCreator;
 import ro.tucn.util.Topics;
 import ro.tucn.workload.*;
 
@@ -15,20 +15,20 @@ public class Application {
 
     public static void main(String[] args) throws IOException, WorkloadException {
         if (args.length > 0) {
-            OperatorCreator operatorCreator;
+            ContextCreator ContextCreator;
             Workload workload = null;
             if (args[0].equalsIgnoreCase(Topics.ADV)) {
-                operatorCreator = new FlinkOperatorCreator(Topics.ADV);
-                workload = new AdvClick(operatorCreator);
+                ContextCreator = new FlinkContextCreator(Topics.ADV);
+                workload = new AdvClick(ContextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.K_MEANS)) {
-                operatorCreator = new FlinkOperatorCreator(Topics.K_MEANS);
-                workload = new KMeans(operatorCreator);
+                ContextCreator = new FlinkContextCreator(Topics.K_MEANS);
+                workload = new KMeans(ContextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.UNIFORM_WORDS)) {
-                operatorCreator = new FlinkOperatorCreator(Topics.UNIFORM_WORDS);
-                workload = new WordCount(operatorCreator);
+                ContextCreator = new FlinkContextCreator(Topics.UNIFORM_WORDS);
+                workload = new WordCount(ContextCreator);
             } else if (args[0].equalsIgnoreCase(Topics.SKEWED_WORDS)) {
-                operatorCreator = new FlinkOperatorCreator(Topics.SKEWED_WORDS);
-                workload = new WordCountFast(operatorCreator);
+                ContextCreator = new FlinkContextCreator(Topics.SKEWED_WORDS);
+                workload = new WordCountFast(ContextCreator);
             } else {
                 return;
             }

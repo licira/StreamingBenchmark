@@ -7,11 +7,11 @@ import java.io.Serializable;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public abstract class OperatorCreator implements Serializable {
+public abstract class ContextCreator implements Serializable {
 
     protected String appName;
 
-    public OperatorCreator(String appName) {
+    public ContextCreator(String appName) {
         this.appName = appName;
     }
 

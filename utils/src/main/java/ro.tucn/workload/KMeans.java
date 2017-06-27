@@ -5,7 +5,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.kafka.KafkaConsumerCustom;
 import ro.tucn.operator.Operator;
-import ro.tucn.operator.OperatorCreator;
+import ro.tucn.operator.ContextCreator;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -15,7 +15,7 @@ public class KMeans extends Workload {
     private static final Logger logger = Logger.getLogger(KMeans.class);
     private final KafkaConsumerCustom kafkaConsumerCustom;
 
-    public KMeans(OperatorCreator creator) throws WorkloadException {
+    public KMeans(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
     }
