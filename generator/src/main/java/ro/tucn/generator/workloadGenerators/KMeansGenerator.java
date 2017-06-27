@@ -12,8 +12,8 @@ import ro.tucn.kMeans.Point;
 import java.util.List;
 import java.util.Random;
 
-import static ro.tucn.util.Topics.CENTROID;
-import static ro.tucn.util.Topics.POINT;
+import static ro.tucn.util.KafkaTopics.CENTROID;
+import static ro.tucn.util.KafkaTopics.POINT;
 
 /**
  * Created by Liviu on 4/5/2017.

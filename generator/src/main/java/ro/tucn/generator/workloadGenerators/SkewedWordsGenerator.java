@@ -9,7 +9,7 @@ import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
-import static ro.tucn.util.Topics.SKEWED_WORDS;
+import static ro.tucn.util.KafkaTopics.SKEWED_WORDS;
 
 /**
  * Created by Liviu on 4/8/2017.

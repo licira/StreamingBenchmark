@@ -3,7 +3,7 @@ package ro.tucn.util;
 /**
  * Created by Liviu on 4/6/2017.
  */
-public class Topics {
+public class KafkaTopics {
 
     public static final String ADV = "adv";
     public static final String CLICK = "click";
