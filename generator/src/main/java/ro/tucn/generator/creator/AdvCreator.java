@@ -3,6 +3,8 @@ package ro.tucn.generator.creator;
 import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.helper.TimeHelper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -14,5 +16,13 @@ public class AdvCreator {
         String advId = UUID.randomUUID().toString();
         long timestamp = TimeHelper.getNanoTime();
         return new Adv(advId, timestamp);
+    }
+
+    public static List<Adv> getNewAdvs(long n) {
+        List<Adv> advs = new ArrayList<>();
+        for (long i = 0; i < n; i++) {
+            advs.add(getNewAdv());
+        }
+        return advs;
     }
 }

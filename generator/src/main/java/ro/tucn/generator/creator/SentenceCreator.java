@@ -4,6 +4,9 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ro.tucn.generator.creator.SentenceCreator.SENTENCE_TYPE.SKEWED_WORDS_SENTENCE;
 import static ro.tucn.generator.creator.SentenceCreator.SENTENCE_TYPE.UNIFORM_WORDS_SENTENCE;
 
@@ -16,11 +19,11 @@ public class SentenceCreator {
     private static int wordsNumberUpperBound = 10000;
     private static int wordIdLowerBound = 1000;
 
-    private FastZipfGenerator zipfGenerator;
-    private RandomDataGenerator randomDataGenerator;
+    private static FastZipfGenerator zipfGenerator;
+    private static RandomDataGenerator randomDataGenerator;
 
-    private double mu;
-    private double sigma;
+    private static double mu;
+    private static double sigma;
     private int upperBound;
 
     public Sentence getNewSkewedWordsSentence() {
@@ -31,7 +34,7 @@ public class SentenceCreator {
         return getNewSentence(UNIFORM_WORDS_SENTENCE);
     }
 
-    private Sentence getNewSentence(SENTENCE_TYPE sentenceType) {
+    private static Sentence getNewSentence(SENTENCE_TYPE sentenceType) {
         int sentenceLength = (int) randomDataGenerator.nextGaussian(mu, sigma);
         int[] words = new int[sentenceLength];
         if (sentenceType.equals(SKEWED_WORDS_SENTENCE)) {
@@ -45,6 +48,14 @@ public class SentenceCreator {
         }
         int sentenceId = randomDataGenerator.nextInt(wordIdLowerBound, 10000);
         return new Sentence(sentenceId, words);
+    }
+
+    public static List<Sentence> getNewSentences(SENTENCE_TYPE sentenceType, long n) {
+        List<Sentence> sentences = new ArrayList<>();
+        for (long i = 0; i < n; i++) {
+            sentences.add(getNewSentence(sentenceType));
+        }
+        return sentences;
     }
 
     public void setMessageGenerator(RandomDataGenerator messageGenerator) {
