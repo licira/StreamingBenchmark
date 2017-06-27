@@ -2,6 +2,7 @@ package ro.tucn.flink.context;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.log4j.Logger;
+import ro.tucn.consumer.GeneratorConsumer;
 import ro.tucn.flink.kafka.FlinkKafkaConsumerCustom;
 import ro.tucn.consumer.KafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
@@ -41,6 +42,11 @@ public class FlinkContextCreator extends ContextCreator {
     @Override
     public KafkaConsumerCustom getKafkaConsumerCustom() {
         return new FlinkKafkaConsumerCustom(env);
+    }
+
+    @Override
+    public GeneratorConsumer getGeneratorConsumer() {
+        return null;
     }
 
     private void initializeProperties() throws IOException {
