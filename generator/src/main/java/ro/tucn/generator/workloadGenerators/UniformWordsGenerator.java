@@ -8,7 +8,7 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
 
-import static ro.tucn.util.KafkaTopics.UNIFORM_WORDS;
+import static ro.tucn.topic.KafkaTopics.UNIFORM_WORDS;
 
 /**
  * Created by Liviu on 4/8/2017.

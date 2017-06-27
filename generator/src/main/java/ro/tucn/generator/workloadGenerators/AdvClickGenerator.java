@@ -15,8 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static ro.tucn.util.KafkaTopics.ADV;
-import static ro.tucn.util.KafkaTopics.CLICK;
+import static ro.tucn.topic.KafkaTopics.ADV;
+import static ro.tucn.topic.KafkaTopics.CLICK;
 
 /**
  * Created by Liviu on 4/4/2017.

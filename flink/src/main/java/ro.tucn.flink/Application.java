@@ -4,7 +4,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.context.FlinkContextCreator;
 import ro.tucn.operator.ContextCreator;
 import ro.tucn.util.ArgsParser;
-import ro.tucn.util.KafkaTopics;
+import ro.tucn.topic.KafkaTopics;
 import ro.tucn.workload.*;
 import ro.tucn.workload.stream.AdvClickStream;
 import ro.tucn.workload.stream.KMeansStream;

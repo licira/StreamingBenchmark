@@ -1,4 +1,4 @@
-package ro.tucn.util;
+package ro.tucn.topic;
 
 /**
  * Created by Liviu on 4/6/2017.

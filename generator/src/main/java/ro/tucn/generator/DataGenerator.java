@@ -3,7 +3,7 @@ package ro.tucn.generator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.workloadGenerators.*;
 import ro.tucn.util.ArgsParser;
-import ro.tucn.util.KafkaTopics;
+import ro.tucn.topic.KafkaTopics;
 
 import java.util.HashMap;
 
@@ -15,7 +15,6 @@ public class DataGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     public void run(String[] args) {
-
         HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
         String topic = ArgsParser.getTopic(parsedArgs);
         int sleepFrequency = ArgsParser.getSleepFrequency(parsedArgs);
@@ -35,5 +34,4 @@ public class DataGenerator {
         }
         generator.generate(sleepFrequency);
     }
-
 }
