@@ -5,6 +5,8 @@ import ro.tucn.generator.workloadGenerators.*;
 import ro.tucn.util.ArgsParser;
 import ro.tucn.util.Topics;
 
+import java.util.HashMap;
+
 /**
  * Created by Liviu on 4/5/2017.
  */
@@ -14,10 +16,10 @@ public class DataGenerator {
 
     public void run(String[] args) {
 
-        ArgsParser.parseArgs(args);
-        String topic = ArgsParser.getTopic();
-        int sleepFrequency = ArgsParser.getSleepFrequency();
-        int entitiesNumber = ArgsParser.getNumberOfGeneratedEntities();
+        HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
+        String topic = ArgsParser.getTopic(parsedArgs);
+        int sleepFrequency = ArgsParser.getSleepFrequency(parsedArgs);
+        int entitiesNumber = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
         logger.info(topic);
         AbstractGenerator generator = null;
         if (topic.equalsIgnoreCase(Topics.ADV)) {

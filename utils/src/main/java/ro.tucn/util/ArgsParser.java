@@ -7,8 +7,6 @@ import java.util.HashMap;
  */
 public class ArgsParser {
 
-    private static HashMap<String, String> paramsWithValues;
-
     private static String wrongArgsSyntaxMsg = "Wrong Argument Syntax Error: "
             + "Arguments must have the following syntax: "
             + "[-parameter] [value].";
@@ -39,27 +37,27 @@ public class ArgsParser {
 
     private static HashMap<String, String> getParamsWithValuesFromArgs(String[] args) {
         int length = args.length;
-        paramsWithValues = new HashMap<String, String>();
+        HashMap<String, String> paramsWithValues = new HashMap<String, String>();
         for (int i = 0; i < length; i += 2) {
             paramsWithValues.put(args[i], args[i + 1]);
         }
         return paramsWithValues;
     }
 
-    public static String getTopic() {
-        return paramsWithValues.get("-topic");
+    public static String getTopic(HashMap<String, String> parsedArgs) {
+        return parsedArgs.get("-topic");
     }
 
-    public static int getNumberOfGeneratedEntities() {
-        return tryGetIntValueByKey("-number");
+    public static int getNumberOfGeneratedEntities(HashMap<String, String> paramsWithValues) {
+        return tryGetIntValueByKey("-number", paramsWithValues);
     }
 
-    public static int getSleepFrequency() {
-        return tryGetIntValueByKey("-sleep.frequency");
+    public static int getSleepFrequency(HashMap<String, String> paramsWithValues) {
+        return tryGetIntValueByKey("-sleep.frequency", paramsWithValues);
     }
 
-    private static int tryGetIntValueByKey(String key) {
-        String value = getValueByKey(key);
+    private static int tryGetIntValueByKey(String key, HashMap<String, String> paramsWithValues) {
+        String value = getValueByKey(key, paramsWithValues);
         int intValue = 0;
         try {
             intValue = Integer.parseInt(value);
@@ -67,7 +65,7 @@ public class ArgsParser {
         return intValue;
     }
 
-    private static String getValueByKey(String key) {
+    private static String getValueByKey(String key, HashMap<String, String> paramsWithValues) {
         return paramsWithValues.get(key);
     }
 }
