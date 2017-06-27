@@ -1,4 +1,4 @@
-package ro.tucn.generator.creator;
+package ro.tucn.generator.creator.entity;
 
 import ro.tucn.generator.entity.Adv;
 import ro.tucn.generator.entity.Click;

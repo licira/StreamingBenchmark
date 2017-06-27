@@ -3,7 +3,7 @@ package ro.tucn.generator.workloadGenerators;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.entity.Sentence;
-import ro.tucn.generator.creator.SentenceCreator;
+import ro.tucn.generator.creator.entity.SentenceCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractMessageSender;
 import ro.tucn.generator.sender.SentenceSender;
