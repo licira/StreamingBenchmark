@@ -10,9 +10,7 @@ import java.util.Properties;
 /**
  * Created by Liviu on 6/27/2017.
  */
-public abstract class AbstractGeneratorConsumer {
-
-    protected int parallelism;
+public abstract class AbstractGeneratorConsumer extends AbstractConsumer {
 
     public abstract BatchPairOperator<String, String> getBatchPairOperator(Properties properties,
                                                                            String topicPropertyName);
@@ -25,8 +23,4 @@ public abstract class AbstractGeneratorConsumer {
 
     public abstract BatchOperator<String> getBatchStringOperator(Properties properties,
                                                                  String topicPropertyName);
-
-    public void setParallelism(int parallelism) {
-        this.parallelism = parallelism;
-    }
 }

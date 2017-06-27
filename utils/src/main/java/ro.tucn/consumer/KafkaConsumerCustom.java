@@ -10,9 +10,7 @@ import java.util.Properties;
 /**
  * Created by Liviu on 6/24/2017.
  */
-public abstract class KafkaConsumerCustom {
-
-    protected int parallelism;
+public abstract class KafkaConsumerCustom extends AbstractConsumer {
 
     public abstract StreamOperator<String> getStringOperator(Properties properties,
                                                               String topicPropertyName);
@@ -25,8 +23,4 @@ public abstract class KafkaConsumerCustom {
 
     public abstract StreamOperator<Point> getPointOperator(Properties properties,
                                                             String topicPropertyName);
-
-    public void setParallelism(int parallelism) {
-        this.parallelism = parallelism;
-    }
 }
