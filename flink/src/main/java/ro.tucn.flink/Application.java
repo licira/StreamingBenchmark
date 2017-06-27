@@ -18,7 +18,9 @@ public class Application {
     public static void main(String[] args) throws IOException, WorkloadException {
         if (args.length > 0) {
             HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
+            ArgsParser.checkParamsValidityForTestBed(parsedArgs);
             String topic = ArgsParser.getTopic(parsedArgs);
+            String mode = ArgsParser.getMode(parsedArgs);
             ContextCreator contextCreator = new FlinkContextCreator(topic);
             WorkloadCreator workloadCreator = new WorkloadCreator();
             Workload workload = workloadCreator.getNewWorkload(contextCreator, topic);

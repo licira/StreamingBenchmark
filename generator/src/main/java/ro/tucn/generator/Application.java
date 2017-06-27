@@ -17,6 +17,7 @@ public class Application {
     public static void main(String args[]) {
         if (args.length > 0) {
             HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
+            ArgsParser.checkParamsValidityForGenerator(parsedArgs);
             String topic = ArgsParser.getTopic(parsedArgs);
             int sleepFrequency = ArgsParser.getSleepFrequency(parsedArgs);
             int entitiesNumber = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
