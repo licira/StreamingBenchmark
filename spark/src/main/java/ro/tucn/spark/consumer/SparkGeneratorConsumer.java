@@ -1,6 +1,6 @@
 package ro.tucn.spark.consumer;
 
-import ro.tucn.consumer.GeneratorConsumer;
+import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Created by Liviu on 6/27/2017.
  */
-public class SparkGeneratorConsumer extends GeneratorConsumer {
+public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
 
     @Override
     public BatchPairOperator<String, String> getBatchPairOperator(Properties properties, String topicPropertyName) {
