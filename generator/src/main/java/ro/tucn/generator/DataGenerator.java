@@ -2,8 +2,8 @@ package ro.tucn.generator;
 
 import org.apache.log4j.Logger;
 import ro.tucn.generator.workloadGenerators.*;
+import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.util.ArgsParser;
-import ro.tucn.topic.KafkaTopics;
 
 import java.util.HashMap;
 
@@ -21,16 +21,16 @@ public class DataGenerator {
         int entitiesNumber = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
         logger.info(topic);
         AbstractGenerator generator = null;
-        if (topic.equalsIgnoreCase(KafkaTopics.ADV)) {
+        if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.ADV))) {
             generator = new AdvClickGenerator(entitiesNumber);
-        } else if (topic.equalsIgnoreCase(KafkaTopics.K_MEANS)) {
+        } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.K_MEANS))) {
             generator = new KMeansGenerator(entitiesNumber);
-        } else if (topic.equalsIgnoreCase(KafkaTopics.SKEWED_WORDS)) {
+        } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.SKEWED_WORDS))) {
             generator = new SkewedWordsGenerator(entitiesNumber);
-        } else if (topic.equalsIgnoreCase(KafkaTopics.UNIFORM_WORDS)) {
+        } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.UNIFORM_WORDS))) {
             generator = new UniformWordsGenerator(entitiesNumber);
         } else {
-            return;
+            return; 
         }
         generator.generate(sleepFrequency);
     }

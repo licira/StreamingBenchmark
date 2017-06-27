@@ -26,7 +26,6 @@ public class Application {
             ContextCreator contextCreator;
             Workload workload = null;
 
-
             if (topic.equalsIgnoreCase(KafkaTopics.ADV)) {
                 contextCreator = new FlinkContextCreator(KafkaTopics.ADV);
                 workload = new AdvClickStream(contextCreator);
