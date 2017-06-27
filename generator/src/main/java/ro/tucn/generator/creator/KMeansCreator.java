@@ -22,17 +22,17 @@ import java.util.Random;
  */
 public class KMeansCreator {
 
-    private static long pointIdLowerBound;
+    private long pointIdLowerBound;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-    private static Random centroidRandom;
-    private static RandomGenerator randomGenerator = new JDKRandomGenerator();
-    private static MultivariateNormalDistribution multiderivativeNormalDistribution;
+    private Random centroidRandom;
+    private RandomGenerator randomGenerator = new JDKRandomGenerator();
+    private MultivariateNormalDistribution multiderivativeNormalDistribution;
 
-    private static int dimension;
+    private int dimension;
     private double distance;
     private int centroidsNo;
 
-    public static Point getNewPoint(List<Point> centroids) {
+    public Point getNewPoint(List<Point> centroids) {
         double[] coordinatesDistribution = multiderivativeNormalDistribution.sample();
         //randomGenerator.setSeed(10000);
         int centroidIndex = centroidRandom.nextInt(centroids.size());
@@ -48,7 +48,7 @@ public class KMeansCreator {
         return new Point(pointId, pointCoordinates);
     }
 
-    public static List<Point> getNewPoints(List<Point> centroids, long n) {
+    public List<Point> getNewPoints(List<Point> centroids, long n) {
         List<Point> points = new ArrayList<>();
         for (long i = 0; i < n; i++) {
             points.add(getNewPoint(centroids));
@@ -155,7 +155,7 @@ public class KMeansCreator {
         return coordinate;
     }
 
-    private static Long generateId() {
+    private Long generateId() {
         long id = randomGenerator.nextLong() % pointIdLowerBound;
         if (id < 0) {
             id = -id;

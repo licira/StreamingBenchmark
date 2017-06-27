@@ -31,6 +31,7 @@ public class AdvClickGenerator extends AbstractGenerator {
     private ArrayList<Adv> advs;
     private double clickLambda;
     private double clickProbability;
+    private ClickCreator clickCreator;
 
     public AdvClickGenerator(int entitiesNumber) {
         super(entitiesNumber);
@@ -94,7 +95,7 @@ public class AdvClickGenerator extends AbstractGenerator {
         for (Adv adv : advs) {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
-                Click click = ClickCreator.getNewClick(adv);
+                Click click = clickCreator.getNewClick(adv);
                 clickSender.send(click);
                 attemptSleep(adv.getTimestamp());
             }
@@ -144,6 +145,7 @@ public class AdvClickGenerator extends AbstractGenerator {
     protected void initializeDataGenerators() {
         generator = new RandomDataGenerator();
         generator.reSeed(10000L);
+        clickCreator = new ClickCreator();
     }
 
     @Override

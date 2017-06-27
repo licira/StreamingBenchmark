@@ -15,15 +15,15 @@ import static ro.tucn.generator.creator.SentenceCreator.SENTENCE_TYPE.UNIFORM_WO
  */
 public class SentenceCreator {
 
-    private static int wordsNumberLowerBound = 1;
-    private static int wordsNumberUpperBound = 10000;
-    private static int wordIdLowerBound = 1000;
+    private int wordsNumberLowerBound = 1;
+    private int wordsNumberUpperBound = 10000;
+    private int wordIdLowerBound = 1000;
 
-    private static FastZipfGenerator zipfGenerator;
-    private static RandomDataGenerator randomDataGenerator;
+    private FastZipfGenerator zipfGenerator;
+    private RandomDataGenerator randomDataGenerator;
 
-    private static double mu;
-    private static double sigma;
+    private double mu;
+    private double sigma;
     private int upperBound;
 
     public Sentence getNewSkewedWordsSentence() {
@@ -34,7 +34,7 @@ public class SentenceCreator {
         return getNewSentence(UNIFORM_WORDS_SENTENCE);
     }
 
-    private static Sentence getNewSentence(SENTENCE_TYPE sentenceType) {
+    private Sentence getNewSentence(SENTENCE_TYPE sentenceType) {
         int sentenceLength = (int) randomDataGenerator.nextGaussian(mu, sigma);
         int[] words = new int[sentenceLength];
         if (sentenceType.equals(SKEWED_WORDS_SENTENCE)) {
@@ -50,7 +50,7 @@ public class SentenceCreator {
         return new Sentence(sentenceId, words);
     }
 
-    public static List<Sentence> getNewSentences(SENTENCE_TYPE sentenceType, long n) {
+    public List<Sentence> getNewSentences(SENTENCE_TYPE sentenceType, long n) {
         List<Sentence> sentences = new ArrayList<>();
         for (long i = 0; i < n; i++) {
             sentences.add(getNewSentence(sentenceType));
@@ -79,15 +79,15 @@ public class SentenceCreator {
     }
 
     public void setWordIdLowerBound(int wordIdLowerBound) {
-        SentenceCreator.wordIdLowerBound = wordIdLowerBound;
+        this.wordIdLowerBound = wordIdLowerBound;
     }
 
     public void setWordsNumberUpperBound(int wordsNumberUpperBound) {
-        SentenceCreator.wordsNumberUpperBound = wordsNumberUpperBound;
+        this.wordsNumberUpperBound = wordsNumberUpperBound;
     }
 
     public void setWordsNumberLowerBound(int wordsNumberLowerBound) {
-        SentenceCreator.wordsNumberLowerBound = wordsNumberLowerBound;
+        this.wordsNumberLowerBound = wordsNumberLowerBound;
     }
 
     public enum SENTENCE_TYPE {

@@ -11,11 +11,11 @@ import java.util.List;
  */
 public class ClickCreator {
 
-	public static Click getNewClick(Adv adv) {
+	public Click getNewClick(Adv adv) {
 		return new Click(adv.getId());
 	}
 
-	public static List<Click> getNewClicks(List<Adv> advs) {
+	public List<Click> getNewClicks(List<Adv> advs) {
 		List<Click> clicks = new ArrayList<>();
 		for (Adv adv : advs) {
 			clicks.add(getNewClick(adv));

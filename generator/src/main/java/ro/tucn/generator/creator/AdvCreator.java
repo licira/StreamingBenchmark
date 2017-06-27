@@ -18,7 +18,7 @@ public class AdvCreator {
         return new Adv(advId, timestamp);
     }
 
-    public static List<Adv> getNewAdvs(long n) {
+    public List<Adv> getNewAdvs(long n) {
         List<Adv> advs = new ArrayList<>();
         for (long i = 0; i < n; i++) {
             advs.add(getNewAdv());
