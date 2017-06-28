@@ -34,7 +34,8 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     @Override
     public StreamOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
         DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         return new FlinkStreamOperator<>(stream, parallelism);
     }
@@ -42,7 +43,8 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     @Override
     public StreamPairOperator<String, String> getStreamPairOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
         DataStream<Tuple2<String, String>> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         return new FlinkStreamPairOperator<>(pairStream, parallelism);
     }
@@ -50,15 +52,16 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     @Override
     public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        DataStream<String> jsonStream = getStringStreamFromKafka(properties, topic);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new FlinkStreamOperator<>(pointStream, parallelism);
     }
 
     @Override
-    public StreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
+    public StreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topic) {
         setEnvParallelism(parallelism);
-        DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
+        DataStream<String> stream = getStreamFromKafka(properties, topic);
         DataStream<TimeHolder<String>> TimeHolderDataStream = stream.map((MapFunction<String, TimeHolder<String>>) value -> {
             String[] list = value.split(Constants.TimeSeparatorRegex);
             if (list.length == 2) {
@@ -69,8 +72,8 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         return new FlinkStreamOperator<>(TimeHolderDataStream, parallelism);
     }
 
-    private DataStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
-        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
+    private DataStream<String> getStringStreamFromKafka(Properties properties, String topic) {
+        DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
         DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         return stream;
     }
@@ -111,13 +114,12 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         return pairStream;
     }
 
-    private DataStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topicPropertyName) {
-        DataStream<String> stream = getStreamFromKafka(properties, topicPropertyName);
+    private DataStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topic) {
+        DataStream<String> stream = getStreamFromKafka(properties, topic);
         return stream;
     }
 
-    private DataStream<String> getStreamFromKafka(Properties properties, String topicPropertyName) {
-        String topic = getTopicFromProperties(properties, topicPropertyName);
+    private DataStream<String> getStreamFromKafka(Properties properties, String topic) {
         properties.setProperty("flink.starting-position", "largest");
         FlinkKafkaConsumer081<String> kafkaConsumer = new FlinkKafkaConsumer081<>(topic, new SimpleStringSchema(), properties);
         return env.addSource(kafkaConsumer);
