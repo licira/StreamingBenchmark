@@ -21,6 +21,11 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         super(parallelism);
     }
 
+    public FlinkBatchOperator(DataSet<T> dataSet, int parallelism) {
+        super(parallelism);
+        this.dataSet = dataSet;
+    }
+
     @Override
     public BatchPairOperator<String, Integer> wordCount() {
         return null;
@@ -38,6 +43,10 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public void print() {
-
+        try {
+            dataSet.print();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
