@@ -21,7 +21,7 @@ public class WorkloadCreator {
     protected final String NONEXISTING_WORKLOAD_FOR_TOPIC_EXCEPTION_MSG = "No workload available for this topic.";
     protected final String NONEXISTING_WORKLOAD_FOR_MODE_EXCEPTION_MSG = "No workload available for this mode.";
 
-    public Workload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException{
+    public Workload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException {
         Workload workload;
         if (mode.equalsIgnoreCase(DataMode.STREAMING)) {
             workload = getNewStreamWorkload(contextCreator, topic);
@@ -35,15 +35,14 @@ public class WorkloadCreator {
 
     private Workload getNewBatchWorkload(ContextCreator contextCreator, String topic) throws WorkloadException {
         Workload workload;
-        String s = String.valueOf(ApplicationTopics.SKEWED_WORDS);
         if (topic.equalsIgnoreCase(ApplicationTopics.ADV)) {
             workload = new AdvClickBatch(contextCreator);
         } else if (topic.equalsIgnoreCase(ApplicationTopics.K_MEANS)) {
             workload = new KMeansBatch(contextCreator);
         } else if (topic.equalsIgnoreCase(ApplicationTopics.SKEWED_WORDS)) {
-            workload = new WordCountBatch(contextCreator);
-        } else if (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS)) {
             workload = new WordCountFastBatch(contextCreator);
+        } else if (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS)) {
+            workload = new WordCountBatch(contextCreator);
         } else {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_EXCEPTION_MSG);
         }
