@@ -9,6 +9,7 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.SentenceSenderKafka;
+import ro.tucn.generator.sender.offline.SentenceSenderOffline;
 
 import static ro.tucn.topic.KafkaTopics.UNIFORM_WORDS;
 
@@ -19,8 +20,8 @@ public class UniformWordsGenerator extends AbstractGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private SentenceCreator SentenceCreator;
-    private AbstractSender SentenceSenderKafka;
+    private SentenceCreator sentenceCreator;
+    private AbstractSender sentenceSender;
 
     private long totalSentences = 10;
 
@@ -39,22 +40,27 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     private void submitNewSentence() {
-        Sentence sentence = SentenceCreator.getNewUniformWordsSentence();
-        SentenceSenderKafka.send(sentence);
+        Sentence sentence = sentenceCreator.getNewUniformWordsSentence();
+        sentenceSender.send(sentence);
     }
 
     private void shutdownSender() {
-        ((AbstractKafkaSender)SentenceSenderKafka).close();
+        sentenceSender.close();
     }
 
     private void initializeHelper() {
-        SentenceCreator = new SentenceCreator();
+        sentenceCreator = new SentenceCreator();
     }
 
     private void initializeKafkaMessageSenderWithSmallBuffer() {
-        SentenceSenderKafka = new SentenceSenderKafka();
-        SentenceSenderKafka.setTopic(UNIFORM_WORDS);
-        ((AbstractKafkaSender)SentenceSenderKafka).initializeSmallBufferProducer(bootstrapServers);
+        sentenceSender = new SentenceSenderKafka();
+        sentenceSender.setTopic(UNIFORM_WORDS);
+        ((AbstractKafkaSender)sentenceSender).initializeSmallBufferProducer(bootstrapServers);
+    }
+
+    private void initializeOfflineMessageSender() {
+        sentenceSender = new SentenceSenderOffline();
+        sentenceSender.setTopic(UNIFORM_WORDS);
     }
 
     @Override
@@ -77,18 +83,15 @@ public class UniformWordsGenerator extends AbstractGenerator {
     private void initialiseMessageSender(String dataMode) {
         if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
             initializeKafkaMessageSenderWithSmallBuffer();
-        } else if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+        } else if (dataMode.equalsIgnoreCase(DataMode.BATCH)) {
             initializeOfflineMessageSender();
         }
-    }
-
-    private void initializeOfflineMessageSender() {
     }
 
     @Override
     protected void initializeDataGenerators() {
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
-        SentenceCreator.setMessageGenerator(messageGenerator);
+        sentenceCreator.setMessageGenerator(messageGenerator);
     }
 
     @Override
@@ -97,8 +100,8 @@ public class UniformWordsGenerator extends AbstractGenerator {
         int upperBound = Integer.parseInt(this.properties.getProperty("uniform.size"));
         double mu = Double.parseDouble(this.properties.getProperty("sentence.mu"));
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
-        SentenceCreator.setMu(mu);
-        SentenceCreator.setSigma(sigma);
-        SentenceCreator.setUpperBound(upperBound);
+        sentenceCreator.setMu(mu);
+        sentenceCreator.setSigma(sigma);
+        sentenceCreator.setUpperBound(upperBound);
     }
 }

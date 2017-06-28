@@ -9,6 +9,7 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.KMeansSenderKafka;
+import ro.tucn.generator.sender.offline.KMeansSenderOffline;
 import ro.tucn.kMeans.Point;
 
 import java.util.List;
@@ -24,8 +25,8 @@ public class KMeansGenerator extends AbstractGenerator {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    private KMeansCreator KMeansCreator;
-    private AbstractSender KMeansSenderKafka;
+    private KMeansCreator kMeansCreator;
+    private AbstractSender kMeansSender;
 
     private List<Point> centroids;
     private static long totalPoints;
@@ -37,7 +38,7 @@ public class KMeansGenerator extends AbstractGenerator {
 
     @Override
     public void generate(int sleepFrequency) {
-        centroids = KMeansCreator.generateCentroids();
+        centroids = kMeansCreator.generateCentroids();
         //centroids = KMeansCreator.loadCentroids();
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
@@ -47,32 +48,36 @@ public class KMeansGenerator extends AbstractGenerator {
     }
 
     private void initializeHelper() {
-        KMeansCreator = new KMeansCreator();
+        kMeansCreator = new KMeansCreator();
     }
 
     private void initializeKafkaMessageSenderWithSmallBuffer() {
-        KMeansSenderKafka = new KMeansSenderKafka();
-        ((AbstractKafkaSender)KMeansSenderKafka).initializeSmallBufferProducer(bootstrapServers);
+        kMeansSender = new KMeansSenderKafka();
+        ((AbstractKafkaSender)kMeansSender).initializeSmallBufferProducer(bootstrapServers);
+    }
+
+    private void initializeOfflineMessageSender() {
+        kMeansSender = new KMeansSenderOffline();
     }
 
     private void shutdownSender() {
-        ((AbstractKafkaSender)KMeansSenderKafka).close();
+        kMeansSender.close();
     }
 
     private void submitPoint(Point point) {
-        KMeansSenderKafka.send(point);
+        kMeansSender.send(point);
     }
 
     @Override
     protected void submitData(int sleepFrequency) {
-        KMeansSenderKafka.setTopic(POINT);
+        kMeansSender.setTopic(POINT);
         for (int i = 0; i < totalPoints; i++) {
-            Point point = KMeansCreator.getNewPoint(centroids);
+            Point point = kMeansCreator.getNewPoint(centroids);
             submitPoint(point);
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
-        KMeansSenderKafka.setTopic(CENTROID);
+        kMeansSender.setTopic(CENTROID);
         for (int i = 0; i < centroids.size(); i++) {
             submitPoint(centroids.get(i));
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
@@ -91,12 +96,9 @@ public class KMeansGenerator extends AbstractGenerator {
     private void initializeMessageSenders(String dataMode) {
         if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
             initializeKafkaMessageSenderWithSmallBuffer();
-        } else if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+        } else if (dataMode.equalsIgnoreCase(DataMode.BATCH)) {
             initializeOfflineMessageSender();
         }
-    }
-
-    private void initializeOfflineMessageSender() {
     }
 
     @Override
@@ -115,12 +117,12 @@ public class KMeansGenerator extends AbstractGenerator {
         String covariancesAsString = properties.getProperty("covariances");
         totalPoints = ((entitiesNumber == 0) ? Long.parseLong(properties.getProperty("points.number")) : entitiesNumber);
         long pointIdLowerBound = Long.parseLong(properties.getProperty("point.id.lower.bound"));
-        KMeansCreator.setPointIdLowerBound(pointIdLowerBound);
-        KMeansCreator.setCentroidRandom(centroidRandomGenerator);
-        KMeansCreator.setDimension(dimension);
-        KMeansCreator.setDistance(distance);
-        KMeansCreator.setCentroidsNo(centroidsNo);
-        double[][] covariances = KMeansCreator.getCovariancesFromString(covariancesAsString, means);
-        KMeansCreator.initializeMultiderivativeNormalDistribution(pointRandomGenerator, means, covariances);
+        kMeansCreator.setPointIdLowerBound(pointIdLowerBound);
+        kMeansCreator.setCentroidRandom(centroidRandomGenerator);
+        kMeansCreator.setDimension(dimension);
+        kMeansCreator.setDistance(distance);
+        kMeansCreator.setCentroidsNo(centroidsNo);
+        double[][] covariances = kMeansCreator.getCovariancesFromString(covariancesAsString, means);
+        kMeansCreator.initializeMultiderivativeNormalDistribution(pointRandomGenerator, means, covariances);
     }
 }
