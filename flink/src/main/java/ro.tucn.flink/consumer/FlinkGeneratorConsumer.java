@@ -44,7 +44,8 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     public BatchPairOperator<String, String> getPairOperator(Properties properties,
                                                              String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDatasetFromGenerator(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDatasetFromGenerator(topic);
         DataSet<Tuple2<String, String>> pairDataSet = getPairDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
         return new FlinkBatchPairOperator<String, String>(pairDataSet, parallelism);
     }
@@ -53,7 +54,8 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     public BatchOperator<Point> getPointOperator(Properties properties,
                                                  String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataSet<String> jsonDataSet = getStringDataSetFromGenerator(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        DataSet<String> jsonDataSet = getStringDataSetFromGenerator(topic);
         DataSet<Point> pointDataSet = getPointDataSetFromJsonDataSet(jsonDataSet);
         return new FlinkBatchOperator<Point>(pointDataSet, parallelism);
     }
@@ -62,7 +64,8 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     public BatchOperator<String> getStringOperator(Properties properties,
                                                    String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(topic);
         DataSet<String> dataSet = getStringDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
         return new FlinkBatchOperator<String>(dataSet, parallelism);
     }
@@ -86,13 +89,13 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
         return pairDataSet;
     }
 
-    private DataSet<String> getStringWithJsonAsValueDatasetFromGenerator(Properties properties, String topicPropertyName) {
-        DataSet<String> dataSet = getDataSetFromGenerator(properties, topicPropertyName);
+    private DataSet<String> getStringWithJsonAsValueDatasetFromGenerator(String topic) {
+        DataSet<String> dataSet = getDataSetFromGenerator(topic);
         return dataSet;
     }
 
-    private DataSet<String> getStringDataSetFromGenerator(Properties properties, String topicPropertyName) {
-        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(properties, topicPropertyName);
+    private DataSet<String> getStringDataSetFromGenerator(String topic) {
+        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(topic);
         DataSet<String> dataSet = getStringDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
         return dataSet;
     }
@@ -121,13 +124,12 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
         return dataSet;
     }
 
-    private DataSet<String> getStringWithJsonAsValueDataSetFromGenerator(Properties properties, String topicPropertyName) {
-        DataSet<String> dataSet = getDataSetFromGenerator(properties, topicPropertyName);
+    private DataSet<String> getStringWithJsonAsValueDataSetFromGenerator(String topic) {
+        DataSet<String> dataSet = getDataSetFromGenerator(topic);
         return dataSet;
     }
 
-    private DataSet<String> getDataSetFromGenerator(Properties properties, String topicPropertyName) {
-        String topic = getTopicFromProperties(properties, topicPropertyName);
+    private DataSet<String> getDataSetFromGenerator(String topic) {
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
         List<String> jsons = getJsonListFromMapList(generatedData);
         DataSet<String> jsonDataSet = env.fromCollection(jsons);
