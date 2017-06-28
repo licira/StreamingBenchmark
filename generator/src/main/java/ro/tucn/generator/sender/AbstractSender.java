@@ -20,4 +20,6 @@ public abstract class AbstractSender implements Serializable {
     public void setTopic(String topic) {
         this.topic = topic;
     }
+
+    public abstract void close();
 }
