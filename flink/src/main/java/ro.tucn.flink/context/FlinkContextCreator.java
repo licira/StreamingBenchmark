@@ -47,7 +47,7 @@ public class FlinkContextCreator extends ContextCreator {
 
     @Override
     public AbstractGeneratorConsumer getGeneratorConsumer() {
-        return new FlinkGeneratorConsumer();
+        return new FlinkGeneratorConsumer(env);
     }
 
     private void initializeProperties() throws IOException {
