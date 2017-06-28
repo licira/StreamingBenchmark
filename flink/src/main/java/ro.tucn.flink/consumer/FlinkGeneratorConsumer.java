@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.log4j.Logger;
 import ro.tucn.DataMode;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.flink.operator.batch.FlinkBatchOperator;
@@ -26,6 +27,8 @@ import java.util.Properties;
  * Created by Liviu on 6/27/2017.
  */
 public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
+
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     protected AbstractGenerator generator;
     private ExecutionEnvironment env;
@@ -130,9 +133,14 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
         //generator.generate(0);
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
         List<String> jsons = new ArrayList<>();
-        for (Map<String, String> map : generatedData) {
-            String json = map.get(null);
-            jsons.add(json);
+        try {
+            for (Map<String, String> map : generatedData) {
+                String json = map.get(null);
+                jsons.add(json);
+            }
+        } catch (NullPointerException e) {
+            logger.error(e.getMessage());
+            return null;
         }
         DataSet<String> jsonDataSet = env.fromCollection(jsons);
         return jsonDataSet;
