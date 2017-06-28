@@ -8,6 +8,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
+import ro.tucn.spark.consumer.SparkGeneratorConsumer;
 import ro.tucn.spark.consumer.SparkKafkaConsumerCustom;
 import ro.tucn.spark.statistics.PerformanceStreamingListener;
 
@@ -53,7 +54,7 @@ public class SparkContextCreator extends ContextCreator {
 
     @Override
     public AbstractGeneratorConsumer getGeneratorConsumer() {
-        return null;
+        return new SparkGeneratorConsumer();
     }
 
     private void initializeProperties() throws IOException {
