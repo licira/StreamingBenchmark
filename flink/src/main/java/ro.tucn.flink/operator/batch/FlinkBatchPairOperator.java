@@ -48,6 +48,10 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     @Override
     public void print() {
-
+        try {
+            dataSet.print();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }

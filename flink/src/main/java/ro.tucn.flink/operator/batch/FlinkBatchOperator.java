@@ -46,7 +46,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         try {
             dataSet.print();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 }
