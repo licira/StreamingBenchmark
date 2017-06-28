@@ -1,12 +1,14 @@
 package ro.tucn.flink.context;
 
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.log4j.Logger;
+import ro.tucn.DataMode;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
-import ro.tucn.flink.consumer.FlinkGeneratorConsumer;
-import ro.tucn.flink.consumer.FlinkKafkaConsumerCustom;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
+import ro.tucn.flink.consumer.FlinkGeneratorConsumer;
+import ro.tucn.flink.consumer.FlinkKafkaConsumerCustom;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -20,21 +22,36 @@ public class FlinkContextCreator extends ContextCreator {
 
     private static final String FLINK_PROPERTIES_FILE_NAME = "flink-cluster.properties";
 
-    private final StreamExecutionEnvironment env;
+    private StreamExecutionEnvironment streamEnv = null;
+    private ExecutionEnvironment batchEnv = null;
     private Properties properties;
+    private String dataMode;
 
-    public FlinkContextCreator(String name) throws IOException {
+    public FlinkContextCreator(String name, String mode) throws IOException {
         super(name);
         System.out.println("1");
         initializeProperties();
-        env = StreamExecutionEnvironment.getExecutionEnvironment();
+        initializeEnv(mode);
         System.out.println("2");
+    }
+
+    private void initializeEnv(String mode) {
+        this.dataMode = mode;
+        if (dataMode.equals(DataMode.STREAMING)) {
+            streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();
+        } else if (dataMode.equals(DataMode.BATCH)) {
+            batchEnv = ExecutionEnvironment.getExecutionEnvironment();
+        }
     }
 
     @Override
     public void Start() {
         try {
-            env.execute(appName);
+            if (dataMode.equals(DataMode.STREAMING)) {
+                streamEnv.execute(appName);
+            } else if (dataMode.equals(DataMode.BATCH)) {
+                batchEnv.execute(appName);
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -42,12 +59,12 @@ public class FlinkContextCreator extends ContextCreator {
 
     @Override
     public AbstractKafkaConsumerCustom getKafkaConsumerCustom() {
-        return new FlinkKafkaConsumerCustom(env);
+        return new FlinkKafkaConsumerCustom(streamEnv);
     }
 
     @Override
     public AbstractGeneratorConsumer getGeneratorConsumer() {
-        return new FlinkGeneratorConsumer(env);
+        return new FlinkGeneratorConsumer(batchEnv);
     }
 
     private void initializeProperties() throws IOException {
