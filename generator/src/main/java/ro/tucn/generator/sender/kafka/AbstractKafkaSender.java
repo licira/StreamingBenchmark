@@ -34,6 +34,7 @@ public abstract class AbstractKafkaSender extends AbstractSender implements Seri
         producer.close();
     }
 
+    @Override
     public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, 0, timestamp, key, value);

@@ -7,6 +7,8 @@ public abstract class AbstractSender {
 
     protected String topic;
 
+    public abstract void send(String topic, Object key, Object value);
+
     public String getTopic() {
         return topic;
     }
