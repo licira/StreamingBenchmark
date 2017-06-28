@@ -46,7 +46,8 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public BatchOperator<String> getStringOperator(Properties properties,
                                                    String topicPropertyName) {
-        JavaRDD<String> rddWithJsonAsValue = getStringWithJsonAsValueRddFromGenerator(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        JavaRDD<String> rddWithJsonAsValue = getStringWithJsonAsValueRddFromGenerator(topic);
         JavaRDD<String> rdd = getRddFromRddWithJsonAsValue(rddWithJsonAsValue);
         return new SparkBatchOperator<String>(rdd, parallelism);
     }
@@ -54,7 +55,8 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public BatchPairOperator<String, String> getPairOperator(Properties properties,
                                                              String topicPropertyName) {
-        JavaRDD<String> streamWithJsonAsValue = getStringWithJsonAsValueRddFromGenerator(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        JavaRDD<String> streamWithJsonAsValue = getStringWithJsonAsValueRddFromGenerator(topic);
         JavaPairRDD<String, String> pairRdd = getPairRddFromRddWithJsonAsValue(streamWithJsonAsValue);
         return new SparkBatchPairOperator<String, String>(pairRdd, parallelism);
     }
@@ -62,7 +64,8 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public BatchOperator<Point> getPointOperator(Properties properties,
                                                  String topicPropertyName) {
-        JavaRDD<String> jsonStream = getStringRddFromGenerator(properties, topicPropertyName);
+        String topic = getTopicFromProperties(properties, topicPropertyName);
+        JavaRDD<String> jsonStream = getStringRddFromGenerator(topic);
         JavaRDD<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new SparkBatchOperator<Point>(pointStream, parallelism);
     }
@@ -82,14 +85,14 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
         return pointStream;
     }
 
-    private JavaRDD<String> getStringRddFromGenerator(Properties properties, String topicPropertyName) {
-        JavaRDD<String> rddWithJsonAsValue = getStringWithJsonAsValueRddFromKafka(properties, topicPropertyName);
+    private JavaRDD<String> getStringRddFromGenerator(String topic) {
+        JavaRDD<String> rddWithJsonAsValue = getStringWithJsonAsValueRddFromKafka(topic);
         JavaRDD<String> rdd = getRddFromRddWithJsonAsValue(rddWithJsonAsValue);
         return rdd;
     }
 
-    private JavaRDD<String> getStringWithJsonAsValueRddFromKafka(Properties properties, String topicPropertyName) {
-        JavaRDD<String> rddWithJsonAsValue = getDirectRddFromGenerator(properties, topicPropertyName);
+    private JavaRDD<String> getStringWithJsonAsValueRddFromKafka(String topic) {
+        JavaRDD<String> rddWithJsonAsValue = getDirectRddFromGenerator(topic);
         return rddWithJsonAsValue;
     }
 
@@ -111,13 +114,12 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
         return rdd;
     }
 
-    private JavaRDD<String> getStringWithJsonAsValueRddFromGenerator(Properties properties, String topicPropertyName) {
-        JavaRDD<String> rdd = getDirectRddFromGenerator(properties, topicPropertyName);
+    private JavaRDD<String> getStringWithJsonAsValueRddFromGenerator(String topic) {
+        JavaRDD<String> rdd = getDirectRddFromGenerator(topic);
         return rdd;
     }
 
-    private JavaRDD<String> getDirectRddFromGenerator(Properties properties, String topicPropertyName) {
-        String topic = getTopicFromProperties(properties, topicPropertyName);
+    private JavaRDD<String> getDirectRddFromGenerator(String topic) {
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
         List<String> jsons = getJsonListFromMapList(generatedData);
         JavaRDD<String> jsonRdds = sc.parallelize(jsons);
