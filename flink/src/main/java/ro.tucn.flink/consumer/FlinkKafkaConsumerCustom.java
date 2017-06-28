@@ -64,12 +64,12 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     @Override
     public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
         setEnvParallelism(parallelism);
-        DataStream<String> jsonStream = getStringSstreamFromKafka(properties, topicPropertyName);
+        DataStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new FlinkOperator<>(pointStream, parallelism);
     }
 
-    private DataStream<String> getStringSstreamFromKafka(Properties properties, String topicPropertyName) {
+    private DataStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         return stream;
