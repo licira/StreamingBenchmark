@@ -6,15 +6,15 @@ import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import ro.tucn.exceptions.UnsupportOperatorException;
-import ro.tucn.flink.operator.FlinkOperator;
+import ro.tucn.flink.operator.FlinkStreamOperator;
 import ro.tucn.frame.functions.FilterFunction;
 import ro.tucn.frame.functions.MapFunction;
 import ro.tucn.frame.functions.MapPairFunction;
 import ro.tucn.frame.functions.MapPartitionFunction;
 import ro.tucn.operator.BaseOperator;
+import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamWindowedOperator;
-import ro.tucn.operator.StreamOperator;
 import scala.Tuple2;
 
 /**
@@ -37,7 +37,7 @@ public class FlinkStreamWindowedOperator<T, W extends Window> extends StreamWind
                 collector.collect(r);
             }
         });
-        return new FlinkOperator<>(newDataStream, parallelism);
+        return new FlinkStreamOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class FlinkStreamWindowedOperator<T, W extends Window> extends StreamWind
                 collector.collect(result);
             }
         });
-        return new FlinkOperator<>(newDataStream, parallelism);
+        return new FlinkStreamOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -59,14 +59,14 @@ public class FlinkStreamWindowedOperator<T, W extends Window> extends StreamWind
                     collector.collect(value);
             }
         });
-        return new FlinkOperator<>(newDataStream, parallelism);
+        return new FlinkStreamOperator<>(newDataStream, parallelism);
     }
 
     @Override
     public StreamOperator<T> reduce(ro.tucn.frame.functions.ReduceFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = windowStream.reduce((ReduceFunction<T>) (t, t1) ->
                 fun.reduce(t, t1));
-        return new FlinkOperator<>(newDataStream, parallelism);
+        return new FlinkStreamOperator<>(newDataStream, parallelism);
     }
 
     @Override
