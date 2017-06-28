@@ -1,4 +1,4 @@
-package ro.tucn.generator.sender;
+package ro.tucn.generator.sender.kafka;
 
 import ro.tucn.generator.helper.entity.KMeansJSONHelper;
 import ro.tucn.kMeans.Point;

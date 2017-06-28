@@ -6,9 +6,9 @@ import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.creator.entity.AdvCreator;
 import ro.tucn.generator.creator.entity.ClickCreator;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractKafkaSender;
-import ro.tucn.generator.sender.AdvSender;
-import ro.tucn.generator.sender.ClickSender;
+import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
+import ro.tucn.generator.sender.kafka.AdvSender;
+import ro.tucn.generator.sender.kafka.ClickSender;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;

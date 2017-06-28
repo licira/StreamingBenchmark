@@ -1,4 +1,4 @@
-package ro.tucn.generator.sender;
+package ro.tucn.generator.sender.kafka;
 
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.generator.helper.entity.SentenceJSONHelper;

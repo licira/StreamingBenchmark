@@ -5,8 +5,8 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.creator.entity.KMeansCreator;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractKafkaSender;
-import ro.tucn.generator.sender.KMeansSender;
+import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
+import ro.tucn.generator.sender.kafka.KMeansSender;
 import ro.tucn.kMeans.Point;
 
 import java.util.List;

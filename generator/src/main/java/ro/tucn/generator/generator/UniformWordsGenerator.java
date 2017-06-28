@@ -5,8 +5,8 @@ import org.apache.log4j.Logger;
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.generator.creator.entity.SentenceCreator;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractKafkaSender;
-import ro.tucn.generator.sender.SentenceSender;
+import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
+import ro.tucn.generator.sender.kafka.SentenceSender;
 
 import static ro.tucn.topic.KafkaTopics.UNIFORM_WORDS;
 

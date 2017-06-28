@@ -1,4 +1,4 @@
-package ro.tucn.generator.sender;
+package ro.tucn.generator.sender.kafka;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
