@@ -17,12 +17,13 @@ public class Application {
     public static void main(String args[]) {
         if (args.length > 0) {
             HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
-            ArgsParser.checkParamsValidityForGenerator(parsedArgs);
+            ArgsParser.checkParamsValidityForTestBed(parsedArgs);
             String topic = ArgsParser.getTopic(parsedArgs);
+            String mode = ArgsParser.getMode(parsedArgs);
             int sleepFrequency = ArgsParser.getSleepFrequency(parsedArgs);
             int entitiesNumber = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
             logger.info(topic);
-            AbstractGenerator generator = GeneratorCreator.getNewGenerator(topic, entitiesNumber);
+            AbstractGenerator generator = GeneratorCreator.getNewGenerator(topic, mode, entitiesNumber);
             generator.generate(sleepFrequency);
         }
     }
