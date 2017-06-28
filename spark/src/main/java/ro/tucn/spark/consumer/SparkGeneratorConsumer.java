@@ -1,7 +1,6 @@
 package ro.tucn.spark.consumer;
 
 import com.google.gson.Gson;
-import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -19,7 +18,6 @@ import ro.tucn.util.Message;
 import ro.tucn.util.TimeHolder;
 import scala.Tuple2;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -29,7 +27,6 @@ import java.util.Properties;
  */
 public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
 
-    private static final Logger logger = Logger.getLogger(SparkGeneratorConsumer.class);
     protected AbstractGenerator generator;
     private JavaSparkContext sc;
     private JavaStreamingContext jssc;
@@ -122,15 +119,7 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     private JavaRDD<String> getDirectRddFromGenerator(Properties properties, String topicPropertyName) {
         String topic = getTopicFromProperties(properties, topicPropertyName);
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
-        List<String> jsons = new ArrayList<>();
-        try {
-            for (Map<String, String> map : generatedData) {
-                String json = map.get(null);
-                jsons.add(json);
-            }
-        } catch (NullPointerException e) {
-            logger.error(e.getMessage());
-        }
+        List<String> jsons = getJsonListFromMapList(generatedData);
         JavaRDD<String> jsonRdds = sc.parallelize(jsons);
         return jsonRdds;
     }
