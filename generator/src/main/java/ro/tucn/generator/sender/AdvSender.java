@@ -7,7 +7,7 @@ import ro.tucn.util.Message;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public class AdvSender extends AbstractKafkaMessageSender {
+public class AdvSender extends AbstractKafkaSender {
 
     private AdvJSONHelper jsonHelper;
 

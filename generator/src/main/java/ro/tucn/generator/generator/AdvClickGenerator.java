@@ -6,7 +6,7 @@ import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.creator.entity.AdvCreator;
 import ro.tucn.generator.creator.entity.ClickCreator;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractKafkaMessageSender;
+import ro.tucn.generator.sender.AbstractKafkaSender;
 import ro.tucn.generator.sender.AdvSender;
 import ro.tucn.generator.sender.ClickSender;
 
@@ -24,8 +24,8 @@ import static ro.tucn.topic.KafkaTopics.CLICK;
 public class AdvClickGenerator extends AbstractGenerator {
 
     private static Long totalAdvs;
-    private AbstractKafkaMessageSender advSender;
-    private AbstractKafkaMessageSender clickSender;
+    private AbstractKafkaSender advSender;
+    private AbstractKafkaSender clickSender;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
     private ArrayList<Adv> advs;

@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public abstract class AbstractKafkaMessageSender implements Serializable {
+public abstract class AbstractKafkaSender implements Serializable {
 
     protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     protected static KafkaProducer<String, String> producer;
@@ -19,7 +19,7 @@ public abstract class AbstractKafkaMessageSender implements Serializable {
     protected String topic;
     private ProducerCreator producerCreator;
 
-    public AbstractKafkaMessageSender() {
+    public AbstractKafkaSender() {
         producerCreator = new ProducerCreator();
     }
 

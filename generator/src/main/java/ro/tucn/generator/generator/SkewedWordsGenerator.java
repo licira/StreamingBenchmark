@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import ro.tucn.generator.entity.Sentence;
 import ro.tucn.generator.creator.entity.SentenceCreator;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractKafkaMessageSender;
+import ro.tucn.generator.sender.AbstractKafkaSender;
 import ro.tucn.generator.sender.SentenceSender;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
@@ -19,7 +19,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private SentenceCreator SentenceCreator;
-    private AbstractKafkaMessageSender sentenceSender;
+    private AbstractKafkaSender sentenceSender;
 
     private long totalSentences = 10;
 

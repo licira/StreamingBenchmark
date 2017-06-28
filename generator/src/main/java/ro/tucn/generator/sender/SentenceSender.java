@@ -7,7 +7,7 @@ import ro.tucn.util.Message;
 /**
  * Created by liviu.cira on 11.05.2017.
  */
-public class SentenceSender extends AbstractKafkaMessageSender {
+public class SentenceSender extends AbstractKafkaSender {
 
     private SentenceJSONHelper jsonHelper;
 

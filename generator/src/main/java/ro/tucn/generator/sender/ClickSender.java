@@ -7,7 +7,7 @@ import ro.tucn.util.Message;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public class ClickSender extends AbstractKafkaMessageSender {
+public class ClickSender extends AbstractKafkaSender {
 
     private ClickJSONHelper jsonHelper;
 

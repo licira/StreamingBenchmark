@@ -5,7 +5,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.creator.entity.KMeansCreator;
 import ro.tucn.generator.helper.TimeHelper;
-import ro.tucn.generator.sender.AbstractKafkaMessageSender;
+import ro.tucn.generator.sender.AbstractKafkaSender;
 import ro.tucn.generator.sender.KMeansSender;
 import ro.tucn.kMeans.Point;
 
@@ -23,7 +23,7 @@ public class KMeansGenerator extends AbstractGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private KMeansCreator KMeansCreator;
-    private AbstractKafkaMessageSender kMeansSender;
+    private AbstractKafkaSender kMeansSender;
 
     private List<Point> centroids;
     private static long totalPoints;
