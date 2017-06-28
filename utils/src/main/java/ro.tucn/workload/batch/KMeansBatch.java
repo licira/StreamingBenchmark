@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.kMeans.Point;
+import ro.tucn.operator.BatchOperator;
 import ro.tucn.workload.Workload;
 
 /**
@@ -22,6 +24,14 @@ public class KMeansBatch extends Workload {
     @Override
     public void process() {
         generatorConsumer.setParallelism(parallelism);
-
+        BatchOperator<Point> points = generatorConsumer.getPointOperator(properties, "topic1");
+        BatchOperator<Point> centroids = generatorConsumer.getPointOperator(properties, "topic2");
+        //points.print();
+        //centroids.print();
+        try {
+            points.kMeansCluster(centroids);
+        } catch (WorkloadException e) {
+            e.printStackTrace();
+        }
     }
 }
