@@ -9,8 +9,8 @@ import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
-import ro.tucn.generator.sender.kafka.AdvSender;
-import ro.tucn.generator.sender.kafka.ClickSender;
+import ro.tucn.generator.sender.kafka.AdvSenderKafka;
+import ro.tucn.generator.sender.kafka.ClickSenderKafka;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -26,8 +26,8 @@ import static ro.tucn.topic.KafkaTopics.CLICK;
 public class AdvClickGenerator extends AbstractGenerator {
 
     private static Long totalAdvs;
-    private AbstractSender advSender;
-    private AbstractSender clickSender;
+    private AbstractSender AdvSenderKafka;
+    private AbstractSender ClickSenderKafka;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
     private ArrayList<Adv> advs;
@@ -65,12 +65,12 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     private void initializeKafkaMessageSendersWithSmallBuffer() {
-        advSender = new AdvSender();
-        advSender.setTopic(ADV);
-        ((AbstractKafkaSender)advSender).initializeSmallBufferProducer(bootstrapServers);
-        clickSender = new ClickSender();
-        clickSender.setTopic(CLICK);
-        ((AbstractKafkaSender)clickSender).initializeSmallBufferProducer(bootstrapServers);
+        AdvSenderKafka = new AdvSenderKafka();
+        AdvSenderKafka.setTopic(ADV);
+        ((AbstractKafkaSender)AdvSenderKafka).initializeSmallBufferProducer(bootstrapServers);
+        ClickSenderKafka = new ClickSenderKafka();
+        ClickSenderKafka.setTopic(CLICK);
+        ((AbstractKafkaSender)ClickSenderKafka).initializeSmallBufferProducer(bootstrapServers);
     }
 
     private void initializeOfflineMessageSenders() {
@@ -86,13 +86,13 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     private void shutdownSender() {
-        ((AbstractKafkaSender)advSender).close();
-        ((AbstractKafkaSender)clickSender).close();
+        ((AbstractKafkaSender)AdvSenderKafka).close();
+        ((AbstractKafkaSender)ClickSenderKafka).close();
     }
 
     private Adv submitNewAdv() {
         Adv adv = AdvCreator.getNewAdv();
-        advSender.send(adv);
+        AdvSenderKafka.send(adv);
         return adv;
     }
 
@@ -101,7 +101,7 @@ public class AdvClickGenerator extends AbstractGenerator {
             // probability that the customer would click this advertisement
             if (generator.nextUniform(0, 1) <= clickProbability) {
                 Click click = clickCreator.getNewClick(adv);
-                clickSender.send(click);
+                ClickSenderKafka.send(click);
                 attemptSleep(adv.getTimestamp());
             }
         }

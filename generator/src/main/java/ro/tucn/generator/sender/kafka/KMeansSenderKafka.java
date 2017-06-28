@@ -7,11 +7,11 @@ import ro.tucn.util.Message;
 /**
  * Created by Liviu on 5/9/2017.
  */
-public class KMeansSender extends AbstractKafkaSender {
+public class KMeansSenderKafka extends AbstractKafkaSender {
 
     private KMeansJSONHelper jsonHelper;
 
-    public KMeansSender() {
+    public KMeansSenderKafka() {
         super();
         jsonHelper = new KMeansJSONHelper();
     }

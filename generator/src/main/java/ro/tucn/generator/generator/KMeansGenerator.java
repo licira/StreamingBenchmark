@@ -8,7 +8,7 @@ import ro.tucn.generator.creator.entity.KMeansCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
-import ro.tucn.generator.sender.kafka.KMeansSender;
+import ro.tucn.generator.sender.kafka.KMeansSenderKafka;
 import ro.tucn.kMeans.Point;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class KMeansGenerator extends AbstractGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private KMeansCreator KMeansCreator;
-    private AbstractSender kMeansSender;
+    private AbstractSender KMeansSenderKafka;
 
     private List<Point> centroids;
     private static long totalPoints;
@@ -51,28 +51,28 @@ public class KMeansGenerator extends AbstractGenerator {
     }
 
     private void initializeKafkaMessageSenderWithSmallBuffer() {
-        kMeansSender = new KMeansSender();
-        ((AbstractKafkaSender)kMeansSender).initializeSmallBufferProducer(bootstrapServers);
+        KMeansSenderKafka = new KMeansSenderKafka();
+        ((AbstractKafkaSender)KMeansSenderKafka).initializeSmallBufferProducer(bootstrapServers);
     }
 
     private void shutdownSender() {
-        ((AbstractKafkaSender)kMeansSender).close();
+        ((AbstractKafkaSender)KMeansSenderKafka).close();
     }
 
     private void submitPoint(Point point) {
-        kMeansSender.send(point);
+        KMeansSenderKafka.send(point);
     }
 
     @Override
     protected void submitData(int sleepFrequency) {
-        kMeansSender.setTopic(POINT);
+        KMeansSenderKafka.setTopic(POINT);
         for (int i = 0; i < totalPoints; i++) {
             Point point = KMeansCreator.getNewPoint(centroids);
             submitPoint(point);
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
             TimeHelper.temporizeDataGeneration(sleepFrequency, i);
         }
-        kMeansSender.setTopic(CENTROID);
+        KMeansSenderKafka.setTopic(CENTROID);
         for (int i = 0; i < centroids.size(); i++) {
             submitPoint(centroids.get(i));
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());

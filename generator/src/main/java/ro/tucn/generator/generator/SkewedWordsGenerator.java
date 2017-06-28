@@ -8,7 +8,7 @@ import ro.tucn.generator.entity.Sentence;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
-import ro.tucn.generator.sender.kafka.SentenceSender;
+import ro.tucn.generator.sender.kafka.SentenceSenderKafka;
 import ro.tucn.skewedWords.FastZipfGenerator;
 
 import static ro.tucn.topic.KafkaTopics.SKEWED_WORDS;
@@ -21,7 +21,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private SentenceCreator SentenceCreator;
-    private AbstractSender sentenceSender;
+    private AbstractSender SentenceSenderKafka;
 
     private long totalSentences = 10;
 
@@ -41,7 +41,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
 
     private void submitNewSentence() {
         Sentence sentence = SentenceCreator.getNewSkewedWordsSentence();
-        sentenceSender.send(sentence);
+        SentenceSenderKafka.send(sentence);
     }
 
     private void initializeHelper() {
@@ -49,16 +49,16 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     private void initializeKafkaMessageSenderWithSmallBuffer() {
-        sentenceSender = new SentenceSender();
-        sentenceSender.setTopic(SKEWED_WORDS);
-        ((AbstractKafkaSender)sentenceSender).initializeSmallBufferProducer(bootstrapServers);
+        SentenceSenderKafka = new SentenceSenderKafka();
+        SentenceSenderKafka.setTopic(SKEWED_WORDS);
+        ((AbstractKafkaSender)SentenceSenderKafka).initializeSmallBufferProducer(bootstrapServers);
     }
 
     private void initializeOfflineMessageSender() {
     }
 
     private void shutdownSender() {
-        ((AbstractKafkaSender)sentenceSender).close();
+        ((AbstractKafkaSender)SentenceSenderKafka).close();
     }
 
     @Override
