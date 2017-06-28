@@ -11,6 +11,8 @@ import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
+import java.util.List;
+
 /**
  * Created by Liviu on 6/27/2017.
  */
@@ -44,7 +46,10 @@ public class SparkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     @Override
     public void print() {
-
+        List<Tuple2<K, V>> collect = pairRDD.collect();
+        for (Tuple2<K, V> tuple : collect) {
+            logger.info(tuple);
+        }
     }
 
 }

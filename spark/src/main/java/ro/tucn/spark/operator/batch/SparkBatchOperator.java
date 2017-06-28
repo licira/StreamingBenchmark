@@ -8,7 +8,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 /**
  * Created by Liviu on 6/25/2017.
@@ -46,11 +46,9 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public void print() {
-        rdd.collect().forEach(new Consumer<T>() {
-            @Override
-            public void accept(T t) {
-                logger.info(t.toString());
-            }
-        });
+        List<T> collect = rdd.collect();
+        for (T t : collect) {
+            logger.info(t.toString());
+        }
     }
 }
