@@ -5,6 +5,8 @@ import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.ConfigReader;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -40,6 +42,8 @@ public abstract class AbstractGenerator<K, V> {
     protected abstract void initializeDataGenerators();
 
     protected abstract void initializeWorkloadData();
+
+    public abstract List<Map<String, String>> getGeneratedData(String topic);
 
     private void initialzeBootstrapServersData() {
         Properties properties = null;
