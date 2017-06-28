@@ -44,8 +44,4 @@ public abstract class AbstractGeneratorConsumer extends AbstractConsumer {
         }
         return jsons;
     }
-
-    protected String getTopicFromProperties(Properties properties, String topicPropertyName) {
-        return properties.getProperty(topicPropertyName);
-    }
 }

@@ -123,10 +123,6 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         return env.addSource(kafkaConsumer);
     }
 
-    private String getTopicFromProperties(Properties properties, String topicPropertyName) {
-        return properties.getProperty(topicPropertyName);
-    }
-
     private void setEnvParallelism(int parallelism) {
         env.setParallelism(parallelism);
     }
