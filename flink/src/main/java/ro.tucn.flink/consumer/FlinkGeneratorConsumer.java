@@ -1,5 +1,6 @@
 package ro.tucn.flink.consumer;
 
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BatchOperator;
@@ -13,23 +14,30 @@ import java.util.Properties;
  */
 public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
 
+    private StreamExecutionEnvironment env;
+
+    public FlinkGeneratorConsumer(StreamExecutionEnvironment env) {
+        super();
+        this.env = env;
+    }
+
     @Override
-    public BatchPairOperator<String, String> getBatchPairOperator(Properties properties, String topicPropertyName) {
+    public BatchPairOperator<String, String> getPairOperator(Properties properties, String topicPropertyName) {
         return null;
     }
 
     @Override
-    public BatchOperator<TimeHolder<String>> getBatchStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
+    public BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
         return null;
     }
 
     @Override
-    public BatchOperator<Point> getBatchPointOperator(Properties properties, String topicPropertyName) {
+    public BatchOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
         return null;
     }
 
     @Override
-    public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
+    public BatchOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
         return null;
     }
 }
