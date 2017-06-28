@@ -5,18 +5,19 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 import ro.tucn.generator.creator.ProducerCreator;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractSender;
 
 import java.io.Serializable;
 
 /**
  * Created by Liviu on 5/9/2017.
  */
-public abstract class AbstractKafkaSender implements Serializable {
+public abstract class AbstractKafkaSender extends AbstractSender implements Serializable {
 
     protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+
     protected static KafkaProducer<String, String> producer;
     protected static ProducerRecord<String, String> newRecord;
-    protected String topic;
     private ProducerCreator producerCreator;
 
     public AbstractKafkaSender() {
@@ -41,13 +42,5 @@ public abstract class AbstractKafkaSender implements Serializable {
                 "\tPartition:" + newRecord.partition() +
                 "\tMessage: " + newRecord.value()
         );
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
     }
 }
