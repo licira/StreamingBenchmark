@@ -20,8 +20,9 @@ public class SparkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     public JavaPairRDD<K, V> pairRDD;
 
-    public SparkBatchPairOperator(int parallelism) {
+    public SparkBatchPairOperator(JavaPairRDD<K, V> pairRDD, int parallelism) {
         super(parallelism);
+        this.pairRDD = pairRDD;
     }
 
     @Override
