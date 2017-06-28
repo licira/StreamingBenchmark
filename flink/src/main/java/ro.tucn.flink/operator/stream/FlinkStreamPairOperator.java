@@ -18,7 +18,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.datastream.NoWindowJoinedStreams;
 import ro.tucn.flink.operator.FlinkGroupedOperator;
-import ro.tucn.flink.operator.FlinkOperator;
+import ro.tucn.flink.operator.FlinkStreamOperator;
 import ro.tucn.frame.functions.*;
 import ro.tucn.operator.*;
 import ro.tucn.statistics.LatencyLog;
@@ -243,7 +243,7 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
     public <R> StreamOperator<R> map(final MapFunction<Tuple2<K, V>, R> fun, final String componentId) {
         DataStream<R> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<Tuple2<K, V>, R>) value ->
                 fun.map(value));
-        return new FlinkOperator<>(newDataStream, parallelism);
+        return new FlinkStreamOperator<>(newDataStream, parallelism);
     }
 
     @Override
@@ -253,7 +253,7 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
         TypeInformation<R> outType = TypeExtractor.getForClass(outputClass);
         DataStream<R> newDataStream = dataStream.transform("Map", outType,
                 new StreamMap<>(dataStream.getExecutionEnvironment().clean(mapper)));
-        return new FlinkOperator<>(newDataStream, parallelism);
+        return new FlinkStreamOperator<>(newDataStream, parallelism);
     }
 
     @Override
