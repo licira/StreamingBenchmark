@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
 
-    protected AbstractGenerator generator;
+    private AbstractGenerator generator;
     private JavaSparkContext sc;
     private JavaStreamingContext jssc;
 

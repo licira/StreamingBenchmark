@@ -26,7 +26,7 @@ import java.util.Properties;
  */
 public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
 
-    protected AbstractGenerator generator;
+    private AbstractGenerator generator;
     private ExecutionEnvironment env;
 
     public FlinkGeneratorConsumer(ExecutionEnvironment env) {
