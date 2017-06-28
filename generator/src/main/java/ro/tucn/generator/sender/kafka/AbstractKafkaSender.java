@@ -14,8 +14,8 @@ public abstract class AbstractKafkaSender extends AbstractSender  {
 
     protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    protected static KafkaProducer<String, String> producer;
-    protected static ProducerRecord<String, String> newRecord;
+    protected KafkaProducer<String, String> producer;
+    protected ProducerRecord<String, String> newRecord;
     private ProducerCreator producerCreator;
 
     public AbstractKafkaSender() {
@@ -26,6 +26,7 @@ public abstract class AbstractKafkaSender extends AbstractSender  {
         producer = producerCreator.createSmallBufferProducer(bootstrapServers);
     }
 
+    @Override
     public void close() {
         producer.close();
     }
@@ -34,9 +35,8 @@ public abstract class AbstractKafkaSender extends AbstractSender  {
     public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, 0, timestamp, key, value);
-        producer.send(newRecord);
+        //producer.send(newRecord);
         logger.info("Topic: " + topic +
-                "\tPartition:" + newRecord.partition() +
                 "\tMessage: " + newRecord.value()
         );
     }
