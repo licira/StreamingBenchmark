@@ -20,8 +20,9 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     private DataSet<Tuple2<K, V>> dataSet;
 
-    public FlinkBatchPairOperator(int parallelism) {
+    public FlinkBatchPairOperator(DataSet<Tuple2<K, V>> dataSet, int parallelism) {
         super(parallelism);
+        this.dataSet = dataSet;
     }
 
     @Override
