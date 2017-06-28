@@ -35,7 +35,7 @@ public abstract class AbstractGenerator<K, V> {
 
     protected abstract void submitData(int sleepFrequency);
 
-    protected abstract void initialize();
+    protected abstract void initialize(String dataMode);
 
     protected abstract void initializeDataGenerators();
 

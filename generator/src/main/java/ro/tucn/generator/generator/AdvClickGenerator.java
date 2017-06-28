@@ -1,11 +1,13 @@
 package ro.tucn.generator.generator;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import ro.tucn.generator.entity.Adv;
-import ro.tucn.generator.entity.Click;
+import ro.tucn.DataMode;
 import ro.tucn.generator.creator.entity.AdvCreator;
 import ro.tucn.generator.creator.entity.ClickCreator;
+import ro.tucn.generator.entity.Adv;
+import ro.tucn.generator.entity.Click;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.AdvSender;
 import ro.tucn.generator.sender.kafka.ClickSender;
@@ -24,8 +26,8 @@ import static ro.tucn.topic.KafkaTopics.CLICK;
 public class AdvClickGenerator extends AbstractGenerator {
 
     private static Long totalAdvs;
-    private AbstractKafkaSender advSender;
-    private AbstractKafkaSender clickSender;
+    private AbstractSender advSender;
+    private AbstractSender clickSender;
     private RandomDataGenerator generator;
     private ExecutorService cachedPool;
     private ArrayList<Adv> advs;
@@ -35,7 +37,7 @@ public class AdvClickGenerator extends AbstractGenerator {
 
     public AdvClickGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
-        initialize();
+        initialize(dataMode);
     }
 
     @Override
@@ -62,13 +64,16 @@ public class AdvClickGenerator extends AbstractGenerator {
         // for loop to generate advertisement
     }
 
-    private void initializeMessageSendersWithSmallBuffers() {
+    private void initializeKafkaMessageSendersWithSmallBuffer() {
         advSender = new AdvSender();
         advSender.setTopic(ADV);
-        advSender.initializeSmallBufferProducer(bootstrapServers);
+        ((AbstractKafkaSender)advSender).initializeSmallBufferProducer(bootstrapServers);
         clickSender = new ClickSender();
         clickSender.setTopic(CLICK);
-        clickSender.initializeSmallBufferProducer(bootstrapServers);
+        ((AbstractKafkaSender)clickSender).initializeSmallBufferProducer(bootstrapServers);
+    }
+
+    private void initializeOfflineMessageSenders() {
     }
 
     private void shutdownExecutorService() {
@@ -81,8 +86,8 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     private void shutdownSender() {
-        advSender.close();
-        clickSender.close();
+        ((AbstractKafkaSender)advSender).close();
+        ((AbstractKafkaSender)clickSender).close();
     }
 
     private Adv submitNewAdv() {
@@ -134,11 +139,19 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void initialize() {
-        initializeMessageSendersWithSmallBuffers();
+    protected void initialize(String dataMode) {
+        initializeMessageSenders(dataMode);
         initializeWorkloadData();
         initializeDataGenerators();
         initializeExecutorService();
+    }
+
+    private void initializeMessageSenders(String dataMode) {
+        if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+            initializeKafkaMessageSendersWithSmallBuffer();
+        } else if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+            initializeOfflineMessageSenders();
+        }
     }
 
     @Override

@@ -2,9 +2,11 @@ package ro.tucn.generator.generator;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.entity.Sentence;
+import ro.tucn.DataMode;
 import ro.tucn.generator.creator.entity.SentenceCreator;
+import ro.tucn.generator.entity.Sentence;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.SentenceSender;
 import ro.tucn.skewedWords.FastZipfGenerator;
@@ -19,13 +21,13 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private SentenceCreator SentenceCreator;
-    private AbstractKafkaSender sentenceSender;
+    private AbstractSender sentenceSender;
 
     private long totalSentences = 10;
 
     public SkewedWordsGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
-        initialize();
+        initialize(dataMode);
     }
 
     @Override
@@ -46,14 +48,17 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         SentenceCreator = new SentenceCreator();
     }
 
-    private void initializeMessageSenderWithSmallBuffer() {
+    private void initializeKafkaMessageSenderWithSmallBuffer() {
         sentenceSender = new SentenceSender();
         sentenceSender.setTopic(SKEWED_WORDS);
-        sentenceSender.initializeSmallBufferProducer(bootstrapServers);
+        ((AbstractKafkaSender)sentenceSender).initializeSmallBufferProducer(bootstrapServers);
+    }
+
+    private void initializeOfflineMessageSender() {
     }
 
     private void shutdownSender() {
-        sentenceSender.close();
+        ((AbstractKafkaSender)sentenceSender).close();
     }
 
     @Override
@@ -66,11 +71,19 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize(String dataMode) {
         initializeHelper();
-        initializeMessageSenderWithSmallBuffer();
+        initializeMessageSender(dataMode);
         initializeWorkloadData();
         initializeDataGenerators();
+    }
+
+    private void initializeMessageSender(String dataMode) {
+        if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+            initializeKafkaMessageSenderWithSmallBuffer();
+        } else if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+            initializeOfflineMessageSender();
+        }
     }
 
     @Override

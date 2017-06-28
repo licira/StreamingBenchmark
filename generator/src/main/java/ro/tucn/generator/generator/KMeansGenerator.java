@@ -3,8 +3,10 @@ package ro.tucn.generator.generator;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
+import ro.tucn.DataMode;
 import ro.tucn.generator.creator.entity.KMeansCreator;
 import ro.tucn.generator.helper.TimeHelper;
+import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.KMeansSender;
 import ro.tucn.kMeans.Point;
@@ -23,14 +25,14 @@ public class KMeansGenerator extends AbstractGenerator {
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private KMeansCreator KMeansCreator;
-    private AbstractKafkaSender kMeansSender;
+    private AbstractSender kMeansSender;
 
     private List<Point> centroids;
     private static long totalPoints;
 
     public KMeansGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
-        initialize();
+        initialize(dataMode);
     }
 
     @Override
@@ -48,13 +50,13 @@ public class KMeansGenerator extends AbstractGenerator {
         KMeansCreator = new KMeansCreator();
     }
 
-    private void initializeMessageSenderWithSmallBuffer() {
+    private void initializeKafkaMessageSenderWithSmallBuffer() {
         kMeansSender = new KMeansSender();
-        kMeansSender.initializeSmallBufferProducer(bootstrapServers);
+        ((AbstractKafkaSender)kMeansSender).initializeSmallBufferProducer(bootstrapServers);
     }
 
     private void shutdownSender() {
-        kMeansSender.close();
+        ((AbstractKafkaSender)kMeansSender).close();
     }
 
     private void submitPoint(Point point) {
@@ -79,11 +81,22 @@ public class KMeansGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize(String dataMode) {
         initializeHelper();
-        initializeMessageSenderWithSmallBuffer();
+        initializeMessageSenders(dataMode);
         initializeWorkloadData();
         initializeDataGenerators();
+    }
+
+    private void initializeMessageSenders(String dataMode) {
+        if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+            initializeKafkaMessageSenderWithSmallBuffer();
+        } else if (dataMode.equalsIgnoreCase(DataMode.STREAMING)) {
+            initializeOfflineMessageSender();
+        }
+    }
+
+    private void initializeOfflineMessageSender() {
     }
 
     @Override
