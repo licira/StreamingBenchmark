@@ -58,7 +58,6 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     public BatchPairOperator<String, String> getPairOperator(Properties properties,
                                                              String topicPropertyName) {
         JavaRDD<String> streamWithJsonAsValue = getStringWithJsonAsValueRddFromGenerator(properties, topicPropertyName);
-        //streamWithJsonAsValue.print();
         JavaPairRDD<String, String> pairRdd = getPairRddFromRddWithJsonAsValue(streamWithJsonAsValue);
         return new SparkBatchPairOperator<String, String>(pairRdd, parallelism);
     }
@@ -67,7 +66,6 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     public BatchOperator<Point> getPointOperator(Properties properties,
                                                  String topicPropertyName) {
         JavaRDD<String> jsonStream = getStringRddFromGenerator(properties, topicPropertyName);
-        //jsonStream.print();
         JavaRDD<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new SparkBatchOperator<Point>(pointStream, parallelism);
     }
@@ -89,7 +87,6 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
 
     private JavaRDD<String> getStringRddFromGenerator(Properties properties, String topicPropertyName) {
         JavaRDD<String> rddWithJsonAsValue = getStringWithJsonAsValueRddFromKafka(properties, topicPropertyName);
-        //streamWithJsonAsValue.print();
         JavaRDD<String> rdd = getRddFromRddWithJsonAsValue(rddWithJsonAsValue);
         return rdd;
     }
