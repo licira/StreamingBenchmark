@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
-import ro.tucn.flink.operator.FlinkOperator;
+import ro.tucn.flink.operator.FlinkStreamOperator;
 import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.StreamOperator;
@@ -36,7 +36,7 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         setEnvParallelism(parallelism);
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        return new FlinkOperator<>(stream, parallelism);
+        return new FlinkStreamOperator<>(stream, parallelism);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         setEnvParallelism(parallelism);
         DataStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
-        return new FlinkOperator<>(pointStream, parallelism);
+        return new FlinkStreamOperator<>(pointStream, parallelism);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
             }
             return new TimeHolder<>(value, System.currentTimeMillis());
         });
-        return new FlinkOperator<>(TimeHolderDataStream, parallelism);
+        return new FlinkStreamOperator<>(TimeHolderDataStream, parallelism);
     }
 
     private DataStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {

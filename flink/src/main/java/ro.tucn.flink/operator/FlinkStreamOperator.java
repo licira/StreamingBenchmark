@@ -32,13 +32,13 @@ import java.util.logging.Logger;
 /**
  * Created by Liviu on 4/17/2017.
  */
-public class FlinkOperator<T> extends StreamOperator<T> {
+public class FlinkStreamOperator<T> extends StreamOperator<T> {
 
     protected DataStream<T> dataStream;
     private Logger logger = Logger.getLogger("the logger");
     private IterativeStream<T> iterativeStream;
 
-    public FlinkOperator(DataStream<T> dataSet, int parallelism) {
+    public FlinkStreamOperator(DataStream<T> dataSet, int parallelism) {
         super(parallelism);
         dataStream = dataSet;
     }
@@ -87,7 +87,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
         checkOperatorType(centroidsOperator);
 
         DataStream<Point> points = (DataStream<Point>) this.dataStream;
-        DataStream<Point> centroids = ((FlinkOperator<Point>) centroidsOperator).dataStream;
+        DataStream<Point> centroids = ((FlinkStreamOperator<Point>) centroidsOperator).dataStream;
 
         NearestCenterSelector nearestCenterSelector = new NearestCenterSelector();
         for (int i = 0; i < 1; i++) {
@@ -138,7 +138,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
     @Override
     public <R> StreamOperator<R> map(final MapFunction<T, R> fun, String componentId) {
         DataStream<R> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, R>) t -> fun.map(t));
-        return new FlinkOperator<>(newDataStream, getParallelism());
+        return new FlinkStreamOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
             newDataStream =
                     dataStream.transform("Map", outType, new FlinkPointAssignMapOperator<>(dataStream.getExecutionEnvironment().clean(map)));
         }
-        return new FlinkOperator<>(newDataStream, getParallelism());
+        return new FlinkStreamOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -178,7 +178,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
                             outType,
                             new FlinkPointAssignMapOperator<>(dataStream.getExecutionEnvironment().clean(map)));
         }
-        return new FlinkOperator<>(newDataStream, getParallelism());
+        return new FlinkStreamOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -214,14 +214,14 @@ public class FlinkOperator<T> extends StreamOperator<T> {
     @Override
     public StreamOperator<T> reduce(final ReduceFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = dataStream.keyBy(0).reduce((org.apache.flink.api.common.functions.ReduceFunction<T>) (t, t1) -> fun.reduce(t, t1));
-        return new FlinkOperator<>(newDataStream, getParallelism());
+        return new FlinkStreamOperator<>(newDataStream, getParallelism());
     }
 
     @Override
     public StreamOperator<T> filter(final FilterFunction<T> fun, String componentId) {
         DataStream<T> newDataStream = dataStream.filter((org.apache.flink.api.common.functions.FilterFunction<T>) t ->
                 fun.filter(t));
-        return new FlinkOperator<>(newDataStream, getParallelism());
+        return new FlinkStreamOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -233,7 +233,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
                 collector.collect(r);
             }
         }).returns(returnType);
-        return new FlinkOperator<>(newDataStream, getParallelism());
+        return new FlinkStreamOperator<>(newDataStream, getParallelism());
     }
 
     @Override
@@ -258,7 +258,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
         } else if (!iterativeEnabled) {
             throw new UnsupportOperatorException("Iterative is not enabled.");
         } else {
-            FlinkOperator<T> operator_close = (FlinkOperator<T>) operator;
+            FlinkStreamOperator<T> operator_close = (FlinkStreamOperator<T>) operator;
             if (broadcast) {
                 iterativeStream.closeWith(operator_close.dataStream.broadcast());
             } else {
@@ -314,7 +314,7 @@ public class FlinkOperator<T> extends StreamOperator<T> {
     }
 
     private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
-        if (!(centroids instanceof FlinkOperator)) {
+        if (!(centroids instanceof FlinkStreamOperator)) {
             throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
         }
     }
