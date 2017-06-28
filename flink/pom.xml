@@ -33,6 +33,18 @@
         </dependency>
 
         <dependency>
+            <groupId>ro.utcn.streamingbenchmark</groupId>
+            <artifactId>generator</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ro.utcn.streamingbenchmark</groupId>
+                    <artifactId>core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-core</artifactId>
             <version>${flink.version}</version>
