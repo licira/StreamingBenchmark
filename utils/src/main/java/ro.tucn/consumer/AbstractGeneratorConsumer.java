@@ -12,15 +12,15 @@ import java.util.Properties;
  */
 public abstract class AbstractGeneratorConsumer extends AbstractConsumer {
 
-    public abstract BatchPairOperator<String, String> getBatchPairOperator(Properties properties,
+    public abstract BatchOperator<String> getStringOperator(Properties properties,
+                                                            String topicPropertyName);
+
+    public abstract BatchPairOperator<String, String> getPairOperator(Properties properties,
                                                                            String topicPropertyName);
 
-    public abstract BatchOperator<TimeHolder<String>> getBatchStringOperatorWithTimeHolder(Properties properties,
-                                                                                           String topicPropertyName);
-
-    public abstract BatchOperator<Point> getBatchPointOperator(Properties properties,
+    public abstract BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
                                                                String topicPropertyName);
 
-    public abstract BatchOperator<String> getBatchStringOperator(Properties properties,
-                                                                 String topicPropertyName);
+    public abstract BatchOperator<Point> getPointOperator(Properties properties,
+                                                               String topicPropertyName);
 }
