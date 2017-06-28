@@ -7,12 +7,10 @@ import ro.tucn.generator.creator.ProducerCreator;
 import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 
-import java.io.Serializable;
-
 /**
  * Created by Liviu on 5/9/2017.
  */
-public abstract class AbstractKafkaSender extends AbstractSender implements Serializable {
+public abstract class AbstractKafkaSender extends AbstractSender  {
 
     protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
@@ -23,8 +21,6 @@ public abstract class AbstractKafkaSender extends AbstractSender implements Seri
     public AbstractKafkaSender() {
         producerCreator = new ProducerCreator();
     }
-
-    public abstract void send(Object o);
 
     public void initializeSmallBufferProducer(String bootstrapServers) {
         producer = producerCreator.createSmallBufferProducer(bootstrapServers);
