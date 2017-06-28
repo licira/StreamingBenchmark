@@ -1,5 +1,6 @@
 package ro.tucn.workload;
 
+import ro.tucn.DataMode;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.topic.ApplicationTopics;
@@ -22,9 +23,9 @@ public class WorkloadCreator {
 
     public Workload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException{
         Workload workload;
-        if (mode.equalsIgnoreCase("streaming")) {
+        if (mode.equalsIgnoreCase(DataMode.STREAMING)) {
             workload = getNewStreamWorkload(contextCreator, topic);
-        } else if (mode.equalsIgnoreCase("batch")) {
+        } else if (mode.equalsIgnoreCase(DataMode.BATCH)) {
             workload = getNewBatchWorkload(contextCreator, topic);
         } else {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_MODE_EXCEPTION_MSG);
