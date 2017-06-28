@@ -16,11 +16,13 @@ public abstract class AbstractGeneratorConsumer extends AbstractConsumer {
                                                             String topicPropertyName);
 
     public abstract BatchPairOperator<String, String> getPairOperator(Properties properties,
-                                                                           String topicPropertyName);
+                                                                      String topicPropertyName);
 
     public abstract BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
-                                                               String topicPropertyName);
+                                                                                      String topicPropertyName);
 
     public abstract BatchOperator<Point> getPointOperator(Properties properties,
-                                                               String topicPropertyName);
+                                                          String topicPropertyName);
+
+    public abstract void askGeneratorToProduceData(String topic);
 }
