@@ -7,6 +7,8 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Liviu on 6/28/2017.
@@ -24,7 +26,7 @@ public abstract class AbstractOfflineSender extends AbstractSender implements Se
 
     @Override
     public void close() {
-        producer.close();
+        //producer.close();
     }
 
     @Override
@@ -37,4 +39,7 @@ public abstract class AbstractOfflineSender extends AbstractSender implements Se
         );
     }
 
+    public List<Map<String, String>> getGeneratedData(String topic) {
+        return producer.read(topic);
+    }
 }

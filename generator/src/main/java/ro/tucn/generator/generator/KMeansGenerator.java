@@ -9,10 +9,12 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.KMeansSenderKafka;
+import ro.tucn.generator.sender.offline.AbstractOfflineSender;
 import ro.tucn.generator.sender.offline.KMeansSenderOffline;
 import ro.tucn.kMeans.Point;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static ro.tucn.topic.KafkaTopics.CENTROID;
@@ -124,5 +126,10 @@ public class KMeansGenerator extends AbstractGenerator {
         kMeansCreator.setCentroidsNo(centroidsNo);
         double[][] covariances = kMeansCreator.getCovariancesFromString(covariancesAsString, means);
         kMeansCreator.initializeMultiderivativeNormalDistribution(pointRandomGenerator, means, covariances);
+    }
+
+    @Override
+    public List<Map<String, String>> getGeneratedData(String topic) {
+        return ((AbstractOfflineSender) kMeansSender).getGeneratedData(topic);
     }
 }

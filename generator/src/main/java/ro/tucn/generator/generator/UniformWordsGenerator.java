@@ -9,7 +9,11 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.SentenceSenderKafka;
+import ro.tucn.generator.sender.offline.AbstractOfflineSender;
 import ro.tucn.generator.sender.offline.SentenceSenderOffline;
+
+import java.util.List;
+import java.util.Map;
 
 import static ro.tucn.topic.KafkaTopics.UNIFORM_WORDS;
 
@@ -103,5 +107,10 @@ public class UniformWordsGenerator extends AbstractGenerator {
         sentenceCreator.setMu(mu);
         sentenceCreator.setSigma(sigma);
         sentenceCreator.setUpperBound(upperBound);
+    }
+
+    @Override
+    public List<Map<String, String>> getGeneratedData(String topic) {
+        return ((AbstractOfflineSender) sentenceSender).getGeneratedData(topic);
     }
 }

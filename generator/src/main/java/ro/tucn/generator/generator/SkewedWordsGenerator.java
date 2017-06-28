@@ -9,8 +9,12 @@ import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.generator.sender.kafka.AbstractKafkaSender;
 import ro.tucn.generator.sender.kafka.SentenceSenderKafka;
+import ro.tucn.generator.sender.offline.AbstractOfflineSender;
 import ro.tucn.generator.sender.offline.SentenceSenderOffline;
 import ro.tucn.skewedWords.FastZipfGenerator;
+
+import java.util.List;
+import java.util.Map;
 
 import static ro.tucn.topic.KafkaTopics.SKEWED_WORDS;
 
@@ -112,5 +116,10 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         double sigma = Double.parseDouble(this.properties.getProperty("sentence.sigma"));
         sentenceCreator.setMu(mu);
         sentenceCreator.setSigma(sigma);
+    }
+
+    @Override
+    public List<Map<String, String>> getGeneratedData(String topic) {
+        return ((AbstractOfflineSender) sentenceSender).getGeneratedData(topic);
     }
 }
