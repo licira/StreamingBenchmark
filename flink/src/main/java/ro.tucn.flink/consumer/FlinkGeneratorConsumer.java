@@ -39,40 +39,43 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     }
 
     @Override
-    public BatchPairOperator<String, String> getPairOperator(Properties properties,
-                                                             String topicPropertyName) {
-        //setEnvParallelism(parallelism);
-        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDatasetFromGenerator(properties, topicPropertyName);
-        DataSet<Tuple2<String, String>> pairDataSet = getPairDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
-        return new FlinkBatchPairOperator<String, String>(pairDataSet, parallelism);
-    }
-
-    @Override
-    public BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
-                                                                             String topicPropertyName) {
-        return null;
-    }
-
-    @Override
-    public BatchOperator<Point> getPointOperator(Properties properties,
-                                                 String topicPropertyName) {
-        DataSet<String> jsonDataSet = getStringDataSetFromGenerator(properties, topicPropertyName);
-        DataSet<Point> pointDataSet = getPointDataSetFromJsonDataSet(jsonDataSet);
-        return new FlinkBatchOperator<Point>(pointDataSet, parallelism);
-    }
-
-    @Override
     public void askGeneratorToProduceData(String topic) {
         generator = GeneratorCreator.getNewGenerator(topic, DataMode.BATCH, 0);
         generator.generate(0);
     }
 
     @Override
+    public BatchPairOperator<String, String> getPairOperator(Properties properties,
+                                                             String topicPropertyName) {
+        setEnvParallelism(parallelism);
+        DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDatasetFromGenerator(properties, topicPropertyName);
+        DataSet<Tuple2<String, String>> pairDataSet = getPairDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
+        return new FlinkBatchPairOperator<String, String>(pairDataSet, parallelism);
+    }
+
+    @Override
+    public BatchOperator<Point> getPointOperator(Properties properties,
+                                                 String topicPropertyName) {
+        setEnvParallelism(parallelism);
+        DataSet<String> jsonDataSet = getStringDataSetFromGenerator(properties, topicPropertyName);
+        DataSet<Point> pointDataSet = getPointDataSetFromJsonDataSet(jsonDataSet);
+        return new FlinkBatchOperator<Point>(pointDataSet, parallelism);
+    }
+
+    @Override
     public BatchOperator<String> getStringOperator(Properties properties,
                                                    String topicPropertyName) {
+        setEnvParallelism(parallelism);
         DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(properties, topicPropertyName);
         DataSet<String> dataSet = getStringDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
         return new FlinkBatchOperator<String>(dataSet, parallelism);
+    }
+
+    @Override
+    public BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
+                                                                             String topicPropertyName) {
+        setEnvParallelism(parallelism);
+        return null;
     }
 
     private DataSet<Tuple2<String,String>> getPairDataSetFromDataSetWithJsonAsValue(DataSet<String> dataSetWithJsonAsValue) {
@@ -129,8 +132,6 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
 
     private DataSet<String> getDataSetFromGenerator(Properties properties, String topicPropertyName) {
         String topic = getTopicFromProperties(properties, topicPropertyName);
-        //AbstractGenerator generator = GeneratorCreator.getNewGenerator(topic, DataMode.BATCH, 0);
-        //generator.generate(0);
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
         List<String> jsons = new ArrayList<>();
         try {
@@ -140,7 +141,7 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
             }
         } catch (NullPointerException e) {
             logger.error(e.getMessage());
-            return null;
+            return env.fromCollection(null);
         }
         DataSet<String> jsonDataSet = env.fromCollection(jsons);
         return jsonDataSet;
@@ -150,7 +151,7 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
         return properties.getProperty(topicPropertyName);
     }
 
-    public void setGenerator(AbstractGenerator generator) {
-        this.generator = generator;
+    private void setEnvParallelism(int parallelism) {
+        env.setParallelism(parallelism);
     }
 }
