@@ -14,6 +14,7 @@ import ro.tucn.generator.sender.kafka.ClickSenderKafka;
 import ro.tucn.generator.sender.offline.AbstractOfflineSender;
 import ro.tucn.generator.sender.offline.AdvSenderOffline;
 import ro.tucn.generator.sender.offline.ClickSenderOffline;
+import ro.tucn.topic.KafkaTopics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,6 +180,11 @@ public class AdvClickGenerator extends AbstractGenerator {
 
     @Override
     public List<Map<String, String>> getGeneratedData(String topic) {
-        return ((AbstractOfflineSender) advSender).getGeneratedData(topic);
+        if (topic.equals(KafkaTopics.ADV)) {
+            return ((AbstractOfflineSender) advSender).getGeneratedData(topic);
+        } else if (topic.equals(KafkaTopics.CLICK)) {
+            return ((AbstractOfflineSender) clickSender).getGeneratedData(topic);
+        }
+        return null;
     }
 }
