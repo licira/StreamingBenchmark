@@ -63,7 +63,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     @Override
     public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
-        JavaDStream<String> jsonStream = getSstringStreamFromKafka(properties, topicPropertyName);
+        JavaDStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
         //jsonStream.print();
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new SparkOperator<Point>(pointStream, parallelism);
@@ -88,7 +88,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         return new SparkOperator<TimeHolder<String>>(stream, parallelism);
     }
 
-    private JavaDStream<String> getSstringStreamFromKafka(Properties properties, String topicPropertyName) {
+    private JavaDStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         //streamWithJsonAsValue.print();
         JavaDStream<String> stream = getStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
