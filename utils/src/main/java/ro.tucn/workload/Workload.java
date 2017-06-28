@@ -23,8 +23,8 @@ public abstract class Workload implements Serializable {
     protected int parallelism;
     private ContextCreator contextCreator;
 
-    public Workload(ContextCreator ContextCreator) throws WorkloadException {
-        this.contextCreator = ContextCreator;
+    public Workload(ContextCreator contextCreator) throws WorkloadException {
+        this.contextCreator = contextCreator;
         initializeParallelism();
         initializeProperties();
     }
