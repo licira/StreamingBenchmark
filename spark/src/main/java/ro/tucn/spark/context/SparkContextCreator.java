@@ -54,7 +54,7 @@ public class SparkContextCreator extends ContextCreator {
 
     @Override
     public AbstractGeneratorConsumer getGeneratorConsumer() {
-        return new SparkGeneratorConsumer();
+        return new SparkGeneratorConsumer(jssc, sc);
     }
 
     private void initializeProperties() throws IOException {
