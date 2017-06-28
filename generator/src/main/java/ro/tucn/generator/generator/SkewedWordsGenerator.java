@@ -23,7 +23,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
 
     private long totalSentences = 10;
 
-    public SkewedWordsGenerator(int entitiesNumber) {
+    public SkewedWordsGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
         initialize();
     }

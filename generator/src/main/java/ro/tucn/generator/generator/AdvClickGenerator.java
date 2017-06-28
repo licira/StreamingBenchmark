@@ -33,7 +33,7 @@ public class AdvClickGenerator extends AbstractGenerator {
     private double clickProbability;
     private ClickCreator clickCreator;
 
-    public AdvClickGenerator(int entitiesNumber) {
+    public AdvClickGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
         initialize();
     }

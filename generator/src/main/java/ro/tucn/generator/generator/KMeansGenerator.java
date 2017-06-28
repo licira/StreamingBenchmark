@@ -28,7 +28,7 @@ public class KMeansGenerator extends AbstractGenerator {
     private List<Point> centroids;
     private static long totalPoints;
 
-    public KMeansGenerator(int entitiesNumber) {
+    public KMeansGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
         initialize();
     }

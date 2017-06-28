@@ -22,7 +22,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
 
     private long totalSentences = 10;
 
-    public UniformWordsGenerator(int entitiesNumber) {
+    public UniformWordsGenerator(String dataMode, int entitiesNumber) {
         super(entitiesNumber);
         initialize();
     }
