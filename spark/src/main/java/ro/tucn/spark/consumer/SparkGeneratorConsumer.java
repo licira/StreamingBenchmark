@@ -123,8 +123,4 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
         JavaRDD<String> jsonRdds = sc.parallelize(jsons);
         return jsonRdds;
     }
-
-    private String getTopicFromProperties(Properties properties, String topicPropertyName) {
-        return properties.getProperty(topicPropertyName);
-    }
 }

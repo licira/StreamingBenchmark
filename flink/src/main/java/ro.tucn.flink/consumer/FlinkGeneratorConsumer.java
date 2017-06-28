@@ -134,10 +134,6 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
         return jsonDataSet;
     }
 
-    private String getTopicFromProperties(Properties properties, String topicPropertyName) {
-        return properties.getProperty(topicPropertyName);
-    }
-
     private void setEnvParallelism(int parallelism) {
         env.setParallelism(parallelism);
     }
