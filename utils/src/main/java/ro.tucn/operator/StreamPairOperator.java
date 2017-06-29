@@ -1,7 +1,9 @@
 package ro.tucn.operator;
 
-import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.functions.*;
+import ro.tucn.frame.functions.FilterFunction;
+import ro.tucn.frame.functions.FlatMapFunction;
+import ro.tucn.frame.functions.MapFunction;
+import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
@@ -60,11 +62,5 @@ public abstract class StreamPairOperator<K, V> extends PairOperator<K, V> {
     public abstract void sink();
 
     public abstract void count();
-
-    protected void checkWindowDurationsCompatibility(TimeDuration duration1, TimeDuration duration2) throws WorkloadException {
-        if (duration1.toMilliSeconds() % duration2.toMilliSeconds() != 0) {
-            throw new WorkloadException("WindowDuration should be multi times of joinWindowDuration");
-        }
-    }
 }
 

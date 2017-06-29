@@ -41,4 +41,10 @@ public abstract class PairOperator<K, V> extends BaseOperator {
             String componentId, PairOperator<K, R> joinStream,
             TimeDuration windowDuration, TimeDuration slideWindowDuration,
             AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException;
+
+    protected void checkWindowDurationsCompatibility(TimeDuration duration1, TimeDuration duration2) throws WorkloadException {
+        if (duration1.toMilliSeconds() % duration2.toMilliSeconds() != 0) {
+            throw new WorkloadException("WindowDuration should be multi times of joinWindowDuration");
+        }
+    }
 }
