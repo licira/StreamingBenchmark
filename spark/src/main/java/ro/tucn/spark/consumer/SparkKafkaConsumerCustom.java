@@ -44,25 +44,20 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     public StreamOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
         logger.info("11");
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
-        //streamWithJsonAsValue.print();
         JavaDStream<String> stream = getStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        //stream.print();
         return new SparkStreamOperator<String>(stream, parallelism);
     }
 
     @Override
     public StreamPairOperator<String, String> getStreamPairOperator(Properties properties, String topicPropertyName) {
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
-        //streamWithJsonAsValue.print();
         JavaPairDStream<String, String> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        //stream.print();
         return new SparkStreamPairOperator(pairStream, parallelism);
     }
 
     @Override
     public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
         JavaDStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
-        //jsonStream.print();
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new SparkStreamOperator<Point>(pointStream, parallelism);
     }
@@ -82,50 +77,42 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     private JavaDStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
-        //streamWithJsonAsValue.print();
-        JavaDStream<String> stream = getStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        return stream;
+        return getStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
     }
 
     private JavaPairDStream<String, String> getPairStreamFromKafka(Properties properties, String topicPropertyName) {
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
-        //streamWithJsonAsValue.print();
-        JavaPairDStream<String, String> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        return pairStream;
+        return getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
     }
 
     private JavaDStream<String> getStreamFromStreamWithJsonAsValue(JavaDStream<String> streamWithJsonAsValue) {
-        JavaDStream<String> stream = streamWithJsonAsValue.map(s -> {
+        return streamWithJsonAsValue.map(s -> {
             Gson gson = new Gson();
             Message msg = gson.fromJson(s, Message.class);
             return msg.getValue();
         });
-        return stream;
     }
 
     private JavaPairDStream<String, String> getPairStreamFromStreamWithJsonAsValue(JavaDStream<String> streamWithJsonAsValue) {
-        JavaPairDStream<String, String> pairStream = streamWithJsonAsValue.mapToPair(s -> {
+        return streamWithJsonAsValue.mapToPair(s -> {
             Gson gson = new Gson();
             Message msg = gson.fromJson(s, Message.class);
             return new Tuple2<String, String>(msg.getKey(), msg.getValue());
         });
-        return pairStream;
     }
 
     private JavaDStream<Point> getPointStreamFromJsonStream(JavaDStream<String> jsonStream) {
-        JavaDStream<Point> pointStream = jsonStream.map(s -> {
+        return jsonStream.map(s -> {
             Gson gson = new Gson();
             Point point = gson.fromJson(s, Point.class);
             return point;
         });
-        return pointStream;
     }
 
     private JavaDStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topicPropertyName) {
         logger.info("111");
         JavaPairDStream<String, String> pairStreamWithJsonAsValue = getDirectStreamFromKafka(properties, topicPropertyName);
-        JavaDStream<String> streamWithJsonAsValue = pairStreamWithJsonAsValue.map(jsonTuple -> jsonTuple._2());
-        return streamWithJsonAsValue;
+        return pairStreamWithJsonAsValue.map(jsonTuple -> jsonTuple._2());
     }
 
     private JavaPairDStream<String, String> getDirectStreamFromKafka(Properties properties, String topicPropertyName) {
