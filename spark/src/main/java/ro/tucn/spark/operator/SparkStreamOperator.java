@@ -20,15 +20,15 @@ import java.util.Arrays;
 /**
  * Created by Liviu on 4/8/2017.
  */
-public class SparkOperator<T> extends StreamOperator<T> {
+public class SparkStreamOperator<T> extends StreamOperator<T> {
 
-    private static final Logger logger = Logger.getLogger(SparkOperator.class);
+    private static final Logger logger = Logger.getLogger(SparkStreamOperator.class);
 
     JavaDStream<T> dStream;
     private boolean firstKMeanClustering = true;
     private StreamingKMeans model;
 
-    public SparkOperator(JavaDStream<T> stream, int parallelism) {
+    public SparkStreamOperator(JavaDStream<T> stream, int parallelism) {
         super(parallelism);
         dStream = stream;
 
@@ -47,7 +47,7 @@ public class SparkOperator<T> extends StreamOperator<T> {
         checkOperatorType(centroidsOperator);
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
-        JavaDStream<Point> centroids = (JavaDStream<Point>) ((SparkOperator<Point>) centroidsOperator).dStream;
+        JavaDStream<Point> centroids = (JavaDStream<Point>) ((SparkStreamOperator<Point>) centroidsOperator).dStream;
 
         JavaDStream<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
         pointsVector.print();
@@ -120,7 +120,7 @@ public class SparkOperator<T> extends StreamOperator<T> {
     }
 
     private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
-        if (!(centroids instanceof SparkOperator)) {
+        if (!(centroids instanceof SparkStreamOperator)) {
             throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
         }
     }

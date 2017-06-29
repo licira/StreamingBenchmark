@@ -14,7 +14,7 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.spark.operator.SparkOperator;
+import ro.tucn.spark.operator.SparkStreamOperator;
 import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
@@ -49,7 +49,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         //streamWithJsonAsValue.print();
         JavaDStream<String> stream = getStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         //stream.print();
-        return new SparkOperator<String>(stream, parallelism);
+        return new SparkStreamOperator<String>(stream, parallelism);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         JavaDStream<String> jsonStream = getStringStreamFromKafka(properties, topicPropertyName);
         //jsonStream.print();
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
-        return new SparkOperator<Point>(pointStream, parallelism);
+        return new SparkStreamOperator<Point>(pointStream, parallelism);
     }
 
     /*public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
@@ -76,7 +76,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     }*/
 
     @Override
-    public SparkOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
+    public SparkStreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
         JavaPairDStream<String, String> pairStream = getPairStreamFromKafka(properties, topicPropertyName);
         JavaDStream<TimeHolder<String>> stream = pairStream.map(stringStringTuple2 -> {
             String[] list = stringStringTuple2._2().split(Constants.TimeSeparatorRegex);
@@ -85,7 +85,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
             }
             return new TimeHolder(stringStringTuple2._2(), System.nanoTime());
         });
-        return new SparkOperator<TimeHolder<String>>(stream, parallelism);
+        return new SparkStreamOperator<TimeHolder<String>>(stream, parallelism);
     }
 
     private JavaDStream<String> getStringStreamFromKafka(Properties properties, String topicPropertyName) {
