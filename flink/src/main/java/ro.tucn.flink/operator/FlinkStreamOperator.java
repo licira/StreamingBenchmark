@@ -78,11 +78,9 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         DataStream<Point> centroids = ((FlinkStreamOperator<Point>) centroidsOperator).dataStream;
 
         NearestCenterSelector nearestCenterSelector = new NearestCenterSelector();
-        for (int i = 0; i < 1; i++) {
-
+        for (int i = 0; i < 10; i++) {
             DataStream<Tuple2<Long, Point>> pointsWithCentroid = centroids.connect(points).flatMap(nearestCenterSelector);
             pointsWithCentroid.print();
-
             centroids = pointsWithCentroid.connect(pointsWithCentroid).flatMap(new CoFlatMapFunction<Tuple2<Long, Point>, Tuple2<Long, Point>, Point>() {
 
                 private Map<Long, Tuple2<Point, Long>> centroidsWithCummulatedCoordinates = new HashMap<Long, Tuple2<Point, Long>>();
@@ -119,8 +117,8 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                     }
                 }
             });
-            centroids.print();
         }
+        centroids.print();
     }
 
     @Override
