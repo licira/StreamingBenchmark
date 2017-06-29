@@ -54,33 +54,6 @@ public class Point implements Serializable {
         this.timestamp = timestamp;
     }
 
-    /*public Point add(Point other) throws Exception {
-        if (this.coordinates.length != other.coordinates.length) {
-            throw new Exception("Dimensions of points are not equal");
-        }
-        double[] coordinates = new double[this.coordinates.length];
-        for (int i = 0; i < this.coordinates.length; ++i) {
-            coordinates[i] = this.coordinates[i] + other.coordinates[i];
-        }
-        return new Point(this.id, coordinates, this.timestamp);
-    }*/
-
-    /*public Point mul(long val) {
-        double[] coordinates = new double[this.coordinates.length];
-        for (int i = 0; i < this.coordinates.length; ++i) {
-            coordinates[i] = this.coordinates[i] * val;
-        }
-        return new Point(this.id, coordinates, this.timestamp);
-    }*/
-
-    /*public Point div(long val) {
-        double[] coordinates = new double[this.coordinates.length];
-        for (int i = 0; i < this.coordinates.length; ++i) {
-            coordinates[i] = this.coordinates[i] / val;
-        }
-        return new Point(this.id, coordinates, this.timestamp);
-    }*/
-
     public double euclideanDistance(Point other) {
         return Math.sqrt(distanceSquaredTo(other));
     }
@@ -132,19 +105,19 @@ public class Point implements Serializable {
         return str;
     }
 
-    public void setCoordinates(double[] coordinates) {
-        this.coordinates = coordinates;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public double[] getCoordinates() {
         return coordinates;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCoordinates(double[] coordinates) {
+        this.coordinates = coordinates;
     }
 }
