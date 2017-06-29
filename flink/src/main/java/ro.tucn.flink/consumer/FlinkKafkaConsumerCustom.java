@@ -74,12 +74,11 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     private DataStream<String> getStringStreamFromKafka(Properties properties, String topic) {
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
-        DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        return stream;
+        return getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
     }
 
     private DataStream<Point> getPointStreamFromJsonStream(DataStream<String> jsonStream) {
-        DataStream<Point> pointStream = jsonStream.map(new MapFunction<String, Point>() {
+        return jsonStream.map(new MapFunction<String, Point>() {
             @Override
             public Point map(String s) throws Exception {
                 Gson gson = new Gson();
@@ -87,11 +86,10 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
                 return point;
             }
         });
-        return pointStream;
     }
 
     private DataStream<String> getStringStreamFromStreamWithJsonAsValue(DataStream<String> streamWithJsonAsValue) {
-        DataStream<String> stream = streamWithJsonAsValue.map(new MapFunction<String, String>() {
+        return streamWithJsonAsValue.map(new MapFunction<String, String>() {
             @Override
             public String map(String s) throws Exception {
                 Gson gson = new Gson();
@@ -99,11 +97,10 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
                 return msg.getValue();
             }
         });
-        return stream;
     }
 
     private DataStream<Tuple2<String, String>> getPairStreamFromStreamWithJsonAsValue(DataStream<String> streamWithJsonAsValue) {
-        DataStream<Tuple2<String, String>> pairStream = streamWithJsonAsValue.map(new MapFunction<String, Tuple2<String, String>>() {
+        return streamWithJsonAsValue.map(new MapFunction<String, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(String s) throws Exception {
                 Gson gson = new Gson();
@@ -111,12 +108,10 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
                 return new Tuple2<String, String>(msg.getKey(), msg.getValue());
             }
         });
-        return pairStream;
     }
 
     private DataStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topic) {
-        DataStream<String> stream = getStreamFromKafka(properties, topic);
-        return stream;
+        return getStreamFromKafka(properties, topic);
     }
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topic) {
