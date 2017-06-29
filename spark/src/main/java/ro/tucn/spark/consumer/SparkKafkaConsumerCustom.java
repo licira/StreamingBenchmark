@@ -3,17 +3,15 @@ package ro.tucn.spark.consumer;
 import com.google.gson.Gson;
 import kafka.serializer.StringDecoder;
 import org.apache.log4j.Logger;
-import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
-import org.apache.spark.streaming.kafka.OffsetRange;
-import ro.tucn.kMeans.Point;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
-import ro.tucn.operator.StreamPairOperator;
+import ro.tucn.kMeans.Point;
 import ro.tucn.operator.StreamOperator;
+import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.spark.operator.SparkStreamOperator;
 import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
 import ro.tucn.util.Constants;
@@ -68,12 +66,6 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         JavaDStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
         return new SparkStreamOperator<Point>(pointStream, parallelism);
     }
-
-    /*public BatchOperator<String> getBatchStringOperator(Properties properties, String topicPropertyName) {
-        JavaPairRDD<String, String> pairRddWithJsonAsValue = getRDDFromKafka(properties, topicPropertyName);
-        JavaRDD<String> rddWithJsonAsValue = pairRddWithJsonAsValue.map(jsonTuple -> jsonTuple._2());
-        return new SparkBatchOperator<String>(rddWithJsonAsValue, parallelism);
-    }*/
 
     @Override
     public SparkStreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topicPropertyName) {
@@ -150,35 +142,10 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         );
     }
 
-    private JavaPairRDD<String, String> getRDDFromKafka(Properties properties, String topicPropertyName) {
-        String[] topicArray = getTopicArrayFromProperites(topicPropertyName, properties);
-        OffsetRange[] offsetRanges = new OffsetRange[topicArray.length];
-
-        for (int i = 0; i < topicArray.length; i++) {
-            offsetRanges[i] = OffsetRange.create(topicArray[i], 0, 0, Long.MAX_VALUE);
-
-        }
-        HashMap<String, String> kafkaParams = getKafkaParamsFromProperties(properties);
-        return KafkaUtils.createRDD(sc,
-                String.class,
-                String.class,
-                StringDecoder.class,
-                StringDecoder.class,
-                kafkaParams,
-                offsetRanges
-        );
-    }
-
     private HashSet<String> getTopicSetFromProperites(String topicPropertyName, Properties properties) {
         String topics = properties.getProperty(topicPropertyName);
         String[] split = splitTopics(topics);
         return new HashSet(Arrays.asList(split));
-    }
-
-    private String[] getTopicArrayFromProperites(String topicPropertyName, Properties properties) {
-        String topics = properties.getProperty(topicPropertyName);
-        String[] split = splitTopics(topics);
-        return split;
     }
 
     private HashMap getKafkaParamsFromProperties(Properties properties) {
