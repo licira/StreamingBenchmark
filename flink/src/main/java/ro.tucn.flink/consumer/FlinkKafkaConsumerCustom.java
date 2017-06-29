@@ -2,6 +2,7 @@ package ro.tucn.flink.consumer;
 
 import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
@@ -15,7 +16,6 @@ import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.util.Constants;
 import ro.tucn.util.Message;
 import ro.tucn.util.TimeHolder;
-import scala.Tuple2;
 
 import java.util.Properties;
 
@@ -46,7 +46,7 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
         DataStream<Tuple2<String, String>> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
-        return new FlinkStreamPairOperator<>(pairStream, parallelism);
+        return new FlinkStreamPairOperator<String, String>(pairStream, parallelism);
     }
 
     @Override
