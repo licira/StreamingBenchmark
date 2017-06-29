@@ -44,8 +44,6 @@ public class AdvClickBatch extends Workload {
             advClick = advs.advClick(clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
-            //advClick.print();
-            //advClick.sink();
             //System.out.println("6");
         } catch (WorkloadException e) {
             logger.error(e.getMessage());

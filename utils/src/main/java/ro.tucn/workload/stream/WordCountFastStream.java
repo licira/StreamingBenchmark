@@ -27,9 +27,8 @@ public class WordCountFastStream extends Workload {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT FAST<<<<<<<<<<<<<<<<<");
         StreamOperator<String> wordOperators = kafkaConsumerCustom.getStringOperator(properties, "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
-        wordOperators.print();
-        StreamPairOperator<String, Integer> stringIntegerStreamPairOperator = wordOperators.wordCount();
+        StreamPairOperator<String, Integer> countedWords = wordOperators.wordCount();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
-        stringIntegerStreamPairOperator.print();
+        countedWords.print();
     }
 }

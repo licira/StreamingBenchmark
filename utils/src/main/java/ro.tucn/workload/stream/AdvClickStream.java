@@ -37,8 +37,6 @@ public class AdvClickStream extends Workload {
     public void process() {
         kafkaConsumerCustom.setParallelism(parallelism);
         //System.out.println("3");
-        //BatchOperator<String> advs = kafkaConsumerCustom.getBatchStringOperator(properties, "topic1");
-        //BatchOperator<String> clicks = kafkaConsumerCustom.getBatchStringOperator(properties, "topic2");
         PairOperator<String, String> advs = kafkaConsumerCustom.getStreamPairOperator(properties, "topic1");
         PairOperator<String, String> clicks = kafkaConsumerCustom.getStreamPairOperator(properties, "topic2");
         System.out.println("4");

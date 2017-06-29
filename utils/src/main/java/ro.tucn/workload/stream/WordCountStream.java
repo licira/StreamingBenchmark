@@ -27,8 +27,8 @@ public class WordCountStream extends Workload {
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
         StreamOperator<String> words = kafkaConsumerCustom.getStringOperator(properties, "topic1");
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
-        StreamPairOperator<String, Integer> stringIntegerStreamPairOperator = words.wordCount();
+        StreamPairOperator<String, Integer> countedWords = words.wordCount();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");
-        stringIntegerStreamPairOperator.print();
+        countedWords.print();
     }
 }
