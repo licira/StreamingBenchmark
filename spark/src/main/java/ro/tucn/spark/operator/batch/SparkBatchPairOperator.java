@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaPairRDD;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.PairOperator;
@@ -25,11 +24,6 @@ public class SparkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
     public SparkBatchPairOperator(JavaPairRDD<K, V> pairRDD, int parallelism) {
         super(parallelism);
         this.pairRDD = pairRDD;
-    }
-
-    @Override
-    public PairOperator join(String componentId, PairOperator joinStream, TimeDuration windowDuration, TimeDuration windowDuration2, AssignTimeFunction eventTimeAssigner1, AssignTimeFunction eventTimeAssigner2) throws WorkloadException {
-        return null;
     }
 
     @Override

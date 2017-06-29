@@ -37,10 +37,10 @@ public abstract class PairOperator<K, V> extends BaseOperator {
      * @param eventTimeAssigner2 event time assignment for joinStream
      * @return joined stream
      */
-    public abstract <R> PairOperator<K, Tuple2<V, R>> join(
+    /*public abstract <R> PairOperator<K, Tuple2<V, R>> join(
             String componentId, PairOperator<K, R> joinStream,
             TimeDuration windowDuration, TimeDuration slideWindowDuration,
-            AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException;
+            AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException;*/
 
     protected void checkWindowDurationsCompatibility(TimeDuration duration1, TimeDuration duration2) throws WorkloadException {
         if (duration1.toMilliSeconds() % duration2.toMilliSeconds() != 0) {

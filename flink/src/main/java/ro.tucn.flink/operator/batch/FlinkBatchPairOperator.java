@@ -3,6 +3,7 @@ package ro.tucn.flink.operator.batch;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.operators.JoinOperator;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
@@ -11,7 +12,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
-import scala.Tuple2;
+
 
 /**
  * Created by Liviu on 6/27/2017.
@@ -104,7 +105,7 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
     }
 
 
-    @Override
+    /*@Override
     public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
                                                   PairOperator<K, R> joinStream,
                                                   TimeDuration windowDuration,
@@ -112,7 +113,7 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
                                                   final AssignTimeFunction<V> eventTimeAssigner1,
                                                   final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
         return null;
-    }
+    }*/
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {

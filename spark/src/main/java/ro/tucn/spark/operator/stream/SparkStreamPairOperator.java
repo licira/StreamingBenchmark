@@ -56,58 +56,6 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
     }
 
     @Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId, PairOperator<K, R> joinStream, TimeDuration windowDuration, TimeDuration slideWindowDuration, AssignTimeFunction<V> eventTimeAssigner1, AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
-        checkWindowDurationsCompatibility(windowDuration, slideWindowDuration);
-        checkOperatorType(joinStream);
-
-        Duration duration = toDuration(windowDuration);
-        Duration slideDuration = toDuration(slideWindowDuration);
-
-        SparkStreamPairOperator<K, R> joinSparkStream = ((SparkStreamPairOperator<K, R>) joinStream);
-        JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
-                .window(duration.plus(slideDuration), slideDuration)
-                .join(joinSparkStream.pairDStream.window(slideDuration, slideDuration));
-        //filter illegal joined data
-        //joinedStream.filter(filterFun);
-        return new SparkStreamPairOperator(joinedStream, parallelism);
-    }
-
-    /**
-     * Spark doesn't support event time join yet
-     *
-     * @param componentId
-     * @param joinStream          the other stream<K,R>
-     * @param windowDuration      window length of this stream
-     * @param slideWindowDuration window length of joinStream
-     * @param eventTimeAssigner1  event time assignment for this stream
-     * @param eventTimeAssigner2  event time assignment for joinStream
-     * @param <R>
-     * @return
-     * @throws WorkloadException
-     */
-    /*@Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  StreamPairOperator<K, R> joinStream,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration slideWindowDuration,
-                                                  final AssignTimeFunction<V> eventTimeAssigner1,
-                                                  final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
-        checkWindowDurationsCompatibility(windowDuration, slideWindowDuration);
-        checkOperatorType(joinStream);
-
-        Duration duration = toDuration(windowDuration);
-        Duration slideDuration = toDuration(slideWindowDuration);
-
-        SparkStreamPairOperator<K, R> joinSparkStream = ((SparkStreamPairOperator<K, R>) joinStream);
-        JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
-                .window(duration.plus(slideDuration), slideDuration)
-                .join(joinSparkStream.pairDStream.window(slideDuration, slideDuration));
-        //filter illegal joined data
-        //joinedStream.filter(filterFun);
-        return new SparkStreamPairOperator(joinedStream, parallelism);
-    }*/
-
-    @Override
     public void count() {
         this.pairDStream.count().print();
     }
