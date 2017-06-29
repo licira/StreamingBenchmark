@@ -115,7 +115,7 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     }
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topic) {
-        properties.setProperty("flink.starting-position", "largest");
+        properties.put("auto.offset.reset", "latest");
         FlinkKafkaConsumer082<String> kafkaConsumer = new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties);
         return env.addSource(kafkaConsumer);
     }
