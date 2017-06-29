@@ -41,7 +41,6 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public BatchPairOperator<String, Integer> wordCount() {
-
         DataSet<Tuple2<String, Integer>> tTuple2FlatMapOperator = dataSet.flatMap(new FlatMapFunction<T, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(T t, Collector<Tuple2<String, Integer>> collector) throws Exception {
@@ -58,13 +57,13 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
                 return new Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1 + t1.f1);
             }
         });
-        DataSet<scala.Tuple2<String, Integer>> map = reduce.map(new MapFunction<Tuple2<String, Integer>, scala.Tuple2<String, Integer>>() {
+        /*DataSet<scala.Tuple2<String, Integer>> map = reduce.map(new MapFunction<Tuple2<String, Integer>, scala.Tuple2<String, Integer>>() {
             @Override
             public scala.Tuple2<String, Integer> map(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
                 return new scala.Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1);
             }
-        });
-        return new FlinkBatchPairOperator<String, Integer>(map, parallelism);
+        });*/
+        return new FlinkBatchPairOperator<String, Integer>(reduce, parallelism);
     }
 
     @Override

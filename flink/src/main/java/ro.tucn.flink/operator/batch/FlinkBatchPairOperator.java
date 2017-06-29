@@ -7,7 +7,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.functions.AssignTimeFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.PairOperator;
@@ -40,20 +39,20 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
         DataSet<Tuple2<String, String>> preDataSet = this.dataSet.map(new MapFunction<Tuple2<K, V>, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(Tuple2<K, V> tuple) throws Exception {
-                return new Tuple2<String, String>((String) tuple._1(), (String) tuple._2());
+                return new Tuple2<String, String>((String) tuple.f0, (String) tuple.f1);
             }
         });
-        DataSet<org.apache.flink.api.java.tuple.Tuple2<String, String>> joinDataSet = joinPreDataSet.map(new MapFunction<Tuple2<K, R>, org.apache.flink.api.java.tuple.Tuple2<String, String>>() {
+        DataSet<Tuple2<String, String>> joinDataSet = joinPreDataSet.map(new MapFunction<Tuple2<K, R>, Tuple2<String, String>>() {
             @Override
-            public org.apache.flink.api.java.tuple.Tuple2<String, String> map(Tuple2<K, R> tuple) throws Exception {
-                return new org.apache.flink.api.java.tuple.Tuple2<String, String>((String) tuple._1(), (String) tuple._2());
+            public Tuple2<String, String> map(Tuple2<K, R> tuple) throws Exception {
+                return new Tuple2<String, String>((String) tuple.f0, (String) tuple.f1);
             }
         });
 
-        DataSet<org.apache.flink.api.java.tuple.Tuple2<String, String>> dataSet = preDataSet.map(new MapFunction<Tuple2<String, String>, org.apache.flink.api.java.tuple.Tuple2<String, String>>() {
+        DataSet<Tuple2<String, String>> dataSet = preDataSet.map(new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
             @Override
-            public org.apache.flink.api.java.tuple.Tuple2<String, String> map(Tuple2<String, String> tuple) throws Exception {
-                return new org.apache.flink.api.java.tuple.Tuple2<String, String>(tuple._1, tuple._2);
+            public Tuple2<String, String> map(Tuple2<String, String> tuple) throws Exception {
+                return new Tuple2<String, String>(tuple.f0, tuple.f1);
             }
         });
 
@@ -103,17 +102,6 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
             throw new WorkloadException("Cast joinStream to FlinkBatchPairOperator failed");
         }
     }
-
-
-    /*@Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(String componentId,
-                                                  PairOperator<K, R> joinStream,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration joinWindowDuration,
-                                                  final AssignTimeFunction<V> eventTimeAssigner1,
-                                                  final AssignTimeFunction<R> eventTimeAssigner2) throws WorkloadException {
-        return null;
-    }*/
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
