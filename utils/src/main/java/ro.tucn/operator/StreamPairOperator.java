@@ -1,11 +1,7 @@
 package ro.tucn.operator;
 
-import ro.tucn.frame.functions.FilterFunction;
-import ro.tucn.frame.functions.FlatMapFunction;
-import ro.tucn.frame.functions.MapFunction;
 import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.util.TimeDuration;
-import scala.Tuple2;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -16,11 +12,12 @@ public abstract class StreamPairOperator<K, V> extends PairOperator<K, V> {
         super(parallelism);
     }
 
+    /*
     public abstract GroupedOperator<K, V> groupByKey();
 
     // TODO: translate to reduce on each node, then group merge
     public abstract StreamPairOperator<K, V> reduceByKey(ReduceFunction<V> fun, String componentId);
-
+    */
     /**
      * Map <K,V> tuple to <K,R>
      *
@@ -29,7 +26,7 @@ public abstract class StreamPairOperator<K, V> extends PairOperator<K, V> {
      * @param <R>
      * @return maped StreamPairOperator<K,R>
      */
-    public abstract <R> StreamPairOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId);
+    /*public abstract <R> StreamPairOperator<K, R> mapValue(MapFunction<V, R> fun, String componentId);
 
     public abstract <R> StreamOperator<R> map(MapFunction<Tuple2<K, V>, R> fun, String componentId);
 
@@ -42,7 +39,7 @@ public abstract class StreamPairOperator<K, V> extends PairOperator<K, V> {
     public abstract StreamPairOperator<K, V> updateStateByKey(ReduceFunction<V> fun, String componentId);
 
     public abstract StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId, TimeDuration windowDuration);
-
+    */
     /**
      * Pre-aggregation -> key group -> reduce
      *
@@ -52,13 +49,13 @@ public abstract class StreamPairOperator<K, V> extends PairOperator<K, V> {
      * @param slideDuration
      * @return
      */
-    public abstract StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
+    /*public abstract StreamPairOperator<K, V> reduceByKeyAndWindow(ReduceFunction<V> fun, String componentId,
                                                                   TimeDuration windowDuration, TimeDuration slideDuration);
 
     public abstract StreamWindowedPairOperator<K, V> window(TimeDuration windowDuration);
 
     public abstract StreamWindowedPairOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideDuration);
-
+    */
     public abstract void sink();
 
     public abstract void count();
