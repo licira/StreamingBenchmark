@@ -5,7 +5,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer081;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer082;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.flink.operator.FlinkStreamOperator;
@@ -116,7 +116,7 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topic) {
         properties.setProperty("flink.starting-position", "largest");
-        FlinkKafkaConsumer081<String> kafkaConsumer = new FlinkKafkaConsumer081<>(topic, new SimpleStringSchema(), properties);
+        FlinkKafkaConsumer082<String> kafkaConsumer = new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties);
         return env.addSource(kafkaConsumer);
     }
 
