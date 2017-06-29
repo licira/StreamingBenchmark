@@ -4,22 +4,18 @@ import org.apache.log4j.Logger;
 import org.apache.spark.mllib.clustering.StreamingKMeans;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
-import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.*;
-import ro.tucn.spark.function.*;
+import ro.tucn.operator.BaseOperator;
+import ro.tucn.operator.StreamOperator;
+import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
-import ro.tucn.spark.operator.stream.SparkStreamWindowedOperator;
-import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Liviu on 4/8/2017.
@@ -107,70 +103,8 @@ public class SparkOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public <R> StreamOperator<R> map(final MapFunction<T, R> fun,
-                               String componentId) {
-        JavaDStream<R> newStream = dStream.map(new FunctionImpl(fun));
-        return new SparkOperator<R>(newStream, parallelism);
-    }
-
-    @Override
-    public <R> StreamOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("Operator not supported");
-    }
-
-    @Override
-    public <R> StreamOperator<R> map(MapWithInitListFunction<T, R> fun, List<T> initList, String componentId, Class<R> outputClass) throws UnsupportOperatorException {
-        throw new UnsupportOperatorException("Operator not supported");
-    }
-
-    @Override
-    public <K, V> StreamPairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
-        JavaPairDStream<K, V> pairDStream = dStream.mapToPair(new PairFunctionImpl(fun));
-        return new SparkStreamPairOperator(pairDStream, parallelism);
-    }
-
-    @Override
-    public StreamOperator<T> reduce(final ReduceFunction<T> fun, String componentId) {
-        JavaDStream<T> newStream = dStream.reduce(new ReduceFunctionImpl(fun));
-        return new SparkOperator(newStream, parallelism);
-    }
-
-    @Override
-    public StreamOperator<T> filter(final FilterFunction<T> fun, String componentId) {
-        JavaDStream<T> newStream = dStream.filter(new FilterFunctionImpl(fun));
-        return new SparkOperator(newStream, parallelism);
-    }
-
-    @Override
-    public <R> StreamOperator<R> flatMap(final FlatMapFunction<T, R> fun,
-                                   String componentId) {
-        JavaDStream<R> newStream = dStream.flatMap(new FlatMapFunctionImpl(fun));
-        return new SparkOperator(newStream, parallelism);
-    }
-
-    @Override
-    public StreamWindowedOperator<T> window(TimeDuration windowDuration) {
-        return window(windowDuration, windowDuration);
-    }
-
-    @Override
-    public StreamWindowedOperator<T> window(TimeDuration windowDuration,
-                                      TimeDuration slideDuration) {
-        Duration windowDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(windowDuration);
-        Duration slideDurations = ro.tucn.spark.util.Utils.timeDurationsToSparkDuration(slideDuration);
-
-        JavaDStream<T> windowedStream = dStream.window(windowDurations, slideDurations);
-        return new SparkStreamWindowedOperator(windowedStream, parallelism);
-    }
-
-    @Override
     public void sink() {
 
-    }
-
-    @Override
-    public StreamOperator map(StreamOperator<T> points) {
-        return null;
     }
 
     @Override
