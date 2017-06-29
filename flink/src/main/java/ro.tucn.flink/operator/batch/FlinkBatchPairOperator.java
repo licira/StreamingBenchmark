@@ -31,26 +31,25 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     @Override
     public <R> PairOperator<K, Tuple2<V, R>> advClick(PairOperator<K, R> joinOperator,
-                                                  TimeDuration windowDuration,
-                                                  TimeDuration joinWindowDuration) throws WorkloadException {
+                                                      TimeDuration windowDuration,
+                                                      TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
         checkOperatorType(joinOperator);
 
         DataSet<Tuple2<K, R>> joinPreDataSet = ((FlinkBatchPairOperator<K, R>) joinOperator).dataSet;
-
         DataSet<Tuple2<String, String>> preDataSet = this.dataSet.map(new MapFunction<Tuple2<K, V>, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(Tuple2<K, V> tuple) throws Exception {
                 return new Tuple2<String, String>((String) tuple.f0, (String) tuple.f1);
             }
         });
+
         DataSet<Tuple2<String, String>> joinDataSet = joinPreDataSet.map(new MapFunction<Tuple2<K, R>, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(Tuple2<K, R> tuple) throws Exception {
                 return new Tuple2<String, String>((String) tuple.f0, (String) tuple.f1);
             }
         });
-
         DataSet<Tuple2<String, String>> dataSet = preDataSet.map(new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(Tuple2<String, String> tuple) throws Exception {
@@ -58,28 +57,20 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
             }
         });
 
-
-        JoinOperator.DefaultJoin<org.apache.flink.api.java.tuple.Tuple2<String, String>,
-                org.apache.flink.api.java.tuple.Tuple2<String, String>> join =
-                dataSet.join(joinDataSet)
+        JoinOperator.DefaultJoin<Tuple2<String, String>, Tuple2<String, String>> join = dataSet.join(joinDataSet)
                 .where("f0")
                 .equalTo("f0");
-        /*try {
-            join.print();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
-        DataSet<Object> map = join.map(new MapFunction<org.apache.flink.api.java.tuple.Tuple2<org.apache.flink.api.java.tuple.Tuple2<String, String>, org.apache.flink.api.java.tuple.Tuple2<String, String>>, Object>() {
+        DataSet<Object> map = join.map(new MapFunction<Tuple2<Tuple2<String, String>, Tuple2<String, String>>, Object>() {
             @Override
-            public org.apache.flink.api.java.tuple.Tuple2<String, org.apache.flink.api.java.tuple.Tuple2<String, String>> map(org.apache.flink.api.java.tuple.Tuple2<org.apache.flink.api.java.tuple.Tuple2<String, String>, org.apache.flink.api.java.tuple.Tuple2<String, String>> doubleTuple) throws Exception {
-                org.apache.flink.api.java.tuple.Tuple2<String, String> t1 = doubleTuple.f0;
-                org.apache.flink.api.java.tuple.Tuple2<String, String> t2 = doubleTuple.f1;
+            public Tuple2<String, Tuple2<String, String>> map(Tuple2<Tuple2<String, String>, Tuple2<String, String>> doubleTuple) throws Exception {
+                Tuple2<String, String> t1 = doubleTuple.f0;
+                Tuple2<String, String> t2 = doubleTuple.f1;
                 String key = t1.f0;
                 String value1 = t1.f1;
                 String value2 = t2.f1;
-                org.apache.flink.api.java.tuple.Tuple2<String, String> finalTuple = new org.apache.flink.api.java.tuple.Tuple2<String, String>(value1, value2);
-                return new org.apache.flink.api.java.tuple.Tuple2<String, org.apache.flink.api.java.tuple.Tuple2<String, String>>(key, finalTuple);
+                Tuple2<String, String> finalTuple = new Tuple2<String, String>(value1, value2);
+                return new Tuple2<String, Tuple2<String, String>>(key, finalTuple);
             }
         });
 
@@ -88,14 +79,6 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        /*try {
-            dataSet.print();
-            joinDataSet.print();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         return null;
     }
 
