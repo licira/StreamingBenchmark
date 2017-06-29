@@ -1,5 +1,6 @@
 package ro.tucn.flink.operator.stream;
 
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
@@ -12,7 +13,7 @@ import ro.tucn.frame.functions.ReduceFunction;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamWindowedPairOperator;
-import scala.Tuple2;
+
 
 /**
  * Created by Liviu on 4/17/2017.
@@ -26,12 +27,12 @@ public class FlinkStreamWindowedPairOperator<K, V, W extends Window> extends Str
         windowStream = stream;
     }
 
-    @Override
+    /*@Override
     public StreamPairOperator<K, V> reduceByKey(final ReduceFunction<V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = windowStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
-                new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
-        return new FlinkStreamPairOperator<>(newDataStream, parallelism);
-    }
+                new Tuple2<>(t1.f0, fun.reduce(t1.f1, t2.f1)));
+        return new FlinkStreamPairOperator<K, V>(newDataStream, parallelism);
+    }*/
 
     /**
      * In spark, updateStateByKey is used to accumulate data
@@ -41,10 +42,10 @@ public class FlinkStreamWindowedPairOperator<K, V, W extends Window> extends Str
      * @param componentId componment id
      * @return pair workload operator
      */
-    @Override
+    /*@Override
     public StreamPairOperator<K, V> updateStateByKey(final ReduceFunction<V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = windowStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
-                new Tuple2<>(t1._1(), fun.reduce(t1._2(), t2._2())));
+                new Tuple2<>(t1.f0, fun.reduce(t1.f1, t2.f1)));
         return new FlinkStreamPairOperator<>(newDataStream, parallelism);
     }
 
@@ -86,7 +87,7 @@ public class FlinkStreamWindowedPairOperator<K, V, W extends Window> extends Str
         DataStream<Tuple2<K, V>> newDataStream = windowStream.reduce((org.apache.flink.api.common.functions.ReduceFunction<Tuple2<K, V>>) (t1, t2) ->
                 fun.reduce(t1, t2));
         return new FlinkStreamPairOperator<>(newDataStream, parallelism);
-    }
+    }*/
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
