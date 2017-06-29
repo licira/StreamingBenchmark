@@ -1,21 +1,10 @@
 package ro.tucn.flink.operator.stream;
 
-import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
-import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import ro.tucn.exceptions.UnsupportOperatorException;
-import ro.tucn.flink.operator.FlinkStreamOperator;
-import ro.tucn.frame.functions.FilterFunction;
-import ro.tucn.frame.functions.MapFunction;
-import ro.tucn.frame.functions.MapPairFunction;
-import ro.tucn.frame.functions.MapPartitionFunction;
 import ro.tucn.operator.BaseOperator;
-import ro.tucn.operator.StreamOperator;
-import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamWindowedOperator;
-import scala.Tuple2;
 
 /**
  * Created by Liviu on 4/17/2017.
@@ -29,7 +18,7 @@ public class FlinkStreamWindowedOperator<T, W extends Window> extends StreamWind
         windowStream = stream;
     }
 
-    @Override
+    /*@Override
     public <R> StreamOperator<R> mapPartition(final MapPartitionFunction<T, R> fun, String componentId) {
         DataStream<R> newDataStream = windowStream.apply((WindowFunction<T, R, T, W>) (t, window, values, collector) -> {
             Iterable<R> results = fun.mapPartition(values);
@@ -78,7 +67,7 @@ public class FlinkStreamWindowedOperator<T, W extends Window> extends StreamWind
             }
         });
         return new FlinkStreamPairOperator<>(newDataStream, parallelism);
-    }
+    }*/
 
     @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
