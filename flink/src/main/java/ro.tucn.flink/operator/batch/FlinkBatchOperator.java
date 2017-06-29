@@ -59,12 +59,6 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
                 return new Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1 + t1.f1);
             }
         });
-        /*DataSet<scala.Tuple2<String, Integer>> map = reduce.map(new MapFunction<Tuple2<String, Integer>, scala.Tuple2<String, Integer>>() {
-            @Override
-            public scala.Tuple2<String, Integer> map(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
-                return new scala.Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1);
-            }
-        });*/
         return new FlinkBatchPairOperator<String, Integer>(reduce, parallelism);
     }
 
