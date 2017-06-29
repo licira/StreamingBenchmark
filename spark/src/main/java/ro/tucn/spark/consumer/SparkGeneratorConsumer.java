@@ -77,52 +77,45 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     }
 
     private JavaRDD<Point> getPointStreamFromJsonStream(JavaRDD<String> jsonStream) {
-        JavaRDD<Point> pointStream = jsonStream.map(s -> {
+        return jsonStream.map(s -> {
             Gson gson = new Gson();
             Point point = gson.fromJson(s, Point.class);
             return point;
         });
-        return pointStream;
     }
 
     private JavaRDD<String> getStringRddFromGenerator(String topic) {
         JavaRDD<String> rddWithJsonAsValue = getStringWithJsonAsValueRddFromKafka(topic);
-        JavaRDD<String> rdd = getRddFromRddWithJsonAsValue(rddWithJsonAsValue);
-        return rdd;
+        return getRddFromRddWithJsonAsValue(rddWithJsonAsValue);
     }
 
     private JavaRDD<String> getStringWithJsonAsValueRddFromKafka(String topic) {
-        JavaRDD<String> rddWithJsonAsValue = getDirectRddFromGenerator(topic);
-        return rddWithJsonAsValue;
+        return getDirectRddFromGenerator(topic);
     }
 
     private JavaPairRDD<String, String> getPairRddFromRddWithJsonAsValue(JavaRDD<String> rddWithJsonAsValue) {
-        JavaPairRDD<String, String> pairRdd = rddWithJsonAsValue.mapToPair(s -> {
+        return rddWithJsonAsValue.mapToPair(s -> {
             Gson gson = new Gson();
             Message msg = gson.fromJson(s, Message.class);
             return new Tuple2<String, String>(msg.getKey(), msg.getValue());
         });
-        return pairRdd;
     }
 
     private JavaRDD<String> getRddFromRddWithJsonAsValue(JavaRDD<String> rddWithJsonAsValue) {
-        JavaRDD<String> rdd = rddWithJsonAsValue.map(s -> {
+        return rddWithJsonAsValue.map(s -> {
             Gson gson = new Gson();
             Message msg = gson.fromJson(s, Message.class);
             return msg.getValue();
         });
-        return rdd;
     }
 
     private JavaRDD<String> getStringWithJsonAsValueRddFromGenerator(String topic) {
-        JavaRDD<String> rdd = getDirectRddFromGenerator(topic);
-        return rdd;
+        return getDirectRddFromGenerator(topic);
     }
 
     private JavaRDD<String> getDirectRddFromGenerator(String topic) {
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
         List<String> jsons = getJsonListFromMapList(generatedData);
-        JavaRDD<String> jsonRdds = sc.parallelize(jsons);
-        return jsonRdds;
+        return sc.parallelize(jsons);
     }
 }
