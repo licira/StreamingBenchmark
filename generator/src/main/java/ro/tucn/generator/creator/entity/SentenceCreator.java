@@ -16,7 +16,7 @@ import static ro.tucn.generator.creator.entity.SentenceCreator.SENTENCE_TYPE.UNI
 public class SentenceCreator {
 
     private int wordsNumberLowerBound = 1;
-    private int wordsNumberUpperBound = 10000;
+    private int wordsNumberUpperBound = 10;
     private int wordIdLowerBound = 1000;
 
     private FastZipfGenerator zipfGenerator;

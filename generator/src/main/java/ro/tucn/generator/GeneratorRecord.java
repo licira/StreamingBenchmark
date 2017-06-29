@@ -1,5 +1,8 @@
 package ro.tucn.generator;
 
+import static ro.tucn.exceptions.ExceptionMessage.INVALID_TIMESTAMP_MSG;
+import static ro.tucn.exceptions.ExceptionMessage.TOPIC_CANNOT_BE_NULL_MSG;
+
 /**
  * Created by Liviu on 6/28/2017.
  */
@@ -12,9 +15,9 @@ public class GeneratorRecord<K, V> {
 
     public GeneratorRecord(String topic, Long timestamp, K key, V value) {
         if (topic == null) {
-            throw new IllegalArgumentException("Topic cannot be null.");
+            throw new IllegalArgumentException(TOPIC_CANNOT_BE_NULL_MSG);
         } else if (timestamp != null && timestamp < 0L) {
-            throw new IllegalArgumentException(String.format("Invalid timestamp: %d. Timestamp should always be non-negative or null.", new Object[]{timestamp}));
+            throw new IllegalArgumentException(String.format(INVALID_TIMESTAMP_MSG, new Object[]{timestamp}));
         }
         this.topic = topic;
         this.timestamp = timestamp;

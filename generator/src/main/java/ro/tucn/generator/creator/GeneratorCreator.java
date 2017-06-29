@@ -9,7 +9,7 @@ import ro.tucn.topic.ApplicationTopics;
  */
 public class GeneratorCreator {
 
-    private static final String NONEXISTING_GENERATOR_EXCEPTION_MSG ="No generator available for this.";
+    private static final String NONEXISTING_GENERATOR_MSG ="No generator available for this.";
 
     public static AbstractGenerator getNewGenerator(String topic, String mode, int entitiesNumber) {
         AbstractGenerator generator;
@@ -25,7 +25,7 @@ public class GeneratorCreator {
         } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.UNIFORM_WORDS))) {
             generator = new UniformWordsGenerator(mode, entitiesNumber);
         } else {
-            throw new RuntimeException(NONEXISTING_GENERATOR_EXCEPTION_MSG);
+            throw new RuntimeException(NONEXISTING_GENERATOR_MSG);
         }
         return generator;
     }

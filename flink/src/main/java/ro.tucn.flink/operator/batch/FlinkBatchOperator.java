@@ -21,6 +21,8 @@ import ro.tucn.operator.BatchPairOperator;
 
 import java.util.Collection;
 
+import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
+
 /**
  * Created by Liviu on 6/27/2017.
  */
@@ -111,7 +113,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     private void checkOperatorType(BatchOperator<T> dataSet) throws WorkloadException {
         if (!(dataSet instanceof FlinkBatchOperator)) {
-            throw new WorkloadException("Cast joinDataSet to FlinkBatchOperator failed");
+            throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }
     }
 

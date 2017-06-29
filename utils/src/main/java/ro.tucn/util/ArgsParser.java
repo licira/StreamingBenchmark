@@ -2,18 +2,12 @@ package ro.tucn.util;
 
 import java.util.HashMap;
 
+import static ro.tucn.exceptions.ExceptionMessage.*;
+
 /**
  * Created by Liviu on 6/25/2017.
  */
 public class ArgsParser {
-
-    private static final String INEXISTING_TOPIC_EXECTION_MESSAGE = "Topic must be specified (using -topic followed by topic value).";
-    private static final String INEXISTING_MODE_EXECTION_MESSAGE = "Topic must be specified (using -topic followed by topic value).";
-    private static String WRONG_ARGS_SYNTAX_EXCEPTION_MSG = "Wrong Argument Syntax Error: "
-            + "Arguments must have the following syntax: "
-            + "[-parameter] [value].";
-    private static String WRONG_ARGS_NUMBER_EXCEPTION_MSG = "Wrong Arguments Number Error: "
-            + "The number of parameters must be equal to the number of values. ";
 
     public static HashMap<String, String> parseArgs(String[] args) {
         int length = args.length;
@@ -21,16 +15,16 @@ public class ArgsParser {
             return null;
         }
         if (((length % 2) != 0)) {
-            throw new RuntimeException(WRONG_ARGS_NUMBER_EXCEPTION_MSG);
+            throw new RuntimeException(WRONG_ARGS_NUMBER_MSG);
         }
         for (int i = 0; i < length; i++) {
             if ((i % 2) == 0) {
                 if (args[i].charAt(0) != '-') {
-                    throw new RuntimeException(WRONG_ARGS_SYNTAX_EXCEPTION_MSG);
+                    throw new RuntimeException(WRONG_ARGS_SYNTAX_MSG);
                 }
             } else {
                 if (args[i].charAt(0) == '-') {
-                    throw new RuntimeException(WRONG_ARGS_SYNTAX_EXCEPTION_MSG);
+                    throw new RuntimeException(WRONG_ARGS_SYNTAX_MSG);
                 }
             }
         }
@@ -79,7 +73,7 @@ public class ArgsParser {
     public static void checkParamsValidityForGenerator(HashMap<String, String> paramsAndValues) {
         String topic = ArgsParser.getTopic(paramsAndValues);
         if (topic.isEmpty()) {
-            throw new RuntimeException(INEXISTING_TOPIC_EXECTION_MESSAGE);
+            throw new RuntimeException(INEXISTING_TOPIC_MESSAGE);
         }
     }
 
@@ -87,10 +81,10 @@ public class ArgsParser {
         String topic = ArgsParser.getTopic(paramsAndValues);
         String mode = ArgsParser.getMode(paramsAndValues);
         if (topic.isEmpty()) {
-            throw new RuntimeException(INEXISTING_TOPIC_EXECTION_MESSAGE);
+            throw new RuntimeException(INEXISTING_TOPIC_MESSAGE);
         }
         if (mode.isEmpty()) {
-            throw new RuntimeException(INEXISTING_MODE_EXECTION_MESSAGE);
+            throw new RuntimeException(INEXISTING_MODE_MESSAGE);
         }
     }
 }

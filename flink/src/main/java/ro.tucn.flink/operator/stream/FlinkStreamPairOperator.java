@@ -19,6 +19,8 @@ import ro.tucn.util.TimeDuration;
 
 import java.util.concurrent.TimeUnit;
 
+import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
+
 /**
  * Created by Liviu on 4/17/2017.
  */
@@ -91,7 +93,7 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
 
     private <R> void checkOperatorType(PairOperator<K, R> joinStream) throws WorkloadException {
         if (!(joinStream instanceof FlinkStreamPairOperator)) {
-            throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
+            throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }
     }
 

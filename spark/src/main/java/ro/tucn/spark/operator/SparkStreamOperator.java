@@ -17,6 +17,8 @@ import scala.Tuple2;
 
 import java.util.Arrays;
 
+import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
@@ -121,7 +123,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
 
     private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof SparkStreamOperator)) {
-            throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
+            throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }
     }
 }

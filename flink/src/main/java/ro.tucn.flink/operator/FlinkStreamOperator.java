@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
+
 /**
  * Created by Liviu on 4/17/2017.
  */
@@ -176,7 +178,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
 
     private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof FlinkStreamOperator)) {
-            throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
+            throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }
     }
 

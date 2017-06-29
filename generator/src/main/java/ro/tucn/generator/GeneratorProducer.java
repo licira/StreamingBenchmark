@@ -27,7 +27,7 @@ public class GeneratorProducer<K, V> {
 
     public List<Map<K, V>> read(String topic) {
         List<Map<K, V>> list = buffer.get(topic);
-        buffer.remove(topic);
+        //buffer.remove(topic);
         return list;
     }
 

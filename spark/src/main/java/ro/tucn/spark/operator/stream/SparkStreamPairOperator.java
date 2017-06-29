@@ -13,6 +13,8 @@ import ro.tucn.spark.util.Utils;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
 
+import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
@@ -82,7 +84,7 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
 
     private void checkOperatorType(PairOperator joinStream) throws WorkloadException {
         if (!(joinStream instanceof SparkStreamPairOperator)) {
-            throw new WorkloadException("Cast joinStream to SparkStreamPairOperator failed");
+            throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }
     }
 }

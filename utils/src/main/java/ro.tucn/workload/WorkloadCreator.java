@@ -18,8 +18,8 @@ import ro.tucn.workload.stream.WordCountStream;
  */
 public class WorkloadCreator {
 
-    protected final String NONEXISTING_WORKLOAD_FOR_TOPIC_EXCEPTION_MSG = "No workload available for this topic.";
-    protected final String NONEXISTING_WORKLOAD_FOR_MODE_EXCEPTION_MSG = "No workload available for this mode.";
+    protected final String NONEXISTING_WORKLOAD_FOR_TOPIC_MSG = "No workload available for this topic.";
+    protected final String NONEXISTING_WORKLOAD_FOR_MODE_MSG = "No workload available for this mode.";
 
     public Workload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException {
         Workload workload;
@@ -28,7 +28,7 @@ public class WorkloadCreator {
         } else if (mode.equalsIgnoreCase(DataMode.BATCH)) {
             workload = getNewBatchWorkload(contextCreator, topic);
         } else {
-            throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_MODE_EXCEPTION_MSG);
+            throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_MODE_MSG);
         }
         return workload;
     }
@@ -44,7 +44,7 @@ public class WorkloadCreator {
         } else if (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS)) {
             workload = new WordCountBatch(contextCreator);
         } else {
-            throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_EXCEPTION_MSG);
+            throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
         return workload;
     }
@@ -60,7 +60,7 @@ public class WorkloadCreator {
         } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.UNIFORM_WORDS))) {
             workload = new WordCountFastStream(contextCreator);
         } else {
-            throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_EXCEPTION_MSG);
+            throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
         return workload;
     }

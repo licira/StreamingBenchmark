@@ -4,6 +4,8 @@ import ro.tucn.exceptions.DurationException;
 
 import java.util.concurrent.TimeUnit;
 
+import static ro.tucn.exceptions.ExceptionMessage.UNSUPPORTED_TIME_UNIT_MSG;
+
 /**
  * Created by Liviu on 4/8/2017.
  */
@@ -21,7 +23,7 @@ public class TimeDuration {
             case MINUTES:
                 break;
             default:
-                throw new DurationException("Unsupport time unit, please use millisecond, second or minute");
+                throw new DurationException(UNSUPPORTED_TIME_UNIT_MSG);
         }
         this.unit = timeUnit;
         this.length = timeLength;

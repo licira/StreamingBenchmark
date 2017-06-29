@@ -12,6 +12,8 @@ import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
 
+import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
+
 
 /**
  * Created by Liviu on 6/27/2017.
@@ -99,7 +101,7 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     private <R> void checkOperatorType(PairOperator<K, R> joinOperator) throws WorkloadException {
         if (!(joinOperator instanceof FlinkBatchPairOperator)) {
-            throw new WorkloadException("Cast joinStream to FlinkBatchPairOperator failed");
+            throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }
     }
 
