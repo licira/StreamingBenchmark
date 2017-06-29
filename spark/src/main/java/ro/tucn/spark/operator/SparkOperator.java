@@ -103,11 +103,6 @@ public class SparkOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public void sink() {
-
-    }
-
-    @Override
     public void closeWith(BaseOperator stream, boolean broadcast) throws UnsupportOperatorException {
         //throw new UnsupportOperatorException("Operator not supported1");
     }

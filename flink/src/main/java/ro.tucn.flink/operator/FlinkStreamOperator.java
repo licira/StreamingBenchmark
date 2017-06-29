@@ -150,18 +150,6 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         dataStream.print();
     }
 
-    @Override
-    public void sink() {
-        /*dataStream.addSink(new org.apache.flink.streaming.api.functions.sink.SinkFunction<T>() {
-            private PerformanceLog performanceLog = PerformanceLog.getLogger("sink");
-
-            @Override
-            public void invoke(T value) throws Exception {
-                performanceLog.logThroughputAndLatencyTimeHolder((TimeHolder<? extends Object>) value);
-            }
-        });*/
-    }
-
     /**
      * @apiNote Workaround to be able to perform flink operations
      */

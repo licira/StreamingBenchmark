@@ -14,6 +14,4 @@ public abstract class StreamOperator<T> extends Operator {
     public abstract StreamPairOperator<String, Integer> wordCount();
 
     public abstract void kMeansCluster(StreamOperator<T> centroids) throws WorkloadException;
-
-    public abstract void sink();
 }
