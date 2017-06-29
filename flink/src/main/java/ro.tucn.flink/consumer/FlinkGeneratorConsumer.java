@@ -78,7 +78,7 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     }
 
     private DataSet<Tuple2<String,String>> getPairDataSetFromDataSetWithJsonAsValue(DataSet<String> dataSetWithJsonAsValue) {
-        DataSet<Tuple2<String, String>> pairDataSet = dataSetWithJsonAsValue.map(new MapFunction<String, Tuple2<String, String>>() {
+        return dataSetWithJsonAsValue.map(new MapFunction<String, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(String s) throws Exception {
                 Gson gson = new Gson();
@@ -86,22 +86,19 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
                 return new Tuple2<String, String>(msg.getKey(), msg.getValue());
             }
         });
-        return pairDataSet;
     }
 
     private DataSet<String> getStringWithJsonAsValueDatasetFromGenerator(String topic) {
-        DataSet<String> dataSet = getDataSetFromGenerator(topic);
-        return dataSet;
+        return getDataSetFromGenerator(topic);
     }
 
     private DataSet<String> getStringDataSetFromGenerator(String topic) {
         DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(topic);
-        DataSet<String> dataSet = getStringDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
-        return dataSet;
+        return getStringDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
     }
 
     private DataSet<Point> getPointDataSetFromJsonDataSet(DataSet<String> jsonDataSet) {
-        DataSet<Point> pointDataSet = jsonDataSet.map(new MapFunction<String, Point>() {
+        return jsonDataSet.map(new MapFunction<String, Point>() {
             @Override
             public Point map(String s) throws Exception {
                 Gson gson = new Gson();
@@ -109,11 +106,10 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
                 return point;
             }
         });
-        return pointDataSet;
     }
 
     private DataSet<String> getStringDataSetFromDataSetWithJsonAsValue(DataSet<String> dataSetWithJsonAsValue) {
-        DataSet<String> dataSet = dataSetWithJsonAsValue.map(new MapFunction<String, String>() {
+        return dataSetWithJsonAsValue.map(new MapFunction<String, String>() {
             @Override
             public String map(String s) throws Exception {
                 Gson gson = new Gson();
@@ -121,19 +117,16 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
                 return msg.getValue();
             }
         });
-        return dataSet;
     }
 
     private DataSet<String> getStringWithJsonAsValueDataSetFromGenerator(String topic) {
-        DataSet<String> dataSet = getDataSetFromGenerator(topic);
-        return dataSet;
+        return getDataSetFromGenerator(topic);
     }
 
     private DataSet<String> getDataSetFromGenerator(String topic) {
         List<Map<String, String>> generatedData = generator.getGeneratedData(topic);
         List<String> jsons = getJsonListFromMapList(generatedData);
-        DataSet<String> jsonDataSet = env.fromCollection(jsons);
-        return jsonDataSet;
+        return env.fromCollection(jsons);
     }
 
     private void setEnvParallelism(int parallelism) {
