@@ -23,7 +23,7 @@ public abstract class PairOperator<K, V> extends BaseOperator {
      * @param <R>                Value type of joinStream
      * @return joined stream
      */
-     public abstract <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
+     public abstract <R> PairOperator<K, Tuple2<V, R>> advClick(PairOperator<K, R> joinStream,
                                                             TimeDuration windowDuration, TimeDuration joinWindowDuration) throws WorkloadException;
 
     /**

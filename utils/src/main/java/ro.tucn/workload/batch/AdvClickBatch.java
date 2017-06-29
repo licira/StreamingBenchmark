@@ -6,6 +6,7 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.DurationException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.PairOperator;
+import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.util.TimeDuration;
 import ro.tucn.workload.Workload;
 import scala.Tuple2;
@@ -32,6 +33,7 @@ public class AdvClickBatch extends Workload {
     @Override
     public void process()  {
         generatorConsumer.setParallelism(parallelism);
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.ADV);
         PairOperator<String, String> advs = generatorConsumer.getPairOperator(properties, "topic1");
         PairOperator<String, String> clicks = generatorConsumer.getPairOperator(properties, "topic2");
         advs.print();
@@ -39,12 +41,12 @@ public class AdvClickBatch extends Workload {
         PairOperator<String, Tuple2<String, String>> advClick = null;
         try {
             System.out.println("5");
-            advClick = advs.join(clicks,
+            advClick = advs.advClick(clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
-            advClick.print();
+            //advClick.print();
             //advClick.sink();
-            System.out.println("6");
+            //System.out.println("6");
         } catch (WorkloadException e) {
             logger.error(e.getMessage());
         } catch (DurationException e) {

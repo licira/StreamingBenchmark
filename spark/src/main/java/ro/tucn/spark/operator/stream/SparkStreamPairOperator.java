@@ -38,7 +38,7 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
      * @throws WorkloadException
      */
     @Override
-    public <R> PairOperator<K, Tuple2<V, R>> join(PairOperator<K, R> joinStream,
+    public <R> PairOperator<K, Tuple2<V, R>> advClick(PairOperator<K, R> joinStream,
                                                   TimeDuration windowDuration,
                                                   TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
