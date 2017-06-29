@@ -129,7 +129,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     }
 
     private JavaPairDStream<String, String> getDirectStreamFromKafka(Properties properties, String topicPropertyName) {
-        HashSet<String> topicsSet = getTopicSetFromProperites(topicPropertyName, properties);
+        HashSet<String> topicsSet = getTopicSetFromProperties(topicPropertyName, properties);
         HashMap<String, String> kafkaParams = getKafkaParamsFromProperties(properties);
         return KafkaUtils.createDirectStream(
                 jssc,
@@ -142,7 +142,7 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
         );
     }
 
-    private HashSet<String> getTopicSetFromProperites(String topicPropertyName, Properties properties) {
+    private HashSet<String> getTopicSetFromProperties(String topicPropertyName, Properties properties) {
         String topics = properties.getProperty(topicPropertyName);
         String[] split = splitTopics(topics);
         return new HashSet(Arrays.asList(split));
