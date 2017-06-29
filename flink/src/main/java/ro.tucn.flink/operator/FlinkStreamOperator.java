@@ -3,6 +3,7 @@ package ro.tucn.flink.operator;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.Utils;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.IterativeStream;
@@ -19,9 +20,11 @@ import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.flink.operator.stream.FlinkStreamWindowedOperator;
 import ro.tucn.frame.functions.*;
 import ro.tucn.kMeans.Point;
-import ro.tucn.operator.*;
+import ro.tucn.operator.BaseOperator;
+import ro.tucn.operator.StreamOperator;
+import ro.tucn.operator.StreamPairOperator;
+import ro.tucn.operator.StreamWindowedOperator;
 import ro.tucn.util.TimeDuration;
-import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,7 +82,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         });
         logger.info("5");
         DataStream<Tuple2<String, Integer>> wordCountsScala = toDataStreamWithScalaTuple2(wordCountsFlink);
-        return new FlinkStreamPairOperator<>(wordCountsScala, parallelism);
+        return new FlinkStreamPairOperator<String, Integer>(wordCountsScala, parallelism);
     }
 
     @Override
@@ -101,32 +104,32 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
 
                 @Override
                 public void flatMap1(Tuple2<Long, Point> t, Collector<Point> collector) throws Exception {
-                    if (centroidsWithCummulatedCoordinates.containsKey(t._1)) {
-                        Tuple2<Point, Long> centroidWithCummulatedCoordinatesAndFrequencyTuple = centroidsWithCummulatedCoordinates.get(t._1);
-                        centroidsWithCummulatedCoordinates.remove(t._1);
-                        Point centroidWithCummulatedCoordinates = centroidWithCummulatedCoordinatesAndFrequencyTuple._1;
-                        Long frequency = centroidWithCummulatedCoordinatesAndFrequencyTuple._2;
-                        Point newCentroidWithCummulatedCoordinates = centroidWithCummulatedCoordinates.add(t._2);
+                    if (centroidsWithCummulatedCoordinates.containsKey(t.f0)) {
+                        Tuple2<Point, Long> centroidWithCummulatedCoordinatesAndFrequencyTuple = centroidsWithCummulatedCoordinates.get(t.f0);
+                        centroidsWithCummulatedCoordinates.remove(t.f0);
+                        Point centroidWithCummulatedCoordinates = centroidWithCummulatedCoordinatesAndFrequencyTuple.f0;
+                        Long frequency = centroidWithCummulatedCoordinatesAndFrequencyTuple.f1;
+                        Point newCentroidWithCummulatedCoordinates = centroidWithCummulatedCoordinates.add(t.f1);
                         frequency += 1;
                         Tuple2<Point, Long> newCentroidWithCummulatedCoordinatesAndFrequencyTuple = new Tuple2<Point, Long>(newCentroidWithCummulatedCoordinates, frequency);
-                        centroidsWithCummulatedCoordinates.put(t._1, newCentroidWithCummulatedCoordinatesAndFrequencyTuple);
+                        centroidsWithCummulatedCoordinates.put(t.f0, newCentroidWithCummulatedCoordinatesAndFrequencyTuple);
                     } else {
-                        Point newCentroid = new Point(t._1, t._2.getCoordinates());
+                        Point newCentroid = new Point(t.f0, t.f1.getCoordinates());
                         Long frequency = 1L;
                         Tuple2<Point, Long> newCentroidWithCummulatedCoordinatesAndFrequencyTuple = new Tuple2<Point, Long>(newCentroid, frequency);
-                        centroidsWithCummulatedCoordinates.put(t._1, newCentroidWithCummulatedCoordinatesAndFrequencyTuple);
+                        centroidsWithCummulatedCoordinates.put(t.f0, newCentroidWithCummulatedCoordinatesAndFrequencyTuple);
                     }
                 }
 
                 @Override
                 public void flatMap2(Tuple2<Long, Point> t, Collector<Point> collector) throws Exception {
-                    if (centroidsWithCummulatedCoordinates.containsKey(t._1)) {
-                        Tuple2<Point, Long> centroidWithCummulatedCoordinatesAndFrequencyTuple = centroidsWithCummulatedCoordinates.get(t._1);
-                        centroidsWithCummulatedCoordinates.remove(t._1);
-                        Point centroidWithCummulatedCoordinates = centroidWithCummulatedCoordinatesAndFrequencyTuple._1;
-                        Long frequency = centroidWithCummulatedCoordinatesAndFrequencyTuple._2;
+                    if (centroidsWithCummulatedCoordinates.containsKey(t.f0)) {
+                        Tuple2<Point, Long> centroidWithCummulatedCoordinatesAndFrequencyTuple = centroidsWithCummulatedCoordinates.get(t.f0);
+                        centroidsWithCummulatedCoordinates.remove(t.f0);
+                        Point centroidWithCummulatedCoordinates = centroidWithCummulatedCoordinatesAndFrequencyTuple.f0;
+                        Long frequency = centroidWithCummulatedCoordinatesAndFrequencyTuple.f1;
                         Point centroid = centroidWithCummulatedCoordinates.div(frequency);
-                        centroid.setId(t._1);
+                        centroid.setId(t.f0);
                         collector.collect(centroid);
                     }
                 }
@@ -185,22 +188,23 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     public <K, V> StreamPairOperator<K, V> mapToPair(final MapPairFunction<T, K, V> fun, String componentId) {
         DataStream<Tuple2<K, V>> newDataStream = dataStream.map(new org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>() {
             public Tuple2<K, V> map(T t) throws Exception {
-                scala.Tuple2<K, V> tuple2 = fun.mapToPair(t);
-                return new Tuple2<>(tuple2._1(), tuple2._2());
+                //Tuple2<K, V> tuple2 = fun.mapToPair(t); !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                Tuple2<K, V> tuple2 = null;
+                return new Tuple2<>(tuple2.f0, tuple2.f1);
             }
         });
         /*
         TypeInformation<Tuple2<K, V>> returnType = TypeExtractor.createTypeInfo(MapFunction.class, fun.getClass(), 1, null, null);
         DataStream<Tuple2<K, V>> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>) t -> {
             Tuple2<K, V> tuple2 = fun.mapToPair(t);
-            return new Tuple2<>(tuple2._1(), tuple2._2());
+            return new Tuple2<>(tuple2.f0(), tuple2.f1());
         }).returns(returnType);
         */
         /*
         TypeInformation<Tuple2<K, V>> returnType = TypeExtractor.createTypeInfo(MapFunction.class, fun.getClass(), 1, null, null);
         DataStream<Tuple2<K, V>> newDataStream = dataStream.map((org.apache.flink.api.common.functions.MapFunction<T, Tuple2<K, V>>) t -> {
             Tuple2<K, V> tuple2 = fun.mapToPair(t);
-            return new Tuple2<>(tuple2._1(), tuple2._2());
+            return new Tuple2<>(tuple2.f0(), tuple2.f1());
         }).returns(returnType.getTypeClass());
 
         newDataStream.print();
@@ -296,7 +300,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         return dataStreamWithScalaTuple2.map(new org.apache.flink.api.common.functions.MapFunction<Tuple2<String, Integer>, org.apache.flink.api.java.tuple.Tuple2<String, Integer>>() {
             @Override
             public org.apache.flink.api.java.tuple.Tuple2<String, Integer> map(Tuple2<String, Integer> tuple2) throws Exception {
-                return new org.apache.flink.api.java.tuple.Tuple2<String, Integer>(tuple2._1(), tuple2._2());
+                return new org.apache.flink.api.java.tuple.Tuple2<String, Integer>(tuple2.f0, tuple2.f1);
             }
         });
     }
