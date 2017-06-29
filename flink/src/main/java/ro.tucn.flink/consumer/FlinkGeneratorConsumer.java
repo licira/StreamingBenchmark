@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
 import ro.tucn.DataMode;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.flink.operator.batch.FlinkBatchOperator;
@@ -15,7 +16,6 @@ import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.util.Message;
 import ro.tucn.util.TimeHolder;
-import scala.Tuple2;
 
 import java.util.List;
 import java.util.Map;
