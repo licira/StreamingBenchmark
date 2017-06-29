@@ -6,6 +6,7 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BatchOperator;
+import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.workload.Workload;
 
 /**
@@ -24,10 +25,11 @@ public class KMeansBatch extends Workload {
     @Override
     public void process() {
         generatorConsumer.setParallelism(parallelism);
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.K_MEANS);
         BatchOperator<Point> points = generatorConsumer.getPointOperator(properties, "topic1");
         BatchOperator<Point> centroids = generatorConsumer.getPointOperator(properties, "topic2");
-        //points.print();
-        //centroids.print();
+        points.print();
+        centroids.print();
         try {
             points.kMeansCluster(centroids);
         } catch (WorkloadException e) {

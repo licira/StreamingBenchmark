@@ -33,6 +33,11 @@ public class Point implements Serializable {
         this.timestamp = timestamp;
     }
 
+    public Point(Long id, Point point) {
+        this.id = id;
+        this.coordinates = point.getCoordinates();
+    }
+
     public int dimension() {
         return this.coordinates.length;
     }
