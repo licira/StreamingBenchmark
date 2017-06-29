@@ -6,6 +6,7 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
+import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.workload.Workload;
 
 /**
@@ -24,8 +25,10 @@ public class WordCountBatch extends Workload {
     @Override
     public void process() {
         generatorConsumer.setParallelism(parallelism);
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.UNIFORM_WORDS);
         BatchOperator<String> words = generatorConsumer.getStringOperator(properties, "topic1");
-        BatchPairOperator<String, Integer> stringIntegerStreamPairOperator = words.wordCount();
-        stringIntegerStreamPairOperator.print();
+        //words.print();
+        BatchPairOperator<String, Integer> countedWords = words.wordCount();
+        countedWords.print();
     }
 }
