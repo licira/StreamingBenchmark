@@ -40,9 +40,9 @@ public class WorkloadCreator {
         } else if (topic.equalsIgnoreCase(ApplicationTopics.K_MEANS)) {
             workload = new KMeansBatch(contextCreator);
         } else if (topic.equalsIgnoreCase(ApplicationTopics.SKEWED_WORDS)) {
-            workload = new WordCountFastBatch(contextCreator);
-        } else if (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS)) {
             workload = new WordCountBatch(contextCreator);
+        } else if (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS)) {
+            workload = new WordCountFastBatch(contextCreator);
         } else {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
