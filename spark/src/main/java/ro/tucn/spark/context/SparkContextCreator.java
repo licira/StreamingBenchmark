@@ -5,6 +5,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import ro.tucn.DataMode;
 import ro.tucn.consumer.AbstractGeneratorConsumer;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
@@ -28,22 +29,26 @@ public class SparkContextCreator extends ContextCreator {
     public static JavaStreamingContext jssc;
     public static JavaSparkContext sc;
     private Properties properties;
+    private String dataMode;
 
-    public SparkContextCreator(String appName) throws IOException {
+    public SparkContextCreator(String appName, String dataMode) throws IOException {
         super(appName);
         initializeProperties();
         initializeJavaStreamingContext(appName);
+        this.dataMode = dataMode;
     }
 
     @Override
     public void Start() {
-        jssc.addStreamingListener(new PerformanceStreamingListener());
-        //jssc.checkpoint("/tmp/spark/checkpoint");
-        jssc.start();
-        try {
-            jssc.awaitTermination();
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage());
+        if (dataMode.equals(DataMode.STREAMING)) {
+            jssc.addStreamingListener(new PerformanceStreamingListener());
+            //jssc.checkpoint("/tmp/spark/checkpoint");
+            jssc.start();
+            try {
+                jssc.awaitTermination();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
         }
     }
 
