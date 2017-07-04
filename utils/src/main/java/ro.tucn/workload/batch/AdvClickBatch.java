@@ -25,15 +25,15 @@ public class AdvClickBatch extends AbstractWorkload {
 
     public AdvClickBatch(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
-        generatorConsumer = contextCreator.getGeneratorConsumer();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));
         streamWindowTwo = Integer.parseInt(properties.getProperty("stream2.window"));
+        generatorConsumer = contextCreator.getGeneratorConsumer();
+        generatorConsumer.setParallelism(parallelism);
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.ADV);
     }
 
     @Override
     public void process()  {
-        generatorConsumer.setParallelism(parallelism);
-        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.ADV);
         PairOperator<String, String> advs = generatorConsumer.getPairOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         PairOperator<String, String> clicks = generatorConsumer.getPairOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         advs.print();

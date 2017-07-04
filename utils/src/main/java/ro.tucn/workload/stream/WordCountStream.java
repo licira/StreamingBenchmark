@@ -19,11 +19,11 @@ public class WordCountStream extends AbstractWorkload {
     public WordCountStream(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
+        kafkaConsumerCustom.setParallelism(parallelism);
     }
 
     @Override
     public void process() {
-        kafkaConsumerCustom.setParallelism(parallelism);
         StreamOperator<String> words = kafkaConsumerCustom.getStringOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         StreamPairOperator<String, Integer> countedWords = words.wordCount();
         countedWords.print();

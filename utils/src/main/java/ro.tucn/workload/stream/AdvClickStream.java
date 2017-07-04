@@ -26,14 +26,14 @@ public class AdvClickStream extends AbstractWorkload {
 
     public AdvClickStream(ContextCreator creator) throws WorkloadException {
         super(creator);
-        kafkaConsumerCustom = creator.getKafkaConsumerCustom();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));
         streamWindowTwo = Integer.parseInt(properties.getProperty("stream2.window"));
+        kafkaConsumerCustom = creator.getKafkaConsumerCustom();
+        kafkaConsumerCustom.setParallelism(parallelism);
     }
 
     @Override
     public void process() {
-        kafkaConsumerCustom.setParallelism(parallelism);
         PairOperator<String, String> advs = kafkaConsumerCustom.getStreamPairOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         PairOperator<String, String> clicks = kafkaConsumerCustom.getStreamPairOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         advs.print();

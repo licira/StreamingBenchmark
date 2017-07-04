@@ -19,10 +19,10 @@ public class KMeansStream extends AbstractWorkload {
     public KMeansStream(ContextCreator creator) throws WorkloadException {
         super(creator);
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
+        kafkaConsumerCustom.setParallelism(parallelism);
     }
 
     public void process() {
-        kafkaConsumerCustom.setParallelism(parallelism);
         StreamOperator<Point> points = kafkaConsumerCustom.getPointOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         StreamOperator<Point> centroids = kafkaConsumerCustom.getPointOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         points.print();
