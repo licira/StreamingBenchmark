@@ -166,5 +166,7 @@
     <orderEntry type="library" name="Maven: jline:jline:0.9.94" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.0" level="project" />
+    <orderEntry type="module" module-name="generator" />
+    <orderEntry type="library" name="Maven: org.apache.kafka:kafka_2.10:0.10.1.0" level="project" />
   </component>
 </module>

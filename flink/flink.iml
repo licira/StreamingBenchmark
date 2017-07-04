@@ -14,13 +14,15 @@
     <orderEntry type="module" module-name="core" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.5" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.1" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="module" module-name="generator" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-core:0.10.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-hadoop2:0.10.2" level="project" />
+    <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
     <orderEntry type="library" name="Maven: xmlenc:xmlenc:0.52" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" name="Maven: commons-net:commons-net:3.1" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-core:1.9" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: commons-el:commons-el:1.0" level="project" />
@@ -80,6 +82,17 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.4.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-clients:0.10.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-optimizer:0.10.2" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api:3.0.20100224" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:8.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.sling:org.apache.sling.commons.json:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-kafka:0.10.2" level="project" />
@@ -97,18 +110,6 @@
     <orderEntry type="library" name="Maven: de.javakaffee:kryo-serializers:0.27" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.5" level="project" />
     <orderEntry type="library" name="Maven: org.joda:joda-convert:1.7" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-clients:0.10.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-optimizer:0.10.2" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api:3.0.20100224" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:8.0.0.M1" level="project" />
-    <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.3.1" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
-    <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
   </component>
 </module>

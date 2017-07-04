@@ -6,12 +6,12 @@ import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.operator.StreamPairOperator;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 
 /**
  * Created by Liviu on 4/15/2017.
  */
-public class WordCountStream extends Workload {
+public class WordCountStream extends AbstractWorkload {
 
     private static final Logger logger = Logger.getLogger(WordCountStream.class);
     private final AbstractKafkaConsumerCustom kafkaConsumerCustom;

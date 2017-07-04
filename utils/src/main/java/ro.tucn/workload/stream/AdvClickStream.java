@@ -8,7 +8,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.logger.SerializableLogger;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.util.TimeDuration;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 import scala.Tuple2;
 
 import java.util.concurrent.TimeUnit;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Liviu on 4/9/2017.
  */
-public class AdvClickStream extends Workload {
+public class AdvClickStream extends AbstractWorkload {
 
     private static final Logger logger = SerializableLogger.getLogger(AdvClickStream.class);
 

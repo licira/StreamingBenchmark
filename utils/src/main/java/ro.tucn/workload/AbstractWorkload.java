@@ -14,9 +14,9 @@ import java.util.Properties;
 /**
  * Created by Liviu on 4/9/2017.
  */
-public abstract class Workload implements Serializable {
+public abstract class AbstractWorkload implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(Workload.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(AbstractWorkload.class.getSimpleName());
 
     protected static final String TOPIC_ONE_PROPERTY_NAME = "topic1";
     protected static final String TOPIC_TWO_PROPERTY_NAME = "topic2";
@@ -25,7 +25,7 @@ public abstract class Workload implements Serializable {
     protected int parallelism;
     private ContextCreator contextCreator;
 
-    public Workload(ContextCreator contextCreator) throws WorkloadException {
+    public AbstractWorkload(ContextCreator contextCreator) throws WorkloadException {
         this.contextCreator = contextCreator;
         initializeParallelism();
         initializeProperties();

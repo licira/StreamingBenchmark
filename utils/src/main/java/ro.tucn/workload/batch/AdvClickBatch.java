@@ -8,7 +8,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.util.TimeDuration;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 import scala.Tuple2;
 
 import java.util.concurrent.TimeUnit;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Liviu on 6/27/2017.
  */
-public class AdvClickBatch extends Workload {
+public class AdvClickBatch extends AbstractWorkload {
 
     private static final Logger logger = Logger.getLogger(AdvClickBatch.class);
     private final AbstractGeneratorConsumer generatorConsumer;

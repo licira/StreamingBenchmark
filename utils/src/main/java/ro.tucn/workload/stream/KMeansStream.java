@@ -6,12 +6,12 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 
 /**
  * Created by Liviu on 4/15/2017.
  */
-public class KMeansStream extends Workload {
+public class KMeansStream extends AbstractWorkload {
 
     private static final Logger logger = Logger.getLogger(KMeansStream.class);
     private final AbstractKafkaConsumerCustom kafkaConsumerCustom;

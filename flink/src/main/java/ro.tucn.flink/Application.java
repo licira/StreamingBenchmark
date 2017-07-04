@@ -4,7 +4,7 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.context.FlinkContextCreator;
 import ro.tucn.util.ArgsParser;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 import ro.tucn.workload.WorkloadCreator;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class Application {
             String mode = ArgsParser.getMode(parsedArgs);
             ContextCreator contextCreator = new FlinkContextCreator(topic, mode);
             WorkloadCreator workloadCreator = new WorkloadCreator();
-            Workload workload = workloadCreator.getNewWorkload(contextCreator, topic, mode);
+            AbstractWorkload workload = workloadCreator.getNewWorkload(contextCreator, topic, mode);
             workload.Start();
         }
     }

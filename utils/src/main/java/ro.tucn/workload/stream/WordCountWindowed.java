@@ -4,12 +4,12 @@ import org.apache.log4j.Logger;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 
 /**
  * Created by Liviu on 4/15/2017.
  */
-public class WordCountWindowed extends Workload {
+public class WordCountWindowed extends AbstractWorkload {
 
     private static final Logger logger = Logger.getLogger(WordCountWindowed.class);
     private final AbstractKafkaConsumerCustom kafkaConsumerCustom;

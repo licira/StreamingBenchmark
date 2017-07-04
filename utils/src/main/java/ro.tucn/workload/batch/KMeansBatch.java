@@ -7,12 +7,12 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.topic.ApplicationTopics;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 
 /**
  * Created by Liviu on 6/27/2017.
  */
-public class KMeansBatch extends Workload {
+public class KMeansBatch extends AbstractWorkload {
 
     private static final Logger logger = Logger.getLogger(KMeansBatch.class);
     private final AbstractGeneratorConsumer generatorConsumer;

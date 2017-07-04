@@ -7,12 +7,12 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.topic.ApplicationTopics;
-import ro.tucn.workload.Workload;
+import ro.tucn.workload.AbstractWorkload;
 
 /**
  * Created by Liviu on 6/27/2017.
  */
-public class WordCountBatch extends Workload {
+public class WordCountBatch extends AbstractWorkload {
 
     private static final Logger logger = Logger.getLogger(WordCountBatch.class);
     private final AbstractGeneratorConsumer generatorConsumer;

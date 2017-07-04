@@ -19,8 +19,8 @@ public class WorkloadCreator {
     protected final String NONEXISTING_WORKLOAD_FOR_TOPIC_MSG = "No workload available for this topic.";
     protected final String NONEXISTING_WORKLOAD_FOR_MODE_MSG = "No workload available for this mode.";
 
-    public Workload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException {
-        Workload workload;
+    public AbstractWorkload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException {
+        AbstractWorkload workload;
         if (mode.equalsIgnoreCase(DataMode.STREAMING)) {
             workload = getNewStreamWorkload(contextCreator, topic);
         } else if (mode.equalsIgnoreCase(DataMode.BATCH)) {
@@ -31,8 +31,8 @@ public class WorkloadCreator {
         return workload;
     }
 
-    private Workload getNewBatchWorkload(ContextCreator contextCreator, String topic) throws WorkloadException {
-        Workload workload;
+    private AbstractWorkload getNewBatchWorkload(ContextCreator contextCreator, String topic) throws WorkloadException {
+        AbstractWorkload workload;
         if (topic.equalsIgnoreCase(ApplicationTopics.ADV)) {
             workload = new AdvClickBatch(contextCreator);
         } else if (topic.equalsIgnoreCase(ApplicationTopics.K_MEANS)) {
@@ -46,8 +46,8 @@ public class WorkloadCreator {
         return workload;
     }
 
-    private Workload getNewStreamWorkload(ContextCreator contextCreator, String topic) throws WorkloadException {
-        Workload workload;
+    private AbstractWorkload getNewStreamWorkload(ContextCreator contextCreator, String topic) throws WorkloadException {
+        AbstractWorkload workload;
         if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.ADV))) {
             workload = new AdvClickStream(contextCreator);
         } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.K_MEANS))) {
