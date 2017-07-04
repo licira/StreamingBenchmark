@@ -39,7 +39,6 @@ public class SparkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
         SparkBatchPairOperator<K, R> joinSparkStream = ((SparkBatchPairOperator<K, R>) joinOperator);
         JavaPairRDD<K, Tuple2<V, R>> joinedRdd = pairRDD
-                //.window(duration.plus(joinDuration), joinDuration)
                 .join(joinSparkStream.pairRDD);
 
         return new SparkBatchPairOperator(joinedRdd, parallelism);
