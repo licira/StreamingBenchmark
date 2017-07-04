@@ -26,7 +26,7 @@ public class WordCountBatch extends Workload {
     public void process() {
         generatorConsumer.setParallelism(parallelism);
         generatorConsumer.askGeneratorToProduceData(ApplicationTopics.SKEWED_WORDS);
-        BatchOperator<String> words = generatorConsumer.getStringOperator(properties, "topic1");
+        BatchOperator<String> words = generatorConsumer.getStringOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         BatchPairOperator<String, Integer> countedWords = words.wordCount();
         countedWords.print();
     }

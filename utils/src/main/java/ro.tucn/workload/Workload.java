@@ -18,6 +18,9 @@ public abstract class Workload implements Serializable {
 
     private static final Logger logger = Logger.getLogger(Workload.class.getSimpleName());
 
+    protected static final String TOPIC_ONE_PROPERTY_NAME = "topic1";
+    protected static final String TOPIC_TWO_PROPERTY_NAME = "topic2";
+
     protected Properties properties;
     protected int parallelism;
     private ContextCreator contextCreator;

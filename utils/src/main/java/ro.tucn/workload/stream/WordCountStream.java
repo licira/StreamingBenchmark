@@ -25,7 +25,7 @@ public class WordCountStream extends Workload {
     public void process() {
         kafkaConsumerCustom.setParallelism(parallelism);
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WORD COUNT<<<<<<<<<<<<<<<<<");
-        StreamOperator<String> words = kafkaConsumerCustom.getStringOperator(properties, "topic1");
+        StreamOperator<String> words = kafkaConsumerCustom.getStringOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<<<");
         StreamPairOperator<String, Integer> countedWords = words.wordCount();
         logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<<<");

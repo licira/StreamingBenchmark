@@ -34,8 +34,8 @@ public class AdvClickBatch extends Workload {
     public void process()  {
         generatorConsumer.setParallelism(parallelism);
         generatorConsumer.askGeneratorToProduceData(ApplicationTopics.ADV);
-        PairOperator<String, String> advs = generatorConsumer.getPairOperator(properties, "topic1");
-        PairOperator<String, String> clicks = generatorConsumer.getPairOperator(properties, "topic2");
+        PairOperator<String, String> advs = generatorConsumer.getPairOperator(properties, TOPIC_ONE_PROPERTY_NAME);
+        PairOperator<String, String> clicks = generatorConsumer.getPairOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         advs.print();
         clicks.print();
         PairOperator<String, Tuple2<String, String>> advClick = null;

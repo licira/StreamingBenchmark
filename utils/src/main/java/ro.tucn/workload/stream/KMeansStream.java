@@ -23,8 +23,8 @@ public class KMeansStream extends Workload {
 
     public void process() {/*PI*/
         kafkaConsumerCustom.setParallelism(parallelism);
-        StreamOperator<Point> points = kafkaConsumerCustom.getPointOperator(properties, "topic1");
-        StreamOperator<Point> centroids = kafkaConsumerCustom.getPointOperator(properties, "topic2");
+        StreamOperator<Point> points = kafkaConsumerCustom.getPointOperator(properties, TOPIC_ONE_PROPERTY_NAME);
+        StreamOperator<Point> centroids = kafkaConsumerCustom.getPointOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         //points.print();
         //centroids.print();
         try {
