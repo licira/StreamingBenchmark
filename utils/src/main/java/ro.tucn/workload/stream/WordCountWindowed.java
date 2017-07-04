@@ -1,12 +1,10 @@
 package ro.tucn.workload.stream;
 
 import org.apache.log4j.Logger;
-import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
 import ro.tucn.context.ContextCreator;
+import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.workload.Workload;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by Liviu on 4/15/2017.
@@ -22,12 +20,12 @@ public class WordCountWindowed extends Workload {
     }
 
     @Override
-    public void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void process() {
         try {
             // Flink doesn't support shuffle().window()
             // Actually Flink does keyGrouping().window().update()
             // It is the same situation to Spark streaming
-            /*Operator<TimeHolder<String>> wordOperators = kafkaConsumerCustom.getStringStreamTimeHolderOperator(properties, "topic1");
+            /*Operator<TimeHolder<String>> wordOperators = kafkaConsumerCustom.getStringStreamTimeHolderOperator(properties, TOPIC_ONE_PROPERTY_NAME);
             StreamPairOperator<String, TimeHolder<Integer>> counts =
                     wordOperators.flatMap(UserFunctions.splitFlatMapTimeHolder, "splitter")
                             .mapToPair(UserFunctions.mapToStrIntPairTimeHolder, "pair")

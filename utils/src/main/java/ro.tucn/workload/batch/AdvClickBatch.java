@@ -40,12 +40,10 @@ public class AdvClickBatch extends Workload {
         clicks.print();
         PairOperator<String, Tuple2<String, String>> advClick = null;
         try {
-            System.out.println("5");
             advClick = advs.advClick(clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
             advClick.print();
-            //System.out.println("6");
         } catch (WorkloadException e) {
             logger.error(e.getMessage());
         } catch (DurationException e) {
