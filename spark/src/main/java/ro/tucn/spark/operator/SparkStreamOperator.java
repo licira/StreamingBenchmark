@@ -10,6 +10,7 @@ import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
@@ -44,7 +45,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(StreamOperator<T> centroidsOperator) throws WorkloadException {
+    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
@@ -120,7 +121,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
         this.dStream.print();
     }
 
-    private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
+    private void checkOperatorType(Operator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof SparkStreamOperator)) {
             throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }

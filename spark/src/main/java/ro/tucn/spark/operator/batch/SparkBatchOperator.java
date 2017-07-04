@@ -14,6 +14,7 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
+import ro.tucn.operator.Operator;
 import scala.Tuple2;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(BatchOperator<T> centroidsOperator) throws WorkloadException {
+    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaRDD<Point> points = (JavaRDD<Point>) this.rdd;
@@ -77,7 +78,7 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
         }
     }
 
-    private void checkOperatorType(BatchOperator<T> centroids) throws WorkloadException {
+    private void checkOperatorType(Operator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof SparkBatchOperator)) {
             throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }

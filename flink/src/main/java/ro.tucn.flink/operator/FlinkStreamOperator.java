@@ -14,6 +14,7 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
+import ro.tucn.operator.Operator;
 import ro.tucn.operator.StreamOperator;
 import ro.tucn.operator.StreamPairOperator;
 
@@ -71,7 +72,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(StreamOperator<T> centroidsOperator) throws WorkloadException {
+    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataStream<Point> points = (DataStream<Point>) this.dataStream;
@@ -154,7 +155,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         });
     }
 
-    private void checkOperatorType(StreamOperator<T> centroids) throws WorkloadException {
+    private void checkOperatorType(Operator<T> centroids) throws WorkloadException {
         if (!(centroids instanceof FlinkStreamOperator)) {
             throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }

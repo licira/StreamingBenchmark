@@ -18,6 +18,7 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
 import ro.tucn.operator.BatchPairOperator;
+import ro.tucn.operator.Operator;
 
 import java.util.Collection;
 
@@ -59,7 +60,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(BatchOperator<T> centroidsOperator) throws WorkloadException {
+    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataSet<Point> points = (DataSet<Point>) this.dataSet;
@@ -102,7 +103,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         }
     }
 
-    private void checkOperatorType(BatchOperator<T> dataSet) throws WorkloadException {
+    private void checkOperatorType(Operator<T> dataSet) throws WorkloadException {
         if (!(dataSet instanceof FlinkBatchOperator)) {
             throw new WorkloadException(FAILED_TO_CAST_OPERATOR_MSG + getClass().getSimpleName());
         }

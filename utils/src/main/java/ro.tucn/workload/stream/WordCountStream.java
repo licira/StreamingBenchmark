@@ -1,17 +1,16 @@
 package ro.tucn.workload.stream;
 
 import org.apache.log4j.Logger;
-import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.consumer.AbstractKafkaConsumerCustom;
-import ro.tucn.operator.StreamOperator;
 import ro.tucn.context.ContextCreator;
-import ro.tucn.operator.StreamPairOperator;
-import ro.tucn.workload.AbstractWorkload;
+import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.operator.StreamOperator;
+import ro.tucn.workload.AbstractWordCount;
 
 /**
  * Created by Liviu on 4/15/2017.
  */
-public class WordCountStream extends AbstractWorkload {
+public class WordCountStream extends AbstractWordCount {
 
     private static final Logger logger = Logger.getLogger(WordCountStream.class);
     private final AbstractKafkaConsumerCustom kafkaConsumerCustom;
@@ -25,7 +24,6 @@ public class WordCountStream extends AbstractWorkload {
     @Override
     public void process() {
         StreamOperator<String> words = kafkaConsumerCustom.getStringOperator(properties, TOPIC_ONE_PROPERTY_NAME);
-        StreamPairOperator<String, Integer> countedWords = words.wordCount();
-        countedWords.print();
+        super.process(words);
     }
 }
