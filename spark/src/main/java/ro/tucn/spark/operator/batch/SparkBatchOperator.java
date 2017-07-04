@@ -31,10 +31,6 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
     JavaRDD<T> rdd;
     private StreamingKMeans model;
 
-    public SparkBatchOperator(int parallelism) {
-        super(parallelism);
-    }
-
     public SparkBatchOperator(JavaRDD<T> rdd, int parallelism) {
         super(parallelism);
         this.rdd = rdd;
@@ -42,10 +38,10 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public BatchPairOperator<String, Integer> wordCount() {
-        JavaRDD<String> stringJavaRDD = rdd.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
-        JavaPairRDD<String, Integer> tIntegerJavaPairRDD = stringJavaRDD.mapToPair(s -> new Tuple2(s, 1));
-        JavaPairRDD<String, Integer> tIntegerJavaPairRDD1 = tIntegerJavaPairRDD.reduceByKey((i1, i2) -> i1 + i2);
-        return new SparkBatchPairOperator(tIntegerJavaPairRDD1, parallelism);
+        JavaRDD<String> sentences = rdd.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
+        JavaPairRDD<String, Integer> wordsCountedByOneEach = sentences.mapToPair(s -> new Tuple2(s, 1));
+        JavaPairRDD<String, Integer> countedWords = wordsCountedByOneEach.reduceByKey((i1, i2) -> i1 + i2);
+        return new SparkBatchPairOperator(countedWords, parallelism);
     }
 
     @Override
@@ -57,13 +53,12 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
         JavaRDD<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
         pointsVector.cache();
-        //pointsVector.print();
-        JavaRDD<Vector> centroidsVector = centroids.map(c -> Vectors.dense(c.getCoordinates()));
-        //centroidsVector.print();
 
         int numClusters = centroids.collect().size();
         int numIterations = 10;
+
         KMeansModel clusters = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
+
         for (Vector center: clusters.clusterCenters()) {
             logger.info(center.toString());
         }

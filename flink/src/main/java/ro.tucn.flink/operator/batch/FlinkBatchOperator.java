@@ -32,10 +32,6 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     DataSet<T> dataSet;
 
-    public FlinkBatchOperator(int parallelism) {
-        super(parallelism);
-    }
-
     public FlinkBatchOperator(DataSet<T> dataSet, int parallelism) {
         super(parallelism);
         this.dataSet = dataSet;
@@ -43,7 +39,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public BatchPairOperator<String, Integer> wordCount() {
-        DataSet<Tuple2<String, Integer>> tTuple2FlatMapOperator = dataSet.flatMap(new FlatMapFunction<T, Tuple2<String, Integer>>() {
+        DataSet<Tuple2<String, Integer>> sentences = dataSet.flatMap(new FlatMapFunction<T, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(T t, Collector<Tuple2<String, Integer>> collector) throws Exception {
                 String sentence = (String) t;
@@ -52,14 +48,14 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
                 }
             }
         });
-        UnsortedGrouping<Tuple2<String, Integer>> tuple2UnsortedGrouping = tTuple2FlatMapOperator.groupBy(0);
-        DataSet<Tuple2<String, Integer>> reduce = tuple2UnsortedGrouping.reduce(new ReduceFunction<Tuple2<String, Integer>>() {
+        UnsortedGrouping<Tuple2<String, Integer>> wordsCountedByOneEach = sentences.groupBy(0);
+        DataSet<Tuple2<String, Integer>> countedWords = wordsCountedByOneEach.reduce(new ReduceFunction<Tuple2<String, Integer>>() {
             @Override
             public Tuple2<String, Integer> reduce(Tuple2<String, Integer> stringIntegerTuple2, Tuple2<String, Integer> t1) throws Exception {
                 return new Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1 + t1.f1);
             }
         });
-        return new FlinkBatchPairOperator<String, Integer>(reduce, parallelism);
+        return new FlinkBatchPairOperator<String, Integer>(countedWords, parallelism);
     }
 
     @Override
@@ -80,15 +76,16 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
                 .map(new CentroidAverager());
 
         DataSet<Point> finalCentroids = loop.closeWith(newCentroids);
+
         DataSet<Tuple2<Long, Point>> clusteredPoints = points
                 // assign points to final clusters
                 .map(new SelectNearestCenter()).withBroadcastSet(finalCentroids, "centroids");
+
         try {
-            clusteredPoints.print();
+            finalCentroids.print();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
