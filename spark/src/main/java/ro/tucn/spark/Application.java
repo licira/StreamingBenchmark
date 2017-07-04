@@ -21,7 +21,7 @@ public class Application {
             ArgsParser.checkParamsValidityForTestBed(parsedArgs);
             String topic = ArgsParser.getTopic(parsedArgs);
             String mode = ArgsParser.getMode(parsedArgs);
-            ContextCreator contextCreator = new SparkContextCreator(topic);
+            ContextCreator contextCreator = new SparkContextCreator(topic, mode);
             WorkloadCreator workloadCreator = new WorkloadCreator();
             Workload workload = workloadCreator.getNewWorkload(contextCreator, topic, mode);
             workload.Start();
