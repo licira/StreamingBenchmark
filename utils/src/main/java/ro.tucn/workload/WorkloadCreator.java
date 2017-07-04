@@ -7,10 +7,8 @@ import ro.tucn.topic.ApplicationTopics;
 import ro.tucn.workload.batch.AdvClickBatch;
 import ro.tucn.workload.batch.KMeansBatch;
 import ro.tucn.workload.batch.WordCountBatch;
-import ro.tucn.workload.batch.WordCountFastBatch;
 import ro.tucn.workload.stream.AdvClickStream;
 import ro.tucn.workload.stream.KMeansStream;
-import ro.tucn.workload.stream.WordCountFastStream;
 import ro.tucn.workload.stream.WordCountStream;
 
 /**
@@ -39,10 +37,9 @@ public class WorkloadCreator {
             workload = new AdvClickBatch(contextCreator);
         } else if (topic.equalsIgnoreCase(ApplicationTopics.K_MEANS)) {
             workload = new KMeansBatch(contextCreator);
-        } else if (topic.equalsIgnoreCase(ApplicationTopics.SKEWED_WORDS)) {
+        } else if ((topic.equalsIgnoreCase(ApplicationTopics.SKEWED_WORDS)) ||
+                (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS))) {
             workload = new WordCountBatch(contextCreator);
-        } else if (topic.equalsIgnoreCase(ApplicationTopics.UNIFORM_WORDS)) {
-            workload = new WordCountFastBatch(contextCreator);
         } else {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
@@ -55,10 +52,9 @@ public class WorkloadCreator {
             workload = new AdvClickStream(contextCreator);
         } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.K_MEANS))) {
             workload = new KMeansStream(contextCreator);
-        } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.SKEWED_WORDS))) {
+        } else if ((topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.SKEWED_WORDS))) ||
+                (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.UNIFORM_WORDS)))) {
             workload = new WordCountStream(contextCreator);
-        } else if (topic.equalsIgnoreCase(String.valueOf(ApplicationTopics.UNIFORM_WORDS))) {
-            workload = new WordCountFastStream(contextCreator);
         } else {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
