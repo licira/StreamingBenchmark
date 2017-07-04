@@ -1,15 +1,14 @@
 package ro.tucn.workload;
 
 import org.apache.log4j.Logger;
+import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.context.ContextCreator;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeHolder;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
@@ -29,7 +28,7 @@ public abstract class Workload implements Serializable {
         initializeProperties();
     }
 
-    public abstract void process() throws WorkloadException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    public abstract void process();
 
     public void Start() {
         logger.info("Start workload: " + this.getClass().getSimpleName());
