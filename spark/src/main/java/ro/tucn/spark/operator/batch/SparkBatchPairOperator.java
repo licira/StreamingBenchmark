@@ -21,7 +21,7 @@ public class SparkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
 
     private static final Logger logger = Logger.getLogger(SparkBatchPairOperator.class);
 
-    public JavaPairRDD<K, V> pairRDD;
+    private JavaPairRDD<K, V> pairRDD;
 
     public SparkBatchPairOperator(JavaPairRDD<K, V> pairRDD, int parallelism) {
         super(parallelism);

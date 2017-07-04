@@ -28,7 +28,7 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     private static final Logger logger = Logger.getLogger(SparkBatchOperator.class);
 
-    JavaRDD<T> rdd;
+    private JavaRDD<T> rdd;
     private StreamingKMeans model;
 
     public SparkBatchOperator(JavaRDD<T> rdd, int parallelism) {

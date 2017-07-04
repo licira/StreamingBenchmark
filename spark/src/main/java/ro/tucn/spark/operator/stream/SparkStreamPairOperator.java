@@ -22,7 +22,7 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
 
     private static final Logger logger = Logger.getLogger(SparkStreamPairOperator.class);
 
-    public JavaPairDStream<K, V> pairDStream;
+    private JavaPairDStream<K, V> pairDStream;
 
     public SparkStreamPairOperator(JavaPairDStream<K, V> stream, int parallelism) {
         super(parallelism);

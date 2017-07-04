@@ -30,7 +30,7 @@ import static ro.tucn.exceptions.ExceptionMessage.FAILED_TO_CAST_OPERATOR_MSG;
  */
 public class FlinkStreamOperator<T> extends StreamOperator<T> {
 
-    protected DataStream<T> dataStream;
+    private DataStream<T> dataStream;
     private Logger logger = Logger.getLogger(FlinkStreamOperator.class.getSimpleName());
 
     public FlinkStreamOperator(DataStream<T> dataStream, int parallelism) {

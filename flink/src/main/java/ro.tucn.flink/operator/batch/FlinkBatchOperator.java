@@ -30,7 +30,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     private static final Logger logger = Logger.getLogger(FlinkBatchOperator.class);
 
-    DataSet<T> dataSet;
+    private DataSet<T> dataSet;
 
     public FlinkBatchOperator(DataSet<T> dataSet, int parallelism) {
         super(parallelism);

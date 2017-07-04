@@ -26,14 +26,13 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
 
     private static final Logger logger = Logger.getLogger(SparkStreamOperator.class);
 
-    JavaDStream<T> dStream;
+    private JavaDStream<T> dStream;
     private boolean firstKMeanClustering = true;
     private StreamingKMeans model;
 
     public SparkStreamOperator(JavaDStream<T> stream, int parallelism) {
         super(parallelism);
         dStream = stream;
-
     }
 
     @Override
