@@ -27,19 +27,19 @@ public class FlinkContextCreator extends ContextCreator {
     private Properties properties;
     private String dataMode;
 
-    public FlinkContextCreator(String name, String mode) throws IOException {
+    public FlinkContextCreator(String name, String dataMode) throws IOException {
         super(name);
         System.out.println("1");
         initializeProperties();
-        initializeEnv(mode);
+        initializeEnv(dataMode);
         System.out.println("2");
     }
 
-    private void initializeEnv(String mode) {
-        this.dataMode = mode;
-        if (dataMode.equals(DataMode.STREAMING)) {
+    private void initializeEnv(String dataMode) {
+        this.dataMode = dataMode;
+        if (this.dataMode.equals(DataMode.STREAMING)) {
             streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();
-        } else if (dataMode.equals(DataMode.BATCH)) {
+        } else if (this.dataMode.equals(DataMode.BATCH)) {
             batchEnv = ExecutionEnvironment.getExecutionEnvironment();
         }
     }
