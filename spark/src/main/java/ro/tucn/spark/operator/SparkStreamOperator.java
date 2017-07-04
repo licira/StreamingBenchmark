@@ -77,7 +77,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
 
         Vector[] vectors = model.latestModel().clusterCenters();
         for (int i = 0; i < vectors.length; i++) {
-            logger.info("out: " + vectors[i]);
+            logger.info(vectors[i]);
         }
     }
 
