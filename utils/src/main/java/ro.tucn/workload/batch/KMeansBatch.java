@@ -28,6 +28,10 @@ public class KMeansBatch extends AbstractKMeans {
     public void process() {
         BatchOperator<Point> points = generatorConsumer.getPointOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         BatchOperator<Point> centroids = generatorConsumer.getPointOperator(properties, TOPIC_TWO_PROPERTY_NAME);
-        super.process(points, centroids);
+        try {
+            super.process(points, centroids);
+        } catch (WorkloadException e) {
+            logger.error(e.getMessage());
+        }
     }
 }
