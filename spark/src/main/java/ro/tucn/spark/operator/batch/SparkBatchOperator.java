@@ -10,6 +10,7 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
@@ -51,13 +52,20 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
         JavaRDD<Point> points = (JavaRDD<Point>) this.rdd;
         JavaRDD<Point> centroids = (JavaRDD<Point>) ((SparkBatchOperator<Point>) centroidsOperator).rdd;
 
-        JavaRDD<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
-        pointsVector.cache();
-
         int numClusters = centroids.collect().size();
         int numIterations = 10;
 
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
+        JavaRDD<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
+        pointsVector.cache();
+
         KMeansModel clusters = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
+
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
 
         for (Vector center: clusters.clusterCenters()) {
             logger.info(center.toString());

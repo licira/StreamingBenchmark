@@ -12,6 +12,7 @@ import org.apache.flink.util.Collector;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.Operator;
@@ -78,10 +79,15 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         DataStream<Point> centroids = ((FlinkStreamOperator<Point>) centroidsOperator).dataStream;
 
         NearestCenterSelector nearestCenterSelector = new NearestCenterSelector();
+
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
+        DataStream<Tuple2<Long, Point>> clusteredPoints;
+
         for (int i = 0; i < 10; i++) {
-            DataStream<Tuple2<Long, Point>> pointsWithCentroid = centroids.connect(points).flatMap(nearestCenterSelector);
-            pointsWithCentroid.print();
-            centroids = pointsWithCentroid.connect(pointsWithCentroid).flatMap(new CoFlatMapFunction<Tuple2<Long, Point>, Tuple2<Long, Point>, Point>() {
+            clusteredPoints = centroids.connect(points).flatMap(nearestCenterSelector);
+            centroids = clusteredPoints.connect(clusteredPoints).flatMap(new CoFlatMapFunction<Tuple2<Long, Point>, Tuple2<Long, Point>, Point>() {
 
                 private Map<Long, Tuple2<Point, Long>> centroidsWithCummulatedCoordinates = new HashMap<Long, Tuple2<Point, Long>>();
 
@@ -118,6 +124,11 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                 }
             });
         }
+
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
+
         centroids.print();
     }
 

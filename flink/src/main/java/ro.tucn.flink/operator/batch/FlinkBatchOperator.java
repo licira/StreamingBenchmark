@@ -14,6 +14,7 @@ import org.apache.flink.util.Collector;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
@@ -65,21 +66,33 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         DataSet<Point> points = (DataSet<Point>) this.dataSet;
         DataSet<Point> centroids = ((FlinkBatchOperator<Point>) centroidsOperator).dataSet;
 
+        SelectNearestCenter nearestCenterSelector = new SelectNearestCenter();
+        CountAppender countAppender = new CountAppender();
+        CentroidAccumulator centroidAccumulator = new CentroidAccumulator();
+        CentroidAverager centroidAverager = new CentroidAverager();
+
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
         IterativeDataSet<Point> loop = centroids.iterate(10);
 
         DataSet<Point> newCentroids = points
                 // compute closest centroid for each point
-                .map(new SelectNearestCenter()).withBroadcastSet(loop, "centroids")
-                .map(new CountAppender())
+                .map(nearestCenterSelector).withBroadcastSet(loop, "centroids")
+                .map(countAppender)
                 .groupBy(0)
-                .reduce(new CentroidAccumulator())
-                .map(new CentroidAverager());
+                .reduce(centroidAccumulator)
+                .map(centroidAverager);
 
         DataSet<Point> finalCentroids = loop.closeWith(newCentroids);
 
         DataSet<Tuple2<Long, Point>> clusteredPoints = points
                 // assign points to final clusters
-                .map(new SelectNearestCenter()).withBroadcastSet(finalCentroids, "centroids");
+                .map(nearestCenterSelector).withBroadcastSet(finalCentroids, "centroids");
+
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
 
         try {
             finalCentroids.print();
