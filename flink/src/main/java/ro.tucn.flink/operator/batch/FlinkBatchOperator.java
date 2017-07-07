@@ -36,6 +36,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
     public FlinkBatchOperator(DataSet<T> dataSet, int parallelism) {
         super(parallelism);
         this.dataSet = dataSet;
+        frameworkName = "FLINK";
     }
 
     @Override
@@ -68,7 +69,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public FlinkBatchPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataSet<Point> points = (DataSet<Point>) this.dataSet;
@@ -102,11 +103,13 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
 
+        centroidsOperator = new FlinkBatchOperator<Point>(finalCentroids, parallelism);
         try {
             finalCentroids.print();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override

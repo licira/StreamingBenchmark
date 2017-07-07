@@ -3,6 +3,7 @@ package ro.tucn.workload;
 import org.apache.log4j.Logger;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.Configuration;
 
 import java.io.IOException;
@@ -16,6 +17,8 @@ public abstract class AbstractWorkload implements Serializable {
 
     private static final Logger logger = Logger.getLogger(AbstractWorkload.class.getSimpleName());
 
+    protected PerformanceLog performanceLog;
+    protected String workloadName;
     protected static final String TOPIC_ONE_PROPERTY_NAME = "topic1";
     protected static final String TOPIC_TWO_PROPERTY_NAME = "topic2";
     protected int numberOfEntities; // for batch processing
@@ -26,6 +29,7 @@ public abstract class AbstractWorkload implements Serializable {
 
     public AbstractWorkload(ContextCreator contextCreator) throws WorkloadException {
         this.contextCreator = contextCreator;
+        this.performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
         initializeParallelism();
         initializeProperties();
     }

@@ -12,11 +12,16 @@ public abstract class AbstractWordCount extends AbstractWorkload {
 
     public AbstractWordCount(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
+        workloadName = "WordCount";
     }
 
     public void process(Operator<String> words) {
         PairOperator<String, Integer> countedWords = words.wordCount();
         countedWords.print();
         words.printExecutionLatency();
+
+        long latency = words.getExecutionLatency();
+
+        performanceLog.logToCsv(words.getFrameworkName(), workloadName, words.getDataMode(), latency, null);
     }
 }

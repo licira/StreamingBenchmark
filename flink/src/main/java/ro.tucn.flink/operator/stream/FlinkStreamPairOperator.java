@@ -32,6 +32,7 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
     public FlinkStreamPairOperator(DataStream<Tuple2<K, V>> dataStream, int parallelism) {
         super(parallelism);
         this.dataStream = dataStream;
+        frameworkName = "FLINK";
     }
 
     /**

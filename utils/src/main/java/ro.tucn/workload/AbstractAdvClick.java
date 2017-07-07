@@ -19,6 +19,7 @@ public abstract class AbstractAdvClick extends AbstractWorkload {
 
     public AbstractAdvClick(ContextCreator creator) throws WorkloadException {
         super(creator);
+        workloadName = "AdvClick";
     }
 
     public void process(PairOperator<String, String> advs, PairOperator<String, String> clicks, int streamWindowOne, int streamWindowTwo) {
@@ -27,12 +28,16 @@ public abstract class AbstractAdvClick extends AbstractWorkload {
             advClick = advs.advClick(clicks,
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
-            advClick.print();
-            advClick.printExecutionLatency();
         } catch (WorkloadException e) {
             logger.error(e.getMessage());
         } catch (DurationException e) {
             logger.error(e.getMessage());
         }
+        advClick.print();
+        advClick.printExecutionLatency();
+
+        long latency = advClick.getExecutionLatency();
+
+        performanceLog.logToCsv(advClick.getFrameworkName(), workloadName, advClick.getDataMode(), latency, null);
     }
 }

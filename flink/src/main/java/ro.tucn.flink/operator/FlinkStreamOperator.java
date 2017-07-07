@@ -37,6 +37,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     public FlinkStreamOperator(DataStream<T> dataStream, int parallelism) {
         super(parallelism);
         this.dataStream = dataStream;
+        frameworkName = "FLINK";
     }
 
     @Override
@@ -81,7 +82,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public FlinkStreamPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataStream<Point> points = (DataStream<Point>) this.dataStream;
@@ -92,7 +93,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
 
-        DataStream<Tuple2<Long, Point>> clusteredPoints;
+        DataStream<Tuple2<Long, Point>> clusteredPoints = null;
 
         for (int i = 0; i < 10; i++) {
             clusteredPoints = centroids.connect(points).flatMap(nearestCenterSelector);
@@ -138,7 +139,10 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
 
+        centroidsOperator = new FlinkStreamOperator<Point>(centroids, parallelism);
         centroids.print();
+
+        return null;
     }
 
     @Override

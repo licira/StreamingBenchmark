@@ -29,6 +29,10 @@ public class PerformanceLog {
         return singleton;
     }
 
+    public void logToCsv(String frameworkName, String workloadName, String dataMode, long latency, Object throughput) {
+        String filename = frameworkName + "-" + workloadName + "-" + dataMode;
+    }
+
     public void info(String msg) {
         logger.info(msg);
     }

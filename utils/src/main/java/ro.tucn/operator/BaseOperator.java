@@ -11,11 +11,12 @@ import java.io.Serializable;
  */
 public abstract class BaseOperator implements Serializable {
 
-    private Logger logger = Logger.getLogger(this.getClass().getName());
-
+    protected String dataMode;
+    protected String frameworkName;
     protected int parallelism = -1;
     protected long executionLatency;
     protected PerformanceLog performanceLog;
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public BaseOperator(int parallelism) {
         this.setParallelism(parallelism);
@@ -38,7 +39,19 @@ public abstract class BaseOperator implements Serializable {
         logger.info(String.format("%-25s\t%d", "Execution Latency: ", executionLatency));
     }
 
+    public long getExecutionLatency() {
+        return executionLatency;
+    }
+
     public void setExecutionLatency(long executionLatency) {
         this.executionLatency = executionLatency;
+    }
+
+    public String getDataMode() {
+        return dataMode;
+    }
+
+    public String getFrameworkName() {
+        return frameworkName;
     }
 }

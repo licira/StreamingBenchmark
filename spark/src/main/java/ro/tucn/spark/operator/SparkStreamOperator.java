@@ -31,9 +31,11 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
     private boolean firstKMeanClustering = true;
     private StreamingKMeans model;
 
-    public SparkStreamOperator(JavaDStream<T> stream, int parallelism) {
+    public SparkStreamOperator(JavaDStream<T> dstream, int parallelism) {
         super(parallelism);
-        dStream = stream;
+        this.dStream = dstream;
+        frameworkName = "SPARK";
+
     }
 
     @Override
@@ -53,7 +55,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public SparkStreamPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
@@ -77,23 +79,26 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
         firstKMeanClustering = false;
         model.trainOn(pointsVector.dstream());
 
-        JavaPairDStream<Point, Vector> pointVectorJavaPairDStream = points.mapToPair(point -> {
+        JavaPairDStream<Point, Vector> clusteredPoints = points.mapToPair(point -> {
             Vector coordinatesVector = Vectors.dense(point.getCoordinates());
             return new Tuple2<Point, Vector>(point, coordinatesVector);
         });
 
-        JavaPairDStream<Point, Integer> finalCentroids = model.predictOnValues(pointVectorJavaPairDStream);
+        JavaPairDStream<Point, Integer> finalCentroids = model.predictOnValues(clusteredPoints);
 
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
 
         finalCentroids.print();
+        centroidsOperator = new SparkStreamOperator<Point>(centroids, parallelism);
 
         /*Vector[] vectors = model.latestModel().clusterCenters();
         for (int i = 0; i < vectors.length; i++) {
             logger.info(vectors[i]);
         }*/
+
+        return null;
     }
 
     private Vector[] initCentroids(int n) {

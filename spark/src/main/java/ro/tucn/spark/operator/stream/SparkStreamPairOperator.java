@@ -25,9 +25,10 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
 
     private JavaPairDStream<K, V> pairDStream;
 
-    public SparkStreamPairOperator(JavaPairDStream<K, V> stream, int parallelism) {
+    public SparkStreamPairOperator(JavaPairDStream<K, V> pairDStream, int parallelism) {
         super(parallelism);
-        this.pairDStream = stream;
+        this.pairDStream = pairDStream;
+        frameworkName = "SPARK";
     }
 
     /**

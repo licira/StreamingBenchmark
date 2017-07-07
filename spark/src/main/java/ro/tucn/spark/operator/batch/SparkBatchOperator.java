@@ -35,6 +35,7 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
     public SparkBatchOperator(JavaRDD<T> rdd, int parallelism) {
         super(parallelism);
         this.rdd = rdd;
+        frameworkName = "SPARK";
     }
 
     @Override
@@ -54,7 +55,7 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public void kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public SparkBatchPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaRDD<Point> points = (JavaRDD<Point>) this.rdd;
@@ -69,15 +70,19 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
         JavaRDD<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
         pointsVector.cache();
 
-        KMeansModel clusters = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
+        KMeansModel clusteredPoints = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
 
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
 
-        for (Vector center: clusters.clusterCenters()) {
+        for (Vector center: clusteredPoints.clusterCenters()) {
             logger.info(center.toString());
         }
+
+        centroidsOperator = new SparkBatchOperator<Point>(centroids, parallelism);
+
+        return null;
     }
 
     @Override

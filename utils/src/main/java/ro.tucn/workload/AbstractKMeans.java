@@ -12,10 +12,15 @@ public abstract class AbstractKMeans extends AbstractWorkload {
 
     public AbstractKMeans(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
+        workloadName = "K-Means";
     }
 
     public void process(Operator<Point> points, Operator<Point> centroids) throws WorkloadException {
         points.kMeansCluster(centroids);
         points.printExecutionLatency();
+
+        long latency = points.getExecutionLatency();
+
+        performanceLog.logToCsv(points.getFrameworkName(), workloadName, points.getDataMode(), latency, null);
     }
 }
