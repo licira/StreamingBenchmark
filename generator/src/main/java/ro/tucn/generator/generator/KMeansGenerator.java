@@ -56,6 +56,7 @@ public class KMeansGenerator extends AbstractGenerator {
     private void initializeKafkaMessageSenderWithSmallBuffer() {
         kMeansSender = new KMeansSenderKafka();
         ((AbstractKafkaSender)kMeansSender).initializeSmallBufferProducer(bootstrapServers);
+        kMeansSender.setPerformanceLog(performanceLog);
     }
 
     private void initializeOfflineMessageSender() {
