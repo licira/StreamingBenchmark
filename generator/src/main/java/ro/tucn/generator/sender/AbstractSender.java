@@ -1,5 +1,7 @@
 package ro.tucn.generator.sender;
 
+import ro.tucn.statistics.PerformanceLog;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,7 @@ import java.io.Serializable;
 public abstract class AbstractSender implements Serializable {
 
     protected String topic;
+    protected PerformanceLog performanceLog;
 
     public abstract void send(String topic, Object key, Object value);
 
@@ -22,4 +25,8 @@ public abstract class AbstractSender implements Serializable {
     }
 
     public abstract void close();
+
+    public void setPerformanceLog(PerformanceLog performanceLog) {
+        this.performanceLog = performanceLog;
+    }
 }
