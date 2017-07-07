@@ -27,7 +27,7 @@ public abstract class AbstractGeneratorConsumer extends AbstractConsumer {
     public abstract BatchOperator<Point> getPointOperator(Properties properties,
                                                           String topicPropertyName);
 
-    public abstract void askGeneratorToProduceData(String topic);
+    public abstract void askGeneratorToProduceData(String topic, int numberOfEntities);
 
     public abstract BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
                                                                                       String topicPropertyName);

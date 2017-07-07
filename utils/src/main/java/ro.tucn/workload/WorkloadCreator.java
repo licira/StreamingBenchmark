@@ -18,6 +18,7 @@ public class WorkloadCreator {
 
     protected final String NONEXISTING_WORKLOAD_FOR_TOPIC_MSG = "No workload available for this topic.";
     protected final String NONEXISTING_WORKLOAD_FOR_MODE_MSG = "No workload available for this mode.";
+    private int numberOfEntities;
 
     public AbstractWorkload getNewWorkload(ContextCreator contextCreator, String topic, String mode) throws WorkloadException {
         AbstractWorkload workload;
@@ -43,6 +44,7 @@ public class WorkloadCreator {
         } else {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
+        workload.setNumberOfEntities(numberOfEntities);
         return workload;
     }
 
@@ -59,5 +61,9 @@ public class WorkloadCreator {
             throw new RuntimeException(NONEXISTING_WORKLOAD_FOR_TOPIC_MSG);
         }
         return workload;
+    }
+
+    public void setNumberOfEntities(int numberOfEntities) {
+        this.numberOfEntities = numberOfEntities;
     }
 }

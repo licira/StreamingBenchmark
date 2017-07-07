@@ -35,8 +35,8 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     }
 
     @Override
-    public void askGeneratorToProduceData(String topic) {
-        generator = GeneratorCreator.getNewGenerator(topic, DataMode.BATCH, 0);
+    public void askGeneratorToProduceData(String topic, int numberOfEntities) {
+        generator = GeneratorCreator.getNewGenerator(topic, DataMode.BATCH, numberOfEntities);
         generator.generate(0);
     }
 

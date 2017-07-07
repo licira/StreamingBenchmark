@@ -24,11 +24,11 @@ public class AdvClickBatch extends AbstractAdvClick {
         streamWindowTwo = Integer.parseInt(properties.getProperty("stream2.window"));
         generatorConsumer = contextCreator.getGeneratorConsumer();
         generatorConsumer.setParallelism(parallelism);
-        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.ADV);
     }
 
     @Override
     public void process()  {
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.ADV, numberOfEntities);
         BatchPairOperator<String, String> advs = generatorConsumer.getPairOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         BatchPairOperator<String, String> clicks = generatorConsumer.getPairOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         super.process(advs, clicks, streamWindowOne, streamWindowTwo);

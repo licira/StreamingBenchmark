@@ -18,6 +18,7 @@ public abstract class AbstractWorkload implements Serializable {
 
     protected static final String TOPIC_ONE_PROPERTY_NAME = "topic1";
     protected static final String TOPIC_TWO_PROPERTY_NAME = "topic2";
+    protected int numberOfEntities; // for batch processing
 
     protected Properties properties;
     protected int parallelism;
@@ -60,5 +61,9 @@ public abstract class AbstractWorkload implements Serializable {
     private void initializeParallelism() throws WorkloadException {
         Configuration.loadConfiguration();
         parallelism = Configuration.clusterHosts * Configuration.hostCores;
+    }
+
+    public void setNumberOfEntities(int numberOfEntities) {
+        this.numberOfEntities = numberOfEntities;
     }
 }

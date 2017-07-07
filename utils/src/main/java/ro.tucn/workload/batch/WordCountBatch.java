@@ -20,11 +20,11 @@ public class WordCountBatch extends AbstractWordCount {
         super(contextCreator);
         generatorConsumer = contextCreator.getGeneratorConsumer();
         generatorConsumer.setParallelism(parallelism);
-        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.SKEWED_WORDS);
     }
 
     @Override
     public void process() {
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.SKEWED_WORDS, numberOfEntities);
         BatchOperator<String> words = generatorConsumer.getStringOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         super.process(words);
     }

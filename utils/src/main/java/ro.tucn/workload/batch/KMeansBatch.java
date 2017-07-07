@@ -21,11 +21,11 @@ public class KMeansBatch extends AbstractKMeans {
         super(contextCreator);
         generatorConsumer = contextCreator.getGeneratorConsumer();
         generatorConsumer.setParallelism(parallelism);
-        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.K_MEANS);
     }
 
     @Override
     public void process() {
+        generatorConsumer.askGeneratorToProduceData(ApplicationTopics.K_MEANS, numberOfEntities);
         BatchOperator<Point> points = generatorConsumer.getPointOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         BatchOperator<Point> centroids = generatorConsumer.getPointOperator(properties, TOPIC_TWO_PROPERTY_NAME);
         try {
