@@ -49,7 +49,7 @@ public class AdvClickGenerator extends AbstractGenerator {
     @Override
     public void generate(int sleepFrequency) {
         initializePerformanceLogWithCurrentTime();
-        //performanceLog.disablePrint();
+        performanceLog.disablePrint();
         submitData(sleepFrequency);
         performanceLog.logTotalThroughputAndTotalLatency();
         shutdownExecutorService();
