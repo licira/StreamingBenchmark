@@ -45,7 +45,7 @@ public class FlinkContextCreator extends ContextCreator {
     }
 
     @Override
-    public void Start() {
+    public void start() {
         try {
             if (dataMode.equals(DataMode.STREAMING)) {
                 streamEnv.execute(appName);

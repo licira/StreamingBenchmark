@@ -39,7 +39,7 @@ public class SparkContextCreator extends ContextCreator {
     }
 
     @Override
-    public void Start() {
+    public void start() {
         if (dataMode.equals(DataMode.STREAMING)) {
             jssc.addStreamingListener(new PerformanceStreamingListener());
             //jssc.checkpoint("/tmp/spark/checkpoint");

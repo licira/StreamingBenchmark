@@ -16,7 +16,7 @@ public abstract class ContextCreator implements Serializable {
         this.appName = appName;
     }
 
-    public abstract void Start();
+    public abstract void start();
 
     public abstract AbstractKafkaConsumerCustom getKafkaConsumerCustom();
 
