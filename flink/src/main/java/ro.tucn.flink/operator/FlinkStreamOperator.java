@@ -82,7 +82,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public FlinkStreamPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
+    public FlinkStreamPairOperator<Long, Point> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataStream<Point> points = (DataStream<Point>) this.dataStream;

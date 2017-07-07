@@ -55,7 +55,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public SparkStreamPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
+    public SparkStreamPairOperator<Long, Point> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
