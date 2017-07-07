@@ -14,8 +14,7 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.MultiplexingStreamRecordSerializer;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.tasks.StreamTaskState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -29,10 +28,8 @@ public class FlinkStreamJoinOperator<K, IN1, IN2, OUT>
         extends AbstractUdfStreamOperator<OUT, JoinFunction<IN1, IN2, OUT>>
         implements TwoInputStreamOperator<IN1, IN2, OUT> {
 
-    private static final Logger logger = LoggerFactory.getLogger(FlinkStreamJoinOperator.class);
+    private static final Logger logger = Logger.getLogger(FlinkStreamJoinOperator.class);
 
-    //private HeapWindowBuffer<IN1> stream1Buffer;
-    //private HeapWindowBuffer<IN2> stream2Buffer;
     private final KeySelector<IN1, K> keySelector1;
     private final KeySelector<IN2, K> keySelector2;
     protected transient long currentWatermark1 = -1L;
@@ -75,22 +72,14 @@ public class FlinkStreamJoinOperator<K, IN1, IN2, OUT>
         if (null == inputSerializer1 || null == inputSerializer2) {
             throw new IllegalStateException("Input serializer was not set.");
         }
-
-//        this.stream1Buffer = new HeapWindowBuffer.Factory<IN1>().create();
-//        this.stream2Buffer = new HeapWindowBuffer.Factory<IN2>().create();
         stream1Buffer = CacheBuilder.newBuilder()
                 .expireAfterWrite(stream1WindowLength, TimeUnit.MILLISECONDS)
                 .build();
         stream2Buffer = CacheBuilder.newBuilder()
                 .expireAfterWrite(stream2WindowLength, TimeUnit.MILLISECONDS)
                 .build();
-
     }
 
-    /**
-     * @param element record of stream1
-     * @throws Exception
-     */
     @Override
     public void processElement1(StreamRecord<IN1> element) throws Exception {
         if (setProcessingTime) {
