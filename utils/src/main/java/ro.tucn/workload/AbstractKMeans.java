@@ -16,7 +16,7 @@ public abstract class AbstractKMeans extends AbstractWorkload {
     }
 
     public void process(Operator<Point> points, Operator<Point> centroids) throws WorkloadException {
-        points.kMeansCluster(centroids);
+        points.kMeansCluster(centroids, 10);
         points.printExecutionLatency();
 
         long latency = points.getExecutionLatency();

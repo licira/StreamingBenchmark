@@ -14,5 +14,5 @@ public abstract class Operator<T> extends BaseOperator {
 
     public abstract PairOperator<String,Integer> wordCount();
 
-    public abstract PairOperator<Point, Integer> kMeansCluster(Operator<T> centroids) throws WorkloadException;
+    public abstract PairOperator<Point, Integer> kMeansCluster(Operator<T> centroids, int numIterations) throws WorkloadException;
 }

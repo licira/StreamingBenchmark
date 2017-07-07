@@ -82,7 +82,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public FlinkStreamPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public FlinkStreamPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataStream<Point> points = (DataStream<Point>) this.dataStream;
@@ -95,7 +95,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
 
         DataStream<Tuple2<Long, Point>> clusteredPoints = null;
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < numIterations; i++) {
             clusteredPoints = centroids.connect(points).flatMap(nearestCenterSelector);
             centroids = clusteredPoints.connect(clusteredPoints).flatMap(new CoFlatMapFunction<Tuple2<Long, Point>, Tuple2<Long, Point>, Point>() {
 

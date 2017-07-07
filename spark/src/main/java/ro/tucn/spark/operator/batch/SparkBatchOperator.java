@@ -55,14 +55,13 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public SparkBatchPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public SparkBatchPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         JavaRDD<Point> points = (JavaRDD<Point>) this.rdd;
         JavaRDD<Point> centroids = (JavaRDD<Point>) ((SparkBatchOperator<Point>) centroidsOperator).rdd;
 
         int numClusters = centroids.collect().size();
-        int numIterations = 10;
 
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());

@@ -69,7 +69,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public FlinkBatchPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator) throws WorkloadException {
+    public FlinkBatchPairOperator<Point, Integer> kMeansCluster(Operator centroidsOperator, int numIterations) throws WorkloadException {
         checkOperatorType(centroidsOperator);
 
         DataSet<Point> points = (DataSet<Point>) this.dataSet;
@@ -83,7 +83,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
 
-        IterativeDataSet<Point> loop = centroids.iterate(10);
+        IterativeDataSet<Point> loop = centroids.iterate(numIterations);
 
         DataSet<Point> newCentroids = points
                 // compute closest centroid for each point
