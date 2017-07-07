@@ -10,13 +10,16 @@ import ro.tucn.operator.Operator;
  */
 public abstract class AbstractKMeans extends AbstractWorkload {
 
+    private static final String numIterationsPropertyName = "num.iterations";
+
     public AbstractKMeans(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
         workloadName = "K-Means";
     }
 
     public void process(Operator<Point> points, Operator<Point> centroids) throws WorkloadException {
-        points.kMeansCluster(centroids, 10);
+        int numIterations = Integer.parseInt(properties.getProperty(numIterationsPropertyName));
+        points.kMeansCluster(centroids, numIterations);
         points.printExecutionLatency();
 
         long latency = points.getExecutionLatency();
