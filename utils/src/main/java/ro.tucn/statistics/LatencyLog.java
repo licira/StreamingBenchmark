@@ -51,8 +51,6 @@ public class LatencyLog implements Serializable {
                 && Configuration.latencyFrequency > 0) {
             probability = Configuration.latencyFrequency;
         }
-        // probability to log 0.001
-        //if (Math.random() < probability)
         {
             log(name + LATENCY_MSG, TimeDuration.nanosToSeconds(latency.longValue()));
         }
@@ -95,5 +93,9 @@ public class LatencyLog implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getTotalLatency() {
+        return totalLatency;
     }
 }

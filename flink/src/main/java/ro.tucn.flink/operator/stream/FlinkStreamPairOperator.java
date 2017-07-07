@@ -12,6 +12,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.datastream.NoWindowJoinedStreams;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.operator.StreamPairOperator;
@@ -75,6 +76,9 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
         DataStream<Tuple2<K, V>> keyedDataStream = new KeyedStream(stream, keySelector1, keyTypeInfo);
         DataStream<Tuple2<K, R>> joinKeyedDataStream = new KeyedStream(stream, keySelector2, keyTypeInfo);
 
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
         DataStream<Tuple2<K, Tuple2<V, R>>> joinedStream =
                 new NoWindowJoinedStreams<>(keyedDataStream, joinKeyedDataStream)
                         .where(keySelector1, keyTypeInfo)
@@ -88,7 +92,13 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
                             }
                         });
 
-        return new FlinkStreamPairOperator<>(joinedStream, parallelism);
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
+
+        FlinkStreamPairOperator<K, Tuple2<V, R>> advClick = new FlinkStreamPairOperator<>(joinedStream, parallelism);
+        advClick.setExecutionLatency(executionLatency);
+        return advClick;
     }
 
     private <R> void checkOperatorType(PairOperator<K, R> joinStream) throws WorkloadException {

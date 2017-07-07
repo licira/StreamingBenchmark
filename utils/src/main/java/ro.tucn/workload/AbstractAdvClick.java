@@ -28,6 +28,7 @@ public abstract class AbstractAdvClick extends AbstractWorkload {
                     new TimeDuration(TimeUnit.SECONDS, streamWindowOne),
                     new TimeDuration(TimeUnit.SECONDS, streamWindowTwo));
             advClick.print();
+            advClick.printExecutionLatency();
         } catch (WorkloadException e) {
             logger.error(e.getMessage());
         } catch (DurationException e) {

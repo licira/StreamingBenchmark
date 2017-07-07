@@ -5,6 +5,7 @@ import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
+import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.operator.StreamPairOperator;
@@ -50,11 +51,21 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
         Duration joinDuration = toDuration(joinWindowDuration);
 
         SparkStreamPairOperator<K, R> joinSparkStream = ((SparkStreamPairOperator<K, R>) joinStream);
+
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
         JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
                 .window(duration.plus(joinDuration), joinDuration)
                 .join(joinSparkStream.pairDStream.window(joinDuration, duration));
 
-        return new SparkStreamPairOperator(joinedStream, parallelism);
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
+
+        SparkStreamPairOperator advClickOperator = new SparkStreamPairOperator(joinedStream, parallelism);
+        advClickOperator.setExecutionLatency(executionLatency);
+        return advClickOperator;
     }
 
     public StreamWindowedPairOperator<K, V> window(TimeDuration windowDuration, TimeDuration slideWindowDuration) {
