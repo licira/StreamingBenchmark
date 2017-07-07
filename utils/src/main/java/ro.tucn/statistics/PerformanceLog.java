@@ -53,6 +53,7 @@ public class PerformanceLog {
 
     public void logTotalThroughputAndTotalLatency() {
         throughputLog.logTotal();
+        throughputLog.logTotalSize();
         latencyLog.logTotal();
     }
 
@@ -81,5 +82,9 @@ public class PerformanceLog {
     public void setName(String name) {
         throughputLog.setName(name);
         latencyLog.setName(name);
+    }
+
+    public void logSize(Object obj) {
+        throughputLog.logSize(obj);
     }
 }

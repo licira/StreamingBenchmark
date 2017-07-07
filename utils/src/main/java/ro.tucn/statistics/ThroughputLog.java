@@ -1,11 +1,11 @@
 package ro.tucn.statistics;
 
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeDuration;
 
 import java.io.Serializable;
-import java.sql.Time;
 
 /**
  * Created by Liviu on 4/6/2017.
@@ -15,7 +15,10 @@ public class ThroughputLog implements Serializable {
     private static Logger logger = Logger.getLogger(ThroughputLog.class.getSimpleName());
 
     private static final String THROUGHPUT_MSG = ": Throughput:";
+    private static final String SIZE_MSG = ": Size:";
     private static final String TOTAL_THROUGHPUT_MSG = ": Total Throughput:";
+    private static final String TOTAL_SIZE_MSG = ": Total Size:";
+    private long size;
 
     private String name;
     private Long received;
@@ -33,6 +36,7 @@ public class ThroughputLog implements Serializable {
         lastLogEle = 0L;
         totalElementDiff = 0L;
         totalTimeDiff = 0L;
+        size = 0L;
     }
 
     public void execute() {
@@ -41,6 +45,11 @@ public class ThroughputLog implements Serializable {
         } else {
             execute(500);
         }
+    }
+
+    public void logSize(Object obj) {
+        long objectSize = ObjectSizeCalculator.getObjectSize(obj);
+        size += objectSize;
     }
 
     public void setStartTime(Long startTime) {
@@ -100,6 +109,7 @@ public class ThroughputLog implements Serializable {
         totalTimeDiff = 0L;
         totalElementDiff = 0L;
         lastLogEle = 0L;
+        size = 0L;
     }
 
     public void enablePrint() {
@@ -112,5 +122,15 @@ public class ThroughputLog implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void logTotalSize() {
+        if (printEnabled) {
+            logger.info(String.format("%-25s\t%d\t%s",
+                    name + ": " + TOTAL_SIZE_MSG,
+                    size,
+                    "Bytes"));
+            int x = 0;
+        }
     }
 }
