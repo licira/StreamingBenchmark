@@ -40,7 +40,7 @@ public abstract class AbstractWorkload implements Serializable {
         logger.info("Start workload: " + this.getClass().getSimpleName());
         try {
             process();
-            contextCreator.Start();
+            contextCreator.start();
         } catch (Exception e) {
             logger.error("WorkloadException caught when trying to run workload " + this.getClass().getSimpleName()
                     + ": " + e.getClass() + " " + e.getMessage());
