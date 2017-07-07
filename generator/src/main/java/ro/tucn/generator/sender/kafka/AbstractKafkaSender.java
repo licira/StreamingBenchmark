@@ -35,7 +35,7 @@ public abstract class AbstractKafkaSender extends AbstractSender  {
     public void send(String topic, Object key, Object value) {
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new ProducerRecord(topic, 0, timestamp, key, value);
-        //producer.send(newRecord);
+        producer.send(newRecord);
         performanceLog.logSize(key);
         performanceLog.logSize(value);
         performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
