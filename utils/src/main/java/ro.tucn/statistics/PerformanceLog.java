@@ -3,10 +3,15 @@ package ro.tucn.statistics;
 import org.apache.log4j.Logger;
 import ro.tucn.util.TimeHolder;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * Created by Liviu on 4/15/2017.
  */
 public class PerformanceLog {
+
+    private static final String CSV_EXTENSION = ".csv";
 
     private static PerformanceLog singleton;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
@@ -30,7 +35,36 @@ public class PerformanceLog {
     }
 
     public void logToCsv(String frameworkName, String workloadName, String dataMode, long latency, Object throughput) {
-        String filename = frameworkName + "-" + workloadName + "-" + dataMode;
+        String filename = getFileName(frameworkName, workloadName, dataMode);
+        try {
+            FileWriter fw = getFileWriter(filename);
+            appendToCsv(fw, latency, throughput);
+            closeFile(fw);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        logger.info(filename);
+    }
+
+    private void closeFile(FileWriter fw) throws IOException {
+        fw.flush();
+        fw.close();
+    }
+
+    private void appendToCsv(FileWriter fw, long latency, Object throughput) throws IOException {
+        fw.append("" + latency);
+        fw.append(",");
+        fw.append("smt else");
+        fw.append("\n");
+    }
+
+    private FileWriter getFileWriter(String filename) throws IOException {
+        FileWriter fw = new FileWriter(filename, true);
+        return fw;
+    }
+
+    private String getFileName(String frameworkName, String workloadName, String dataMode) {
+        return frameworkName + "-" + workloadName + "-" + dataMode + CSV_EXTENSION;
     }
 
     public void info(String msg) {
