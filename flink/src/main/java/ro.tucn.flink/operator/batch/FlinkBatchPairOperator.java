@@ -30,7 +30,7 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
     }
 
     @Override
-    public <R> PairOperator<K, Tuple2<V, R>> advClick(PairOperator<K, R> joinOperator,
+    public <R> FlinkBatchPairOperator<K, Tuple2<V, R>> advClick(PairOperator<K, R> joinOperator,
                                                       TimeDuration windowDuration,
                                                       TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);

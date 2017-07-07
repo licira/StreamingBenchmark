@@ -12,7 +12,6 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.spark.operator.stream.SparkStreamPairOperator;
 import scala.Tuple2;
 
@@ -37,7 +36,7 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public StreamPairOperator<String, Integer> wordCount() {
+    public SparkStreamPairOperator<String, Integer> wordCount() {
         JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);

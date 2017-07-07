@@ -16,7 +16,6 @@ import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.StreamOperator;
-import ro.tucn.operator.StreamPairOperator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
     }
 
     @Override
-    public StreamPairOperator<String, Integer> wordCount() {
+    public FlinkStreamPairOperator<String, Integer> wordCount() {
         DataStream<String> sentence = dataStream.map(new MapFunction<T, String>() {
             @Override
             public String map(T t) throws Exception {

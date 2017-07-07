@@ -13,7 +13,6 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
-import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.Operator;
 import scala.Tuple2;
 
@@ -38,7 +37,7 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public BatchPairOperator<String, Integer> wordCount() {
+    public SparkBatchPairOperator<String, Integer> wordCount() {
         JavaRDD<String> sentences = rdd.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairRDD<String, Integer> wordsCountedByOneEach = sentences.mapToPair(s -> new Tuple2(s, 1));
         JavaPairRDD<String, Integer> countedWords = wordsCountedByOneEach.reduceByKey((i1, i2) -> i1 + i2);

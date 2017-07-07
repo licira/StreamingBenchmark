@@ -17,7 +17,6 @@ import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
-import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.Operator;
 
 import java.util.Collection;
@@ -39,7 +38,7 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
     }
 
     @Override
-    public BatchPairOperator<String, Integer> wordCount() {
+    public FlinkBatchPairOperator<String, Integer> wordCount() {
         DataSet<Tuple2<String, Integer>> sentences = dataSet.flatMap(new FlatMapFunction<T, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(T t, Collector<Tuple2<String, Integer>> collector) throws Exception {
@@ -138,30 +137,6 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
             }
 
             // emit a new record with the center id and the data point.
-            return new Tuple2<Long, Point>(closestCentroidId, p);
-        }
-    }
-
-    private static final class NearestCenterSelector extends RichMapFunction<Point, Tuple2<Long, Point>> {
-
-        private Collection<Point> centroids;
-
-        @Override
-        public void open(Configuration parameters) throws Exception {
-            this.centroids = getRuntimeContext().getBroadcastVariable("centroids");
-        }
-
-        @Override
-        public Tuple2<Long, Point> map(Point p) throws Exception {
-            double minDistance = Double.MAX_VALUE;
-            long closestCentroidId = -1;
-            for (Point centroid : centroids) {
-                double distance = p.euclideanDistance(centroid);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestCentroidId = centroid.getId();
-                }
-            }
             return new Tuple2<Long, Point>(closestCentroidId, p);
         }
     }

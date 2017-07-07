@@ -10,8 +10,6 @@ import java.io.Serializable;
 public abstract class BaseOperator implements Serializable {
 
     protected int parallelism = -1;
-    protected boolean iterativeEnabled = false;
-    protected boolean iterativeClosed = false;
 
     public BaseOperator(int parallelism) {
         this.setParallelism(parallelism);
