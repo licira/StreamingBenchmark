@@ -74,9 +74,11 @@ public class AdvClickGenerator extends AbstractGenerator {
         advSender = new AdvSenderKafka();
         advSender.setTopic(ADV);
         ((AbstractKafkaSender)advSender).initializeSmallBufferProducer(bootstrapServers);
+        advSender.setPerformanceLog(performanceLog);
         clickSender = new ClickSenderKafka();
         clickSender.setTopic(CLICK);
         ((AbstractKafkaSender)clickSender).initializeSmallBufferProducer(bootstrapServers);
+        clickSender.setPerformanceLog(performanceLog);
     }
 
     private void initializeOfflineMessageSenders() {

@@ -60,6 +60,7 @@ public class KMeansGenerator extends AbstractGenerator {
 
     private void initializeOfflineMessageSender() {
         kMeansSender = new KMeansSenderOffline();
+        kMeansSender.setPerformanceLog(performanceLog);
     }
 
     private void shutdownSender() {
