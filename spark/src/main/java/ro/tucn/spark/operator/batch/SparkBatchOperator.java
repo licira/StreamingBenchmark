@@ -69,13 +69,13 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
         JavaRDD<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
         pointsVector.cache();
 
-        KMeansModel clusteredPoints = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
+        KMeansModel finalCentroids = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
 
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
 
-        for (Vector center: clusteredPoints.clusterCenters()) {
+        for (Vector center: finalCentroids.clusterCenters()) {
             logger.info(center.toString());
         }
 

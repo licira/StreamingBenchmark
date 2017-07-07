@@ -69,6 +69,13 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
         JavaDStream<Vector> centroidsVector = centroids.map(c -> Vectors.dense(c.getCoordinates()));
         centroidsVector.print();
 
+        /*centroidsVector.foreachRDD(new VoidFunction<JavaRDD<Vector>>() {
+            @Override
+            public void call(JavaRDD<Vector> vectorJavaRDD) throws Exception {
+
+            }
+        });*/
+
         double[] weights = getEqualWeights(2);
         Vector[] initCentroids = initCentroids(2);
 
@@ -93,10 +100,10 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
         finalCentroids.print();
         centroidsOperator = new SparkStreamOperator<Point>(centroids, parallelism);
 
-        /*Vector[] vectors = model.latestModel().clusterCenters();
+        Vector[] vectors = model.latestModel().clusterCenters();
         for (int i = 0; i < vectors.length; i++) {
             logger.info(vectors[i]);
-        }*/
+        }
 
         return null;
     }
