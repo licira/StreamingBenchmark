@@ -17,5 +17,6 @@ public abstract class AbstractWordCount extends AbstractWorkload {
     public void process(Operator<String> words) {
         PairOperator<String, Integer> countedWords = words.wordCount();
         countedWords.print();
+        words.printExecutionLatency();
     }
 }
