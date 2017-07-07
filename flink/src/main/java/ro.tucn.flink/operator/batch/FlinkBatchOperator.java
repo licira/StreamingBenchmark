@@ -40,6 +40,9 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public FlinkBatchPairOperator<String, Integer> wordCount() {
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
         DataSet<Tuple2<String, Integer>> sentences = dataSet.flatMap(new FlatMapFunction<T, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(T t, Collector<Tuple2<String, Integer>> collector) throws Exception {
@@ -56,6 +59,11 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
                 return new Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1 + t1.f1);
             }
         });
+
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
+
         return new FlinkBatchPairOperator<String, Integer>(countedWords, parallelism);
     }
 

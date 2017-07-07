@@ -38,9 +38,17 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
 
     @Override
     public SparkStreamPairOperator<String, Integer> wordCount() {
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
         JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
+
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
+
         return new SparkStreamPairOperator(tIntegerJavaPairDStream1, parallelism);
     }
 

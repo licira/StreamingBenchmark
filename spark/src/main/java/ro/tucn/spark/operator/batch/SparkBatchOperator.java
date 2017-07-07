@@ -39,9 +39,17 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public SparkBatchPairOperator<String, Integer> wordCount() {
+        performanceLog.disablePrint();
+        performanceLog.setStartTime(TimeHelper.getNanoTime());
+
         JavaRDD<String> sentences = rdd.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairRDD<String, Integer> wordsCountedByOneEach = sentences.mapToPair(s -> new Tuple2(s, 1));
         JavaPairRDD<String, Integer> countedWords = wordsCountedByOneEach.reduceByKey((i1, i2) -> i1 + i2);
+
+        performanceLog.logLatency(TimeHelper.getNanoTime());
+        performanceLog.logTotalLatency();
+        executionLatency = performanceLog.getTotalLatency();
+
         return new SparkBatchPairOperator(countedWords, parallelism);
     }
 
