@@ -57,13 +57,11 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         sentenceSender = new SentenceSenderKafka();
         sentenceSender.setTopic(SKEWED_WORDS);
         ((AbstractKafkaSender)sentenceSender).initializeSmallBufferProducer(bootstrapServers);
-        sentenceSender.setPerformanceLog(performanceLog);
     }
 
     private void initializeOfflineMessageSender() {
         sentenceSender = new SentenceSenderOffline();
         sentenceSender.setTopic(SKEWED_WORDS);
-        sentenceSender.setPerformanceLog(performanceLog);
     }
 
     private void shutdownSender() {
@@ -93,6 +91,7 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         } else if (dataMode.equalsIgnoreCase(DataMode.BATCH)) {
             initializeOfflineMessageSender();
         }
+        setPerformanceLogToSender(sentenceSender);
     }
 
     @Override

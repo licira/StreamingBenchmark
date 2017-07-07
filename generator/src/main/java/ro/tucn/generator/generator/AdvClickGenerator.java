@@ -74,20 +74,17 @@ public class AdvClickGenerator extends AbstractGenerator {
         advSender = new AdvSenderKafka();
         advSender.setTopic(ADV);
         ((AbstractKafkaSender)advSender).initializeSmallBufferProducer(bootstrapServers);
-        advSender.setPerformanceLog(performanceLog);
         clickSender = new ClickSenderKafka();
         clickSender.setTopic(CLICK);
         ((AbstractKafkaSender)clickSender).initializeSmallBufferProducer(bootstrapServers);
-        clickSender.setPerformanceLog(performanceLog);
     }
 
     private void initializeOfflineMessageSenders() {
         advSender = new AdvSenderOffline();
         advSender.setTopic(ADV);
-        advSender.setPerformanceLog(performanceLog);
+        setPerformanceLogToSender(advSender);
         clickSender = new ClickSenderOffline();
         clickSender.setTopic(CLICK);
-        clickSender.setPerformanceLog(performanceLog);
     }
 
     private void shutdownExecutorService() {
@@ -166,6 +163,8 @@ public class AdvClickGenerator extends AbstractGenerator {
         } else if (dataMode.equalsIgnoreCase(DataMode.BATCH)) {
             initializeOfflineMessageSenders();
         }
+        setPerformanceLogToSender(advSender);
+        setPerformanceLogToSender(clickSender);
     }
 
     @Override

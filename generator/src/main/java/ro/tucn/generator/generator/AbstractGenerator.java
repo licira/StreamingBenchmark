@@ -1,6 +1,7 @@
 package ro.tucn.generator.generator;
 
 import org.apache.log4j.Logger;
+import ro.tucn.generator.sender.AbstractSender;
 import ro.tucn.statistics.PerformanceLog;
 import ro.tucn.util.ConfigReader;
 
@@ -17,11 +18,10 @@ public abstract class AbstractGenerator<K, V> {
     protected static final Logger logger = Logger.getLogger(AbstractGenerator.class);
 
     private static final String BROKER_FILE_PROPERTIES_NAME = "DefaultBroker.properties";
-
-    protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
     protected Properties properties;
     protected String bootstrapServers;
     protected int entitiesNumber;
+    protected PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
 
     public AbstractGenerator(int entitiesNumber) {
         try {
@@ -63,5 +63,9 @@ public abstract class AbstractGenerator<K, V> {
 
     public void setEntitiesNumber(int entitiesNumber) {
         this.entitiesNumber = entitiesNumber;
+    }
+
+    protected void setPerformanceLogToSender(AbstractSender sender) {
+        sender.setPerformanceLog(performanceLog);
     }
 }

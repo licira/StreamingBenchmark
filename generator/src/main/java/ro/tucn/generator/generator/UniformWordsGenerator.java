@@ -60,13 +60,11 @@ public class UniformWordsGenerator extends AbstractGenerator {
         sentenceSender = new SentenceSenderKafka();
         sentenceSender.setTopic(UNIFORM_WORDS);
         ((AbstractKafkaSender)sentenceSender).initializeSmallBufferProducer(bootstrapServers);
-        sentenceSender.setPerformanceLog(performanceLog);
     }
 
     private void initializeOfflineMessageSender() {
         sentenceSender = new SentenceSenderOffline();
         sentenceSender.setTopic(UNIFORM_WORDS);
-        sentenceSender.setPerformanceLog(performanceLog);
     }
 
     @Override
@@ -92,6 +90,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
         } else if (dataMode.equalsIgnoreCase(DataMode.BATCH)) {
             initializeOfflineMessageSender();
         }
+        setPerformanceLogToSender(sentenceSender);
     }
 
     @Override

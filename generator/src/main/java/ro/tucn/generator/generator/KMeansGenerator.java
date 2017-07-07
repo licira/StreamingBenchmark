@@ -56,12 +56,10 @@ public class KMeansGenerator extends AbstractGenerator {
     private void initializeKafkaMessageSenderWithSmallBuffer() {
         kMeansSender = new KMeansSenderKafka();
         ((AbstractKafkaSender)kMeansSender).initializeSmallBufferProducer(bootstrapServers);
-        kMeansSender.setPerformanceLog(performanceLog);
     }
 
     private void initializeOfflineMessageSender() {
         kMeansSender = new KMeansSenderOffline();
-        kMeansSender.setPerformanceLog(performanceLog);
     }
 
     private void shutdownSender() {
@@ -103,6 +101,7 @@ public class KMeansGenerator extends AbstractGenerator {
         } else if (dataMode.equalsIgnoreCase(DataMode.BATCH)) {
             initializeOfflineMessageSender();
         }
+        setPerformanceLogToSender(kMeansSender);
     }
 
     @Override
