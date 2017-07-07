@@ -41,6 +41,10 @@ public class PerformanceLog {
         latencyLog.execute(TimeHolder);
     }
 
+    public void logLatency(long time) {
+        latencyLog.execute(time);
+    }
+
     public void logThroughputAndLatency(Long time) {
         throughputLog.execute();
         latencyLog.execute(time);
@@ -49,6 +53,11 @@ public class PerformanceLog {
     public void logThroughputAndLatencyTimeHolder(TimeHolder<?> value) {
         throughputLog.execute();
         latencyLog.execute(value);
+    }
+
+
+    public void logTotalLatency() {
+        latencyLog.logTotal();
     }
 
     public void logTotalThroughputAndTotalLatency() {
@@ -86,5 +95,9 @@ public class PerformanceLog {
 
     public void logSize(Object obj) {
         throughputLog.logSize(obj);
+    }
+
+    public Long getTotalLatency() {
+        return latencyLog.getTotalLatency();
     }
 }
