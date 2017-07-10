@@ -1,6 +1,5 @@
 package ro.tucn.statistics;
 
-import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 import org.apache.log4j.Logger;
 import ro.tucn.util.Configuration;
 import ro.tucn.util.TimeDuration;
@@ -48,8 +47,7 @@ public class ThroughputLog implements Serializable {
     }
 
     public void logSize(Object obj) {
-        long objectSize = ObjectSizeCalculator.getObjectSize(obj);
-        size += objectSize;
+        //size += objectSize;
     }
 
     public void setStartTime(Long startTime) {
