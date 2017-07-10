@@ -1,6 +1,7 @@
 package ro.tucn.kMeans;
 
 import java.io.Serializable;
+import java.util.Random;
 
 /**
  * Created by Liviu on 4/6/2017.
@@ -119,5 +120,14 @@ public class Point implements Serializable {
 
     public void setCoordinates(double[] coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public double[] getRandomlyAlteredCoordinates() {
+        Random random = new Random();
+        double[] coordinates = getCoordinates();
+        for (int i = 0; i < coordinates.length; i++) {
+            coordinates[i] *= random.nextDouble();
+        }
+        return coordinates;
     }
 }
