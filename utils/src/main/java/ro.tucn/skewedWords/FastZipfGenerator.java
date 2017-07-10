@@ -9,11 +9,12 @@ import java.util.TreeMap;
  */
 public class FastZipfGenerator {
 
-	private Random random = new Random(0);
+	private Random random = new Random();
 	private NavigableMap<Double, Integer> map;
 
-	public FastZipfGenerator(int size, double skew) {
+	public FastZipfGenerator(int size, double skew, long seed) {
 		map = computeMap(size, skew);
+		random.setSeed(seed);
 	}
 
 	private static NavigableMap<Double, Integer> computeMap(

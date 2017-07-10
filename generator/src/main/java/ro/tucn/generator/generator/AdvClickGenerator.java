@@ -47,10 +47,10 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void generate(int sleepFrequency) {
+    public void generate(int sleepFrequency, int sleepDuration) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        submitData(sleepFrequency);
+        submitData(sleepFrequency, sleepDuration);
         performanceLog.logTotalThroughputAndTotalLatency();
         shutdownExecutorService();
         shutdownSender();
@@ -136,7 +136,7 @@ public class AdvClickGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void submitData(int sleepFrequency) {
+    protected void submitData(int sleepFrequency, int sleepDuration) {
         advs = new ArrayList();
         for (long i = 0; i < totalAdvs; ++i) {
             Adv adv = submitNewAdv();
@@ -145,7 +145,7 @@ public class AdvClickGenerator extends AbstractGenerator {
                 submitNewClick();
             }
             //performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
+            TimeHelper.temporizeDataGeneration(sleepFrequency, sleepDuration, i);
         }
     }
 

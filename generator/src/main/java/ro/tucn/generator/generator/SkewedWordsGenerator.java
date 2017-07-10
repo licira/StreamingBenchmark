@@ -36,10 +36,10 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void generate(int sleepFrequency) {
+    public void generate(int sleepFrequency, int sleepDuration) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        submitData(sleepFrequency);
+        submitData(sleepFrequency, sleepDuration);
         performanceLog.logTotalThroughputAndTotalLatency();
         shutdownSender();
     }
@@ -69,11 +69,11 @@ public class SkewedWordsGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void submitData(int sleepFrequency) {
+    protected void submitData(int sleepFrequency, int sleepDuration) {
         for (long i = 0; i < totalSentences; ++i) {
             submitNewSentence();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
+            TimeHelper.temporizeDataGeneration(sleepFrequency, sleepDuration, i);
         }
     }
 
@@ -103,7 +103,8 @@ public class SkewedWordsGenerator extends AbstractGenerator {
         int wordsNumberUpperBound = Integer.parseInt(this.properties.getProperty("words.number.upper.bound"));
         int wordIdLowerBound = Integer.parseInt(this.properties.getProperty("word.id.lower.bound"));
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
-        FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent);
+        messageGenerator.reSeedSecure(Long.MAX_VALUE);
+        FastZipfGenerator zipfGenerator = new FastZipfGenerator(zipfSize, zipfExponent, Long.MAX_VALUE);
         sentenceCreator.setMessageGenerator(messageGenerator);
         sentenceCreator.setZipfGenerator(zipfGenerator);
         sentenceCreator.setWordsNumberLowerBound(wordsNumberLowerBound);
