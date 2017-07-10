@@ -18,19 +18,21 @@ import static ro.tucn.DataMode.BATCH;
 public class Application {
 
     public static void main(String[] args) throws IOException, WorkloadException {
-        if (args.length > 0) {
-            HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
-            ArgsParser.checkParamsValidityForTestBed(parsedArgs);
-            String topic = ArgsParser.getTopic(parsedArgs);
-            String mode = ArgsParser.getMode(parsedArgs);
-            ContextCreator contextCreator = new FlinkContextCreator(topic, mode);
-            WorkloadCreator workloadCreator = new WorkloadCreator();
-            if (mode.equals(BATCH)) {
-                int numberEntities = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
-                workloadCreator.setNumberOfEntities(numberEntities);
-            }
-            AbstractWorkload workload = workloadCreator.getNewWorkload(contextCreator, topic, mode);
-            workload.Start();
+        if (!(args.length > 0)) {
+            throw new RuntimeException("No Parameters");
         }
+        HashMap<String, String> parsedArgs = ArgsParser.parseArgs(args);
+        ArgsParser.checkParamsValidityForTestBed(parsedArgs);
+        String topic = ArgsParser.getTopic(parsedArgs);
+        String mode = ArgsParser.getMode(parsedArgs);
+        int parallelism = ArgsParser.getParallelism(parsedArgs);
+        ContextCreator contextCreator = new FlinkContextCreator(topic, mode, parallelism);
+        WorkloadCreator workloadCreator = new WorkloadCreator();
+        if (mode.equals(BATCH)) {
+            int numberEntities = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
+            workloadCreator.setNumberOfEntities(numberEntities);
+        }
+        AbstractWorkload workload = workloadCreator.getNewWorkload(contextCreator, topic, mode);
+        workload.Start();
     }
 }
