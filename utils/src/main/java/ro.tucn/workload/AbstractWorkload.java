@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.statistics.PerformanceLog;
-import ro.tucn.util.Configuration;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,7 +29,7 @@ public abstract class AbstractWorkload implements Serializable {
     public AbstractWorkload(ContextCreator contextCreator) throws WorkloadException {
         this.contextCreator = contextCreator;
         this.performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
-        initializeParallelism();
+        this.parallelism = contextCreator.getParallelism();
         initializeProperties();
     }
 
@@ -53,18 +52,11 @@ public abstract class AbstractWorkload implements Serializable {
         String configFile = this.getClass().getSimpleName() + ".properties";
         try {
             properties.load(this.getClass().getClassLoader().getResourceAsStream(configFile));
-            //int hosts = Integer.parseInt(properties.getProperty("hosts"));
-            //int cores = Integer.parseInt(properties.getProperty("cores"));
         } catch (IOException e) {
             throw new WorkloadException("Read configure file " + configFile + " failed");
         } catch (Exception e) {
             logger.error("Read configure file: " + configFile + " failed");
         }
-    }
-
-    private void initializeParallelism() throws WorkloadException {
-        Configuration.loadConfiguration();
-        parallelism = Configuration.clusterHosts * Configuration.hostCores;
     }
 
     public void setNumberOfEntities(int numberOfEntities) {

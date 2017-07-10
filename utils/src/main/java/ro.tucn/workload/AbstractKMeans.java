@@ -4,6 +4,7 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.Operator;
+import ro.tucn.util.TimeDuration;
 
 /**
  * Created by Liviu on 7/4/2017.
@@ -24,6 +25,6 @@ public abstract class AbstractKMeans extends AbstractWorkload {
 
         long latency = points.getExecutionLatency();
 
-        performanceLog.logToCsv(points.getFrameworkName(), workloadName, points.getDataMode(), latency, null);
+        performanceLog.logToCsv(points.getFrameworkName(), workloadName, points.getDataMode(), String.valueOf(TimeDuration.nanosToSeconds(latency)), null);
     }
 }

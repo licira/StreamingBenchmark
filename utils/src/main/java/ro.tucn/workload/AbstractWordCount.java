@@ -4,6 +4,7 @@ import ro.tucn.context.ContextCreator;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.operator.Operator;
 import ro.tucn.operator.PairOperator;
+import ro.tucn.util.TimeDuration;
 
 /**
  * Created by Liviu on 7/4/2017.
@@ -19,9 +20,8 @@ public abstract class AbstractWordCount extends AbstractWorkload {
         PairOperator<String, Integer> countedWords = words.wordCount();
         countedWords.print();
         words.printExecutionLatency();
-
         long latency = words.getExecutionLatency();
 
-        performanceLog.logToCsv(words.getFrameworkName(), workloadName, words.getDataMode(), latency, null);
+        performanceLog.logToCsv(words.getFrameworkName(), workloadName, words.getDataMode(), String.valueOf(TimeDuration.nanosToSeconds(latency)), null);
     }
 }
