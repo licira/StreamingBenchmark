@@ -48,12 +48,21 @@ public class ArgsParser {
         return tryGetIntValueByKey("-number", paramsWithValues);
     }
 
+    public static int getSleepDuration(HashMap<String, String> paramsWithValues) {
+        return tryGetIntValueByKey("-sleep.duration", paramsWithValues);
+    }
+
     public static int getSleepFrequency(HashMap<String, String> paramsWithValues) {
         return tryGetIntValueByKey("-sleep.frequency", paramsWithValues);
     }
 
     public static String getMode(HashMap<String, String> parsedArgs) {
         return parsedArgs.get("-mode");
+    }
+
+    public static int getParallelism(HashMap<String, String> paramsWithValues) {
+        return tryGetIntValueByKey("-parallelism", paramsWithValues);
+
     }
 
     private static int tryGetIntValueByKey(String key, HashMap<String, String> paramsWithValues) {
