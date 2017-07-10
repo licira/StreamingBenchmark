@@ -10,6 +10,7 @@ import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.PairOperator;
 import ro.tucn.operator.StreamPairOperator;
 import ro.tucn.operator.StreamWindowedPairOperator;
+import ro.tucn.spark.statistics.PerformanceStreamingListener;
 import ro.tucn.spark.util.Utils;
 import ro.tucn.util.TimeDuration;
 import scala.Tuple2;
@@ -53,19 +54,23 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
 
         SparkStreamPairOperator<K, R> joinSparkStream = ((SparkStreamPairOperator<K, R>) joinStream);
 
+
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
 
         JavaPairDStream<K, Tuple2<V, R>> joinedStream = pairDStream
-                .window(duration.plus(joinDuration), joinDuration)
-                .join(joinSparkStream.pairDStream.window(joinDuration, duration));
+                .join(joinSparkStream.pairDStream);
 
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
 
+        PerformanceStreamingListener performanceListener = (PerformanceStreamingListener) this.performanceListener;
+        performanceListener.setLatency(executionLatency);
+
         SparkStreamPairOperator advClickOperator = new SparkStreamPairOperator(joinedStream, parallelism);
         advClickOperator.setExecutionLatency(executionLatency);
+
         return advClickOperator;
     }
 
@@ -81,7 +86,6 @@ public class SparkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
     }
 
     public void print() {
-        //this.pairDStream.foreachRDD(voidFunction2);
         this.pairDStream.print();
     }
 

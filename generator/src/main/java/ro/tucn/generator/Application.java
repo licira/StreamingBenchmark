@@ -20,11 +20,11 @@ public class Application {
             ArgsParser.checkParamsValidityForTestBed(parsedArgs);
             String topic = ArgsParser.getTopic(parsedArgs);
             String mode = ArgsParser.getMode(parsedArgs);
-            int sleepFrequency = ArgsParser.getSleepFrequency(parsedArgs);
+            int sleepDuration = ArgsParser.getSleepDuration(parsedArgs);
             int entitiesNumber = ArgsParser.getNumberOfGeneratedEntities(parsedArgs);
             logger.info(topic);
             AbstractGenerator generator = GeneratorCreator.getNewGenerator(topic, mode, entitiesNumber);
-            generator.generate(sleepFrequency);
+            generator.generate(1, sleepDuration);
         }
     }
 }

@@ -3,6 +3,7 @@ package ro.tucn.operator;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.statistics.PerformanceLog;
+import ro.tucn.util.TimeDuration;
 
 import java.io.Serializable;
 
@@ -16,6 +17,7 @@ public abstract class BaseOperator implements Serializable {
     protected int parallelism = -1;
     protected long executionLatency;
     protected PerformanceLog performanceLog;
+    protected Object performanceListener;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public BaseOperator(int parallelism) {
@@ -36,7 +38,7 @@ public abstract class BaseOperator implements Serializable {
     public abstract void print();
 
     public void printExecutionLatency() {
-        logger.info(String.format("%-25s\t%d", "Execution Latency: ", executionLatency));
+        logger.info(String.format("%-25s\t%f sec", "Execution Latency: ", TimeDuration.nanosToSeconds(executionLatency)));
     }
 
     public long getExecutionLatency() {
@@ -53,5 +55,9 @@ public abstract class BaseOperator implements Serializable {
 
     public String getFrameworkName() {
         return frameworkName;
+    }
+
+    public void setPerformanceListener(Object performanceListener) {
+        this.performanceListener = performanceListener;
     }
 }

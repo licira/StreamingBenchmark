@@ -1,17 +1,11 @@
 package ro.tucn.generator.creator.entity;
 
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
-import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
-import ro.tucn.generator.generator.KMeansGenerator;
 import ro.tucn.kMeans.Point;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +19,17 @@ public class KMeansCreator {
     private long pointIdLowerBound;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private Random centroidRandom;
-    private RandomGenerator randomGenerator = new JDKRandomGenerator();
+    private RandomGenerator randomGenerator;
     private MultivariateNormalDistribution multiderivativeNormalDistribution;
 
     private int dimension;
     private double distance;
     private int centroidsNo;
+
+    public KMeansCreator() {
+        randomGenerator = new JDKRandomGenerator();
+        randomGenerator.setSeed(Long.MIN_VALUE);
+    }
 
     public Point getNewPoint(List<Point> centroids) {
         double[] coordinatesDistribution = multiderivativeNormalDistribution.sample();
@@ -40,7 +39,7 @@ public class KMeansCreator {
         double[] centroidCoordinates = centroid.getCoordinates();
         double[] pointCoordinates = new double[centroidCoordinates.length];
         for (int i = 0; i < dimension; i++) {
-            pointCoordinates[i] = centroidCoordinates[i] + coordinatesDistribution[i];
+            pointCoordinates[i] = centroidCoordinates[i] * coordinatesDistribution[i];
             DecimalFormat f = new DecimalFormat("##.##");
             pointCoordinates[i] = Double.parseDouble(f.format(pointCoordinates[i]));
         }
@@ -86,41 +85,6 @@ public class KMeansCreator {
         return centroids;
     }
 
-    public List<Point> loadCentroids() {
-        List<Point> centroids = new ArrayList<Point>();
-        BufferedReader br = null;
-        InputStream stream = null;
-        try {
-            String sCurrentLine;
-            stream = KMeansGenerator.class.getClassLoader().getResourceAsStream("centroids.txt");
-            br = new BufferedReader(new InputStreamReader(stream));
-            while ((sCurrentLine = br.readLine()) != null) {
-                String[] strs = sCurrentLine.split(",");
-                if (strs.length != dimension) {
-                    DimensionMismatchException e = new DimensionMismatchException(strs.length, dimension);
-                    logger.error(e.getMessage());
-                    throw e;
-                }
-                double[] position = new double[dimension];
-                for (int i = 0; i < dimension; i++) {
-                    position[i] = Double.valueOf(strs[i]);
-                }
-                Long pointId = generateId();
-                centroids.add(new Point(pointId, position));
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } finally {
-            try {
-                if (stream != null) stream.close();
-                if (br != null) br.close();
-            } catch (IOException ex) {
-                logger.error(ex.getMessage());
-            }
-        }
-        return centroids;
-    }
-
     public double[][] getCovariancesFromString(String covariancesAsString, double[] means) {
         double[][] covariances = new double[dimension][dimension];
         String[] covariancesStrs = covariancesAsString.split(",");
@@ -142,7 +106,8 @@ public class KMeansCreator {
 
     private double generateCoordinate() {
         double coordinate;
-        coordinate = (randomGenerator.nextInt(2000) - 1000) / 100.0;
+        //coordinate = (randomGenerator.nextInt(2000) - 1000) / 100.0;
+        coordinate = randomGenerator.nextInt(10000) / 100.0;
         //coordinate = Math.round(coordinate / 100);
         DecimalFormat f = new DecimalFormat("##.##");
         //coordinate = Double.parseDouble(f.format(coordinate));

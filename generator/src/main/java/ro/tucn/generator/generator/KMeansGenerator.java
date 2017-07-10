@@ -39,12 +39,12 @@ public class KMeansGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void generate(int sleepFrequency) {
+    public void generate(int sleepFrequency, int sleepDuration) {
         centroids = kMeansCreator.generateCentroids();
         //centroids = KMeansCreator.loadCentroids();
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        submitData(sleepFrequency);
+        submitData(sleepFrequency, sleepDuration);
         performanceLog.logTotalThroughputAndTotalLatency();
         shutdownSender();
     }
@@ -71,19 +71,19 @@ public class KMeansGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void submitData(int sleepFrequency) {
+    protected void submitData(int sleepFrequency, int sleepDuration) {
         kMeansSender.setTopic(POINT);
         for (int i = 0; i < totalPoints; i++) {
             Point point = kMeansCreator.getNewPoint(centroids);
             submitPoint(point);
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
+            TimeHelper.temporizeDataGeneration(sleepFrequency, sleepDuration, i);
         }
         kMeansSender.setTopic(CENTROID);
         for (int i = 0; i < centroids.size(); i++) {
             submitPoint(centroids.get(i));
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
+            TimeHelper.temporizeDataGeneration(sleepFrequency, sleepDuration, i);
         }
     }
 
@@ -114,7 +114,9 @@ public class KMeansGenerator extends AbstractGenerator {
         double distance = Double.parseDouble(properties.getProperty("centroids.distance"));
         int centroidsNo = Integer.parseInt(properties.getProperty("centroids.number"));
         Random centroidRandomGenerator = new Random();
+        centroidRandomGenerator.setSeed(Long.MAX_VALUE);
         RandomGenerator pointRandomGenerator = new JDKRandomGenerator();
+        pointRandomGenerator.setSeed(Long.MAX_VALUE);
         int dimension = Integer.parseInt(properties.getProperty("point.dimension"));
         double[] means = new double[dimension];
         String covariancesAsString = properties.getProperty("covariances");

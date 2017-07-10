@@ -16,7 +16,7 @@ import static ro.tucn.generator.creator.entity.SentenceCreator.SENTENCE_TYPE.UNI
 public class SentenceCreator {
 
     private int wordsNumberLowerBound = 1;
-    private int wordsNumberUpperBound = 10;
+    private int wordsNumberUpperBound = 1000;
     private int wordIdLowerBound = 1000;
 
     private FastZipfGenerator zipfGenerator;
@@ -35,11 +35,11 @@ public class SentenceCreator {
     }
 
     private Sentence getNewSentence(SENTENCE_TYPE sentenceType) {
-        int sentenceLength = (int) randomDataGenerator.nextGaussian(mu, sigma);
+        int sentenceLength = (int) mu;
         int[] words = new int[sentenceLength];
         if (sentenceType.equals(SKEWED_WORDS_SENTENCE)) {
             for (int i = 0; i < sentenceLength; ++i) {
-                words[i] = (zipfGenerator.next() + wordsNumberLowerBound) % wordsNumberUpperBound;
+                words[i] = (zipfGenerator.next() + wordsNumberLowerBound);
             }
         } else if (sentenceType.equals(UNIFORM_WORDS_SENTENCE)) {
             for (int i = 0; i < sentenceLength; ++i) {

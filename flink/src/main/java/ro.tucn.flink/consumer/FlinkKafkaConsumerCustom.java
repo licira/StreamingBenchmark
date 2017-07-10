@@ -29,11 +29,11 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     public FlinkKafkaConsumerCustom(StreamExecutionEnvironment env) {
         super();
         this.env = env;
+        this.parallelism = env.getParallelism();
     }
 
     @Override
     public StreamOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
-        setEnvParallelism(parallelism);
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
         DataStream<String> stream = getStringStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
@@ -42,7 +42,6 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     @Override
     public StreamPairOperator<String, String> getStreamPairOperator(Properties properties, String topicPropertyName) {
-        setEnvParallelism(parallelism);
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topic);
         DataStream<Tuple2<String, String>> pairStream = getPairStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
@@ -51,7 +50,6 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     @Override
     public StreamOperator<Point> getPointOperator(Properties properties, String topicPropertyName) {
-        setEnvParallelism(parallelism);
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataStream<String> jsonStream = getStringStreamFromKafka(properties, topic);
         DataStream<Point> pointStream = getPointStreamFromJsonStream(jsonStream);
@@ -60,7 +58,6 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     @Override
     public StreamOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties, String topic) {
-        setEnvParallelism(parallelism);
         DataStream<String> stream = getStreamFromKafka(properties, topic);
         DataStream<TimeHolder<String>> TimeHolderDataStream = stream.map((MapFunction<String, TimeHolder<String>>) value -> {
             String[] list = value.split(Constants.TimeSeparatorRegex);

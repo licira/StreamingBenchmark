@@ -35,10 +35,10 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void generate(int sleepFrequency) {
+    public void generate(int sleepFrequency, int sleepDuration) {
         initializePerformanceLogWithCurrentTime();
         performanceLog.disablePrint();
-        submitData(sleepFrequency);
+        submitData(sleepFrequency, sleepDuration);
         performanceLog.logTotalThroughputAndTotalLatency();
         shutdownSender();
     }
@@ -68,11 +68,11 @@ public class UniformWordsGenerator extends AbstractGenerator {
     }
 
     @Override
-    protected void submitData(int sleepFrequency) {
+    protected void submitData(int sleepFrequency, int sleepDuration) {
         for (long i = 0; i < totalSentences; ++i) {
             submitNewSentence();
             performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-            TimeHelper.temporizeDataGeneration(sleepFrequency, i);
+            TimeHelper.temporizeDataGeneration(sleepFrequency, sleepDuration, i);
         }
     }
 
@@ -96,6 +96,7 @@ public class UniformWordsGenerator extends AbstractGenerator {
     @Override
     protected void initializeDataGenerators() {
         RandomDataGenerator messageGenerator = new RandomDataGenerator();
+        messageGenerator.reSeed(Long.MAX_VALUE);
         sentenceCreator.setMessageGenerator(messageGenerator);
     }
 

@@ -35,17 +35,10 @@ public class FlinkStreamPairOperator<K, V> extends StreamPairOperator<K, V> {
         frameworkName = "FLINK";
     }
 
-    /**
-     * @param joinOperator       the other stream<K,R>
-     * @param windowDuration     window1 length of this stream
-     * @param joinWindowDuration window1 length of joinStream
-     * @param <R>                Value type of the other stream
-     * @return StreamPairOperator after join
-     */
     @Override
     public <R> FlinkStreamPairOperator<K, Tuple2<V, R>> advClick(PairOperator<K, R> joinOperator,
-                                                      TimeDuration windowDuration,
-                                                      TimeDuration joinWindowDuration) throws WorkloadException {
+                                                                 TimeDuration windowDuration,
+                                                                 TimeDuration joinWindowDuration) throws WorkloadException {
         checkWindowDurationsCompatibility(windowDuration, joinWindowDuration);
         checkOperatorType(joinOperator);
 

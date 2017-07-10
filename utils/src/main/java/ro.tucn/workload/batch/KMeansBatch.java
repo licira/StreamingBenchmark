@@ -20,7 +20,6 @@ public class KMeansBatch extends AbstractKMeans {
     public KMeansBatch(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
         generatorConsumer = contextCreator.getGeneratorConsumer();
-        generatorConsumer.setParallelism(parallelism);
     }
 
     @Override

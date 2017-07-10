@@ -17,13 +17,14 @@ public class AdvClickBatch extends AbstractAdvClick {
     private final AbstractGeneratorConsumer generatorConsumer;
     private int streamWindowOne;
     private int streamWindowTwo;
+    private Object performanceListener;
 
     public AdvClickBatch(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
+        performanceListener = contextCreator.getPerformanceListener();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));
         streamWindowTwo = Integer.parseInt(properties.getProperty("stream2.window"));
         generatorConsumer = contextCreator.getGeneratorConsumer();
-        generatorConsumer.setParallelism(parallelism);
     }
 
     @Override

@@ -19,7 +19,6 @@ public class WordCountBatch extends AbstractWordCount {
     public WordCountBatch(ContextCreator contextCreator) throws WorkloadException {
         super(contextCreator);
         generatorConsumer = contextCreator.getGeneratorConsumer();
-        generatorConsumer.setParallelism(parallelism);
     }
 
     @Override

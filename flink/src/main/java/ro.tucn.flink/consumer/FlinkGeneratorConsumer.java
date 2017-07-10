@@ -32,18 +32,18 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     public FlinkGeneratorConsumer(ExecutionEnvironment env) {
         super();
         this.env = env;
+        this.parallelism = env.getParallelism();
     }
 
     @Override
     public void askGeneratorToProduceData(String topic, int numberOfEntities) {
         generator = GeneratorCreator.getNewGenerator(topic, DataMode.BATCH, numberOfEntities);
-        generator.generate(0);
+        generator.generate(0, 0);
     }
 
     @Override
     public BatchPairOperator<String, String> getPairOperator(Properties properties,
                                                              String topicPropertyName) {
-        setEnvParallelism(parallelism);
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDatasetFromGenerator(topic);
         DataSet<Tuple2<String, String>> pairDataSet = getPairDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
@@ -53,7 +53,6 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public BatchOperator<Point> getPointOperator(Properties properties,
                                                  String topicPropertyName) {
-        setEnvParallelism(parallelism);
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataSet<String> jsonDataSet = getStringDataSetFromGenerator(topic);
         DataSet<Point> pointDataSet = getPointDataSetFromJsonDataSet(jsonDataSet);
@@ -63,7 +62,6 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public BatchOperator<String> getStringOperator(Properties properties,
                                                    String topicPropertyName) {
-        setEnvParallelism(parallelism);
         String topic = getTopicFromProperties(properties, topicPropertyName);
         DataSet<String> dataSetWithJsonAsValue = getStringWithJsonAsValueDataSetFromGenerator(topic);
         DataSet<String> dataSet = getStringDataSetFromDataSetWithJsonAsValue(dataSetWithJsonAsValue);
@@ -73,7 +71,6 @@ public class FlinkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public BatchOperator<TimeHolder<String>> getStringOperatorWithTimeHolder(Properties properties,
                                                                              String topicPropertyName) {
-        setEnvParallelism(parallelism);
         return null;
     }
 

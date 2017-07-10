@@ -48,7 +48,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                 return (String) t;
 
             }
-        });
+        }).setParallelism(parallelism);
 
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
@@ -60,7 +60,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                     collector.collect(new Tuple2<String, Integer>(word, 1));
                 }
             }
-        });
+        }).setParallelism(parallelism);
         KeyedStream<Tuple2<String, Integer>, String> keyedWords = wordsCountedByOneEach.keyBy(new KeySelector<Tuple2<String, Integer>, String>() {
             @Override
             public String getKey(org.apache.flink.api.java.tuple.Tuple2<String, Integer> value) throws Exception {
@@ -72,7 +72,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
             public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2) throws Exception {
                 return new Tuple2<>(value1.f0, value1.f1 + value2.f1);
             }
-        });
+        }).setParallelism(parallelism);
 
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
@@ -96,7 +96,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         DataStream<Tuple2<Long, Point>> clusteredPoints = null;
 
         for (int i = 0; i < numIterations; i++) {
-            clusteredPoints = centroids.connect(points).flatMap(nearestCenterSelector);
+            clusteredPoints = centroids.connect(points).flatMap(nearestCenterSelector).setParallelism(parallelism);
             centroids = clusteredPoints.connect(clusteredPoints).flatMap(new CoFlatMapFunction<Tuple2<Long, Point>, Tuple2<Long, Point>, Point>() {
 
                 private Map<Long, Tuple2<Point, Long>> centroidsWithCummulatedCoordinates = new HashMap<Long, Tuple2<Point, Long>>();
@@ -132,7 +132,7 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                         collector.collect(centroid);
                     }
                 }
-            });
+            }).setParallelism(parallelism);
         }
 
         performanceLog.logLatency(TimeHelper.getNanoTime());

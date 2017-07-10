@@ -40,7 +40,7 @@ public class SparkGeneratorConsumer extends AbstractGeneratorConsumer {
     @Override
     public void askGeneratorToProduceData(String topic, int numberOfEntities) {
         generator = GeneratorCreator.getNewGenerator(topic, DataMode.BATCH, numberOfEntities);
-        generator.generate(0);
+        generator.generate(0, 0);
     }
 
     @Override

@@ -33,9 +33,9 @@ public abstract class AbstractGenerator<K, V> {
         this.entitiesNumber = entitiesNumber;
     }
 
-    public abstract void generate(int sleepFrequency);
+    public abstract void generate(int sleepFrequency, int sleepDuration);
 
-    protected abstract void submitData(int sleepFrequency);
+    protected abstract void submitData(int sleepFrequency, int sleepDuration);
 
     protected abstract void initialize(String dataMode);
 

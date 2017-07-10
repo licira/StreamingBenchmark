@@ -18,9 +18,11 @@ public class AdvClickStream extends AbstractAdvClick {
     private final AbstractKafkaConsumerCustom kafkaConsumerCustom;
     private int streamWindowOne;
     private int streamWindowTwo;
+    private Object performanceListener;
 
     public AdvClickStream(ContextCreator creator) throws WorkloadException {
         super(creator);
+        performanceListener = creator.getPerformanceListener();
         streamWindowOne = Integer.parseInt(properties.getProperty("stream1.window"));
         streamWindowTwo = Integer.parseInt(properties.getProperty("stream2.window"));
         kafkaConsumerCustom = creator.getKafkaConsumerCustom();
@@ -31,6 +33,7 @@ public class AdvClickStream extends AbstractAdvClick {
     public void process() {
         StreamPairOperator<String, String> advs = kafkaConsumerCustom.getStreamPairOperator(properties, TOPIC_ONE_PROPERTY_NAME);
         StreamPairOperator<String, String> clicks = kafkaConsumerCustom.getStreamPairOperator(properties, TOPIC_TWO_PROPERTY_NAME);
+        advs.setPerformanceListener(performanceListener);
         super.process(advs, clicks, streamWindowOne, streamWindowTwo);
     }
 }

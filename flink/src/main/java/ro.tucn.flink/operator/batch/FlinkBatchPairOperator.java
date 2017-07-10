@@ -44,20 +44,20 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
             public Tuple2<String, String> map(Tuple2<K, V> tuple) throws Exception {
                 return new Tuple2<String, String>((String) tuple.f0, (String) tuple.f1);
             }
-        });
+        }).setParallelism(parallelism);
 
         DataSet<Tuple2<String, String>> joinDataSet = joinPreDataSet.map(new MapFunction<Tuple2<K, R>, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(Tuple2<K, R> tuple) throws Exception {
                 return new Tuple2<String, String>((String) tuple.f0, (String) tuple.f1);
             }
-        });
+        }).setParallelism(parallelism);
         DataSet<Tuple2<String, String>> dataSet = preDataSet.map(new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
             @Override
             public Tuple2<String, String> map(Tuple2<String, String> tuple) throws Exception {
                 return new Tuple2<String, String>(tuple.f0, tuple.f1);
             }
-        });
+        }).setParallelism(parallelism);
 
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
@@ -81,7 +81,7 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
                 Tuple2<String, String> finalTuple = new Tuple2<String, String>(value1, value2);
                 return new Tuple2<String, Tuple2<String, String>>(key, finalTuple);
             }
-        });
+        }).setParallelism(parallelism);
 
         FlinkBatchPairOperator advClickOperator = new FlinkBatchPairOperator<>(advClick, parallelism);
         advClickOperator.setExecutionLatency(executionLatency);
