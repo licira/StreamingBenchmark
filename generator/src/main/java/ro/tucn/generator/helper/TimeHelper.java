@@ -9,11 +9,11 @@ public class TimeHelper {
 
     protected static final Logger logger = Logger.getLogger(TimeHelper.class.getSimpleName());
 
-    public static void temporizeDataGeneration(int sleepFrequency, long step) {
+    public static void temporizeDataGeneration(int sleepFrequency, long sleepDuration, long step) {
         // control data generate speed
         if ((sleepFrequency > 0) && (step % sleepFrequency == 0)) {
             try {
-                Thread.sleep(1);
+                Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage());
             }
