@@ -31,11 +31,12 @@ public class SparkContextCreator extends ContextCreator {
     private Properties properties;
     private String dataMode;
 
-    public SparkContextCreator(String appName, String dataMode) throws IOException {
+    public SparkContextCreator(String appName, String dataMode, int parallelism) throws IOException {
         super(appName);
         initializeProperties();
-        initializeJavaStreamingContext(appName);
+        this.parallelism = parallelism;
         this.dataMode = dataMode;
+        initializeJavaStreamingContext(appName);
     }
 
     @Override
@@ -62,26 +63,33 @@ public class SparkContextCreator extends ContextCreator {
         return new SparkGeneratorConsumer(jssc, sc);
     }
 
+    @Override
+    public Object getPerformanceListener() {
+        return performanceStreamingListener;
+    }
+
     private void initializeProperties() throws IOException {
         properties = new Properties();
         properties.load(this.getClass().getClassLoader().getResourceAsStream(SPARK_PROPERTIES_FILE_NAME));
+        if ((parallelism == 0) || (parallelism == -1)) {
+            try {
+                parallelism = Integer.parseInt(String.valueOf(properties.get("parallelism")));
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+            if (parallelism == -1) {
+                parallelism = 1;
+            }
+        }
     }
 
     private void initializeJavaStreamingContext(String appName) {
         SparkConf conf = new SparkConf()
                 .setMaster(getMaster())
                 .setAppName(appName)
-                .set("spark.driver.memory", "256m")
-                .set("spark.executor.memory", "768m")
+                .set("executor.cores", String.valueOf(parallelism))
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                //.set("spark.task.maxFailures", "5")
-                //.set("spark.streaming.kafka.maxRetries", "5")
-                .set("spark.streaming.ui.retainedBatches", "2000");
-        //.set("num-executors", "1")
-        //.set("executor.instances", "1")
-        //.set("cores.max", "1")
-        //.set("spark.streaming.ui.retainedBatches", "2000")
-        ;
+                ;
         sc = new JavaSparkContext(conf);
         jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
     }

@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 public abstract class ContextCreator implements Serializable {
 
+    protected int parallelism = -1;
+
     protected String appName;
 
     public ContextCreator(String appName) {
@@ -21,4 +23,14 @@ public abstract class ContextCreator implements Serializable {
     public abstract AbstractKafkaConsumerCustom getKafkaConsumerCustom();
 
     public abstract AbstractGeneratorConsumer getGeneratorConsumer();
+
+    public abstract Object getPerformanceListener();
+
+    public int getParallelism() {
+        return parallelism;
+    }
+
+    public void setParallelism(int parallelism) {
+        this.parallelism = parallelism;
+    }
 }

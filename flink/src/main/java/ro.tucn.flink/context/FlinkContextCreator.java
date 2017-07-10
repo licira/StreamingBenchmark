@@ -27,20 +27,21 @@ public class FlinkContextCreator extends ContextCreator {
     private Properties properties;
     private String dataMode;
 
-    public FlinkContextCreator(String name, String dataMode) throws IOException {
+    public FlinkContextCreator(String name, String dataMode, int parallelism) throws IOException {
         super(name);
-        System.out.println("1");
+        this.parallelism = parallelism;
         initializeProperties();
         initializeEnv(dataMode);
-        System.out.println("2");
     }
 
     private void initializeEnv(String dataMode) {
         this.dataMode = dataMode;
         if (this.dataMode.equals(DataMode.STREAMING)) {
             streamEnv = StreamExecutionEnvironment.getExecutionEnvironment();
+            streamEnv.setParallelism(parallelism);
         } else if (this.dataMode.equals(DataMode.BATCH)) {
             batchEnv = ExecutionEnvironment.getExecutionEnvironment();
+            batchEnv.setParallelism(parallelism);
         }
     }
 
@@ -67,8 +68,24 @@ public class FlinkContextCreator extends ContextCreator {
         return new FlinkGeneratorConsumer(batchEnv);
     }
 
+    @Override
+    public Object getPerformanceListener() {
+
+        return null;
+    }
+
     private void initializeProperties() throws IOException {
         properties = new Properties();
         properties.load(this.getClass().getClassLoader().getResourceAsStream(FLINK_PROPERTIES_FILE_NAME));
+        if ((parallelism == 0) || (parallelism == -1)) {
+            try {
+                parallelism = Integer.parseInt(String.valueOf(properties.get("parallelism")));
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+            if (parallelism == -1) {
+                parallelism = 1;
+            }
+        }
     }
 }
