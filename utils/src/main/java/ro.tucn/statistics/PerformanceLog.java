@@ -34,7 +34,7 @@ public class PerformanceLog {
         return singleton;
     }
 
-    public void logToCsv(String frameworkName, String workloadName, String dataMode, long latency, Object throughput) {
+    public void logToCsv(String frameworkName, String workloadName, String dataMode, String latency, Object throughput) {
         String filename = getFileName(frameworkName, workloadName, dataMode);
         try {
             FileWriter fw = getFileWriter(filename);
@@ -51,7 +51,7 @@ public class PerformanceLog {
         fw.close();
     }
 
-    private void appendToCsv(FileWriter fw, long latency, Object throughput) throws IOException {
+    private void appendToCsv(FileWriter fw, String latency, Object throughput) throws IOException {
         fw.append("" + latency);
         fw.append(",");
         fw.append("smt else");
