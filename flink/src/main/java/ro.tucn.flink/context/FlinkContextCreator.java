@@ -68,12 +68,6 @@ public class FlinkContextCreator extends ContextCreator {
         return new FlinkGeneratorConsumer(batchEnv);
     }
 
-    @Override
-    public Object getPerformanceListener() {
-
-        return null;
-    }
-
     private void initializeProperties() throws IOException {
         properties = new Properties();
         properties.load(this.getClass().getClassLoader().getResourceAsStream(FLINK_PROPERTIES_FILE_NAME));

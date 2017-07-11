@@ -63,11 +63,6 @@ public class SparkContextCreator extends ContextCreator {
         return new SparkGeneratorConsumer(jssc, sc);
     }
 
-    @Override
-    public Object getPerformanceListener() {
-        return performanceStreamingListener;
-    }
-
     private void initializeProperties() throws IOException {
         properties = new Properties();
         properties.load(this.getClass().getClassLoader().getResourceAsStream(SPARK_PROPERTIES_FILE_NAME));
