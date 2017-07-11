@@ -12,7 +12,6 @@ import org.apache.flink.util.Collector;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
 import ro.tucn.flink.operator.stream.FlinkStreamPairOperator;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.Operator;
@@ -49,10 +48,10 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
 
             }
         }).setParallelism(parallelism);
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         DataStream<Tuple2<String, Integer>> wordsCountedByOneEach = sentence.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(String sentence, Collector<Tuple2<String, Integer>> collector) throws Exception {
@@ -73,11 +72,11 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                 return new Tuple2<>(value1.f0, value1.f1 + value2.f1);
             }
         }).setParallelism(parallelism);
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         return new FlinkStreamPairOperator<String, Integer>(countedWords, parallelism);
     }
 
@@ -89,10 +88,10 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
         DataStream<Point> centroids = ((FlinkStreamOperator<Point>) centroidsOperator).dataStream;
 
         NearestCenterSelector nearestCenterSelector = new NearestCenterSelector();
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         DataStream<Tuple2<Long, Point>> clusteredPoints = null;
 
         for (int i = 0; i < numIterations; i++) {
@@ -134,11 +133,11 @@ public class FlinkStreamOperator<T> extends StreamOperator<T> {
                 }
             }).setParallelism(parallelism);
         }
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         centroidsOperator = new FlinkStreamOperator<Point>(centroids, parallelism);
         centroids.print();
 

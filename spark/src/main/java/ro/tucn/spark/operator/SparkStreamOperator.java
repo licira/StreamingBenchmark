@@ -8,7 +8,6 @@ import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.Operator;
@@ -38,17 +37,18 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
 
     @Override
     public SparkStreamPairOperator<String, Integer> wordCount() {
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         JavaDStream<String> stringJavaDStream = dStream.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream = stringJavaDStream.mapToPair(s -> new Tuple2(s, 1));
         JavaPairDStream<String, Integer> tIntegerJavaPairDStream1 = tIntegerJavaPairDStream.reduceByKey((i1, i2) -> i1 + i2);
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         return new SparkStreamPairOperator(tIntegerJavaPairDStream1, parallelism);
     }
 
@@ -58,10 +58,10 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
 
         JavaDStream<Point> points = (JavaDStream<Point>) this.dStream;
         JavaDStream<Point> centroids = (JavaDStream<Point>) ((SparkStreamOperator<Point>) centroidsOperator).dStream;
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         JavaDStream<Vector> pointsVector = points.map(p -> Vectors.dense(p.getRandomlyAlteredCoordinates()));
         JavaDStream<Vector> centroidsVector = centroids.map(c -> Vectors.dense(c.getCoordinates()));
 
@@ -80,11 +80,11 @@ public class SparkStreamOperator<T> extends StreamOperator<T> {
         });
 
         JavaPairDStream<Point, Integer> finalCentroids = model.predictOnValues(pointsToBeClustered);
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         finalCentroids.print();
 
         /*Vector[] vectors = model.latestModel().clusterCenters();

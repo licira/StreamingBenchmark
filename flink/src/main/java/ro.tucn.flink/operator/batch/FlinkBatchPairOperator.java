@@ -7,7 +7,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.PairOperator;
@@ -58,18 +57,18 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
                 return new Tuple2<String, String>(tuple.f0, tuple.f1);
             }
         }).setParallelism(parallelism);
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         JoinOperator.DefaultJoin<Tuple2<String, String>, Tuple2<String, String>> join = dataSet.join(joinDataSet)
                 .where("f0")
                 .equalTo("f0");
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         DataSet advClick = join.map(new MapFunction<Tuple2<Tuple2<String, String>, Tuple2<String, String>>, Object>() {
             @Override
             public Tuple2<String, Tuple2<String, String>> map(Tuple2<Tuple2<String, String>, Tuple2<String, String>> doubleTuple) throws Exception {
@@ -81,7 +80,7 @@ public class FlinkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
                 Tuple2<String, String> finalTuple = new Tuple2<String, String>(value1, value2);
                 return new Tuple2<String, Tuple2<String, String>>(key, finalTuple);
             }
-        }).setParallelism(parallelism);
+        });
 
         FlinkBatchPairOperator advClickOperator = new FlinkBatchPairOperator<>(advClick, parallelism);
         advClickOperator.setExecutionLatency(executionLatency);

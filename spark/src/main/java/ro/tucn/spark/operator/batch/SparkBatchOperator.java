@@ -10,7 +10,6 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
@@ -40,17 +39,18 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public SparkBatchPairOperator<String, Integer> wordCount() {
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         JavaRDD<String> sentences = rdd.flatMap(x -> Arrays.asList(((String) x).split(" ")).iterator());
         JavaPairRDD<String, Integer> wordsCountedByOneEach = sentences.mapToPair(s -> new Tuple2(s, 1));
         JavaPairRDD<String, Integer> countedWords = wordsCountedByOneEach.reduceByKey((i1, i2) -> i1 + i2);
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         return new SparkBatchPairOperator(countedWords, parallelism);
     }
 
@@ -62,19 +62,19 @@ public class SparkBatchOperator<T> extends BatchOperator<T> {
         JavaRDD<Point> centroids = (JavaRDD<Point>) ((SparkBatchOperator<Point>) centroidsOperator).rdd;
 
         int numClusters = centroids.collect().size();
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         JavaRDD<Vector> pointsVector = points.map(p -> Vectors.dense(p.getCoordinates()));
         pointsVector.cache();
 
         KMeansModel finalCentroids = KMeans.train(pointsVector.rdd(), numClusters, numIterations);
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         for (Vector center: finalCentroids.clusterCenters()) {
             logger.info(center.toString());
         }

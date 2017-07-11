@@ -5,7 +5,6 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.streaming.Duration;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchPairOperator;
 import ro.tucn.operator.PairOperator;
@@ -40,17 +39,17 @@ public class SparkBatchPairOperator<K, V> extends BatchPairOperator<K, V> {
         Duration joinDuration = toDuration(joinWindowDuration);
 
         SparkBatchPairOperator<K, R> joinSparkStream = ((SparkBatchPairOperator<K, R>) joinOperator);
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         JavaPairRDD<K, Tuple2<V, R>> advClick = pairRDD
                 .join(joinSparkStream.pairRDD);
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         SparkBatchPairOperator advClickOperator = new SparkBatchPairOperator(advClick, parallelism);
         advClickOperator.setExecutionLatency(executionLatency);
         return advClickOperator;

@@ -14,7 +14,6 @@ import org.apache.flink.util.Collector;
 import org.apache.log4j.Logger;
 import ro.tucn.exceptions.UnsupportOperatorException;
 import ro.tucn.exceptions.WorkloadException;
-import ro.tucn.generator.helper.TimeHelper;
 import ro.tucn.kMeans.Point;
 import ro.tucn.operator.BaseOperator;
 import ro.tucn.operator.BatchOperator;
@@ -41,9 +40,10 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
 
     @Override
     public FlinkBatchPairOperator<String, Integer> wordCount() {
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         DataSet<Tuple2<String, Integer>> sentences = dataSet.flatMap(new FlatMapFunction<T, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(T t, Collector<Tuple2<String, Integer>> collector) throws Exception {
@@ -60,11 +60,11 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
                 return new Tuple2<String, Integer>(stringIntegerTuple2.f0, stringIntegerTuple2.f1 + t1.f1);
             }
         });
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         return new FlinkBatchPairOperator<String, Integer>(countedWords, parallelism);
     }
 
@@ -79,10 +79,10 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         CountAppender countAppender = new CountAppender();
         CentroidAccumulator centroidAccumulator = new CentroidAccumulator();
         CentroidAverager centroidAverager = new CentroidAverager();
-
+        /*
         performanceLog.disablePrint();
         performanceLog.setStartTime(TimeHelper.getNanoTime());
-
+        */
         IterativeDataSet<Point> loop = centroids.iterate(numIterations);
 
         DataSet<Point> newCentroids = points
@@ -98,11 +98,11 @@ public class FlinkBatchOperator<T> extends BatchOperator<T> {
         DataSet<Tuple2<Long, Point>> clusteredPoints = points
                 // assign points to final clusters
                 .map(nearestCenterSelector).withBroadcastSet(finalCentroids, "centroids");
-
+        /*
         performanceLog.logLatency(TimeHelper.getNanoTime());
         performanceLog.logTotalLatency();
         executionLatency = performanceLog.getTotalLatency();
-
+        */
         centroidsOperator = new FlinkBatchOperator<Point>(finalCentroids, parallelism);
         try {
             finalCentroids.print();
