@@ -113,6 +113,8 @@ public class FlinkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     private DataStream<String> getStreamFromKafka(Properties properties, String topic) {
         properties.put("auto.offset.reset", "latest");
+        properties.put("metadata.broker.list", (String) properties.get("bootstrap.servers"));
+        properties.put("zookeeper.connect", (String) properties.get("zookeeper.connect"));
         FlinkKafkaConsumer082<String> kafkaConsumer = new FlinkKafkaConsumer082<>(topic, new SimpleStringSchema(), properties);
         return env.addSource(kafkaConsumer);
     }

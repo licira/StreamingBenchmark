@@ -42,7 +42,6 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
 
     @Override
     public StreamOperator<String> getStringOperator(Properties properties, String topicPropertyName) {
-        logger.info("11");
         JavaDStream<String> streamWithJsonAsValue = getStringWithJsonAsValueStreamFromKafka(properties, topicPropertyName);
         JavaDStream<String> stream = getStreamFromStreamWithJsonAsValue(streamWithJsonAsValue);
         return new SparkStreamOperator<String>(stream, parallelism);
@@ -110,7 +109,6 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     }
 
     private JavaDStream<String> getStringWithJsonAsValueStreamFromKafka(Properties properties, String topicPropertyName) {
-        logger.info("111");
         JavaPairDStream<String, String> pairStreamWithJsonAsValue = getDirectStreamFromKafka(properties, topicPropertyName);
         return pairStreamWithJsonAsValue.map(jsonTuple -> jsonTuple._2());
     }
@@ -138,8 +136,8 @@ public class SparkKafkaConsumerCustom extends AbstractKafkaConsumerCustom {
     private HashMap getKafkaParamsFromProperties(Properties properties) {
         HashMap<String, String> kafkaParams = new HashMap();
         kafkaParams.put("metadata.broker.list", (String) properties.get("bootstrap.servers"));
-        kafkaParams.put("auto.offset.reset", (String) properties.get("auto.offset.reset"));
         kafkaParams.put("zookeeper.connect", (String) properties.get("zookeeper.connect"));
+        kafkaParams.put("auto.offset.reset", (String) properties.get("auto.offset.reset"));
         kafkaParams.put("group.id", (String) properties.get("group.id"));
         kafkaParams.put("auto.create.topics", "true");
         return kafkaParams;
