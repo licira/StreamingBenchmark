@@ -34,11 +34,11 @@ public class PerformanceLog {
         return singleton;
     }
 
-    public void logToCsv(String frameworkName, String workloadName, String dataMode, String latency, Object throughput) {
+    public void logToCsv(String frameworkName, String workloadName, String dataMode, String latency, int numberOfEntities, int parallelism) {
         String filename = getFileName(frameworkName, workloadName, dataMode);
         try {
             FileWriter fw = getFileWriter(filename);
-            appendToCsv(fw, latency, throughput);
+            appendToCsv(fw, latency, numberOfEntities, parallelism);
             closeFile(fw);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -51,10 +51,12 @@ public class PerformanceLog {
         fw.close();
     }
 
-    private void appendToCsv(FileWriter fw, String latency, Object throughput) throws IOException {
+    private void appendToCsv(FileWriter fw, String latency, int numberOfEntities, int parallelism) throws IOException {
         fw.append("" + latency);
         fw.append(",");
-        fw.append("smt else");
+        fw.append("" + numberOfEntities);
+        fw.append(",");
+        fw.append("" + parallelism);
         fw.append("\n");
     }
 

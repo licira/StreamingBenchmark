@@ -14,20 +14,23 @@ import java.util.Properties;
  */
 public abstract class AbstractWorkload implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(AbstractWorkload.class.getSimpleName());
-
-    protected PerformanceLog performanceLog;
-    protected String workloadName;
     protected static final String TOPIC_ONE_PROPERTY_NAME = "topic1";
     protected static final String TOPIC_TWO_PROPERTY_NAME = "topic2";
+    private static final Logger logger = Logger.getLogger(AbstractWorkload.class.getSimpleName());
+    private final String dataMode;
+    protected PerformanceLog performanceLog;
+    protected String workloadName;
     protected int numberOfEntities; // for batch processing
 
     protected Properties properties;
     protected int parallelism;
     private ContextCreator contextCreator;
+    private String frameworkName;
 
     public AbstractWorkload(ContextCreator contextCreator) throws WorkloadException {
         this.contextCreator = contextCreator;
+        this.frameworkName = contextCreator.getFrameworkName();
+        this.dataMode = contextCreator.getDataMode();
         this.performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
         this.parallelism = contextCreator.getParallelism();
         initializeProperties();
@@ -39,7 +42,23 @@ public abstract class AbstractWorkload implements Serializable {
         logger.info("Start workload: " + this.getClass().getSimpleName());
         try {
             process();
-            contextCreator.start();
+            //Works for measuring batch processing performance ONLY
+
+            /*for(int i = 1; i <= 18; i++)
+            {
+                if(i == 7) parallelism = 2;
+                else if (i == 13) parallelism = 4;*/
+
+                PerformanceLog performanceLog = PerformanceLog.getLogger(this.getClass().getSimpleName());
+                performanceLog.setStartTime(System.nanoTime());
+
+                contextCreator.start();
+
+                performanceLog.logLatency(System.nanoTime());
+                performanceLog.logTotalLatency();
+                performanceLog.logToCsv(frameworkName, workloadName, dataMode, performanceLog.getTotalLatency().toString(), numberOfEntities, parallelism);
+                logger.info(performanceLog.getTotalLatency());
+            //}
         } catch (Exception e) {
             logger.error("WorkloadException caught when trying to run workload " + this.getClass().getSimpleName()
                     + ": " + e.getClass() + " " + e.getMessage());

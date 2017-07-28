@@ -37,8 +37,6 @@ public abstract class AbstractKafkaSender extends AbstractSender  {
         newRecord = new ProducerRecord(topic, 0, timestamp, key, value);
         producer.partitionsFor(topic);
         producer.send(newRecord);
-        //performanceLog.logSize(key);
-        //performanceLog.logSize(value);
         //performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
         logger.info("Topic: " + topic +
                 "\tPartition: " + newRecord.partition() +

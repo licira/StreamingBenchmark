@@ -34,10 +34,9 @@ public abstract class AbstractAdvClick extends AbstractWorkload {
             logger.error(e.getMessage());
         }
         advClick.print();
-        advClick.printExecutionLatency();
 
-        long latency = advClick.getExecutionLatency();
+        //long latency = advClick.getExecutionLatency();
 
-        performanceLog.logToCsv(advClick.getFrameworkName(), workloadName, advClick.getDataMode(), String.valueOf(TimeDuration.nanosToSeconds(latency)), null);
+        //performanceLog.logToCsv(advClick.getFrameworkName(), workloadName, advClick.getDataMode(), String.valueOf(TimeDuration.nanosToSeconds(latency)), null);
     }
 }

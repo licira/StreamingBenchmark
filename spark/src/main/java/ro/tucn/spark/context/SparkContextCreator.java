@@ -29,13 +29,13 @@ public class SparkContextCreator extends ContextCreator {
     public static JavaStreamingContext jssc;
     public static JavaSparkContext sc;
     private Properties properties;
-    private String dataMode;
 
     public SparkContextCreator(String appName, String dataMode, int parallelism) throws IOException {
         super(appName);
         initializeProperties();
         this.parallelism = parallelism;
         this.dataMode = dataMode;
+        this.frameworkName = "SPARK";
         initializeJavaStreamingContext(appName);
     }
 
@@ -80,11 +80,17 @@ public class SparkContextCreator extends ContextCreator {
 
     private void initializeJavaStreamingContext(String appName) {
         SparkConf conf = new SparkConf()
-                .setMaster(getMaster())
                 .setAppName(appName)
-                .set("executor.cores", String.valueOf(parallelism))
+                .set("spark.executor.instances", String.valueOf(parallelism))
+                //.set("executor.cores", "1")
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 ;
+        if (dataMode.equals(DataMode.BATCH)) {
+            conf.setMaster("local[" + parallelism + "]");
+        } else if (dataMode.equals(DataMode.STREAMING)) {
+            conf.setMaster(getMaster());
+        }
+
         sc = new JavaSparkContext(conf);
         jssc = new JavaStreamingContext(sc, Durations.milliseconds(this.getDurationsMilliseconds()));
     }

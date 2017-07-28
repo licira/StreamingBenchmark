@@ -25,11 +25,11 @@ public class FlinkContextCreator extends ContextCreator {
     private StreamExecutionEnvironment streamEnv = null;
     private ExecutionEnvironment batchEnv = null;
     private Properties properties;
-    private String dataMode;
 
     public FlinkContextCreator(String name, String dataMode, int parallelism) throws IOException {
         super(name);
         this.parallelism = parallelism;
+        this.frameworkName = "FLINK";
         initializeProperties();
         initializeEnv(dataMode);
     }

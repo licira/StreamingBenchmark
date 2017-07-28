@@ -13,6 +13,8 @@ public abstract class ContextCreator implements Serializable {
     protected int parallelism = -1;
 
     protected String appName;
+    protected String frameworkName;
+    protected String dataMode;
 
     public ContextCreator(String appName) {
         this.appName = appName;
@@ -24,13 +26,19 @@ public abstract class ContextCreator implements Serializable {
 
     public abstract AbstractGeneratorConsumer getGeneratorConsumer();
 
-    public abstract Object getPerformanceListener();
-
     public int getParallelism() {
         return parallelism;
     }
 
     public void setParallelism(int parallelism) {
         this.parallelism = parallelism;
+    }
+
+    public String getFrameworkName() {
+        return frameworkName;
+    }
+
+    public String getDataMode() {
+        return dataMode;
     }
 }

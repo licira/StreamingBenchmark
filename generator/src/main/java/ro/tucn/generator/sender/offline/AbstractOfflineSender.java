@@ -34,12 +34,10 @@ public abstract class AbstractOfflineSender extends AbstractSender implements Se
         long timestamp = TimeHelper.getNanoTime();
         newRecord = new GeneratorRecord(topic, timestamp, key, value);
         producer.send(newRecord);
-        //performanceLog.logSize(key);
-        //performanceLog.logSize(value);
         performanceLog.logThroughputAndLatency(TimeHelper.getNanoTime());
-        logger.info("Topic: " + topic +
+        /*logger.info("Topic: " + topic +
                 "\tMessage: " + newRecord.getValue()
-        );
+        );*/
     }
 
     public List<Map<String, String>> getGeneratedData(String topic) {
